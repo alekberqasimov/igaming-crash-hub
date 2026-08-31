@@ -1,0 +1,52 @@
+name: Install Rush History Sync V2.6
+on:
+  push:
+    paths:
+      - '.github/install-history-sync-v26-trigger.txt'
+permissions:
+  contents: write
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install history sync script in all Player and Admin views
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          games=['camel-rush','horse-rush','Greyhound-Rush','sonic-rush']
+          for slug in games:
+            for fn in ['index.html','admin.html']:
+              p=Path('games')/slug/fn
+              s=p.read_text()
+              tag='<script src="history-sync-v26.js?v=2.6.1"></script>'
+              if 'history-sync-v26.js' not in s:
+                if '</body>' not in s.lower(): raise SystemExit(str(p)+' missing body')
+                pos=s.lower().rfind('</body>')
+                s=s[:pos]+tag+s[pos:]
+                p.write_text(s)
+          PY
+      - name: Validate
+        shell: bash
+        run: |
+          set -euo pipefail
+          for g in camel-rush horse-rush Greyhound-Rush sonic-rush; do
+            node --check "games/$g/history-sync-v26.js"
+            grep -q 'history-sync-v26.js?v=2.6.1' "games/$g/index.html"
+            grep -q 'history-sync-v26.js?v=2.6.1' "games/$g/admin.html"
+          done
+          grep -q 'camel-wrap' games/camel-rush/index.html
+          grep -q 'horse-body' games/horse-rush/index.html
+          grep -q 'Greyhound Rush' games/Greyhound-Rush/index.html
+          grep -q 'runner-svg' games/sonic-rush/index.html
+      - name: Commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add games/camel-rush games/horse-rush games/Greyhound-Rush games/sonic-rush
+          git commit -m 'Rush V2.6.1: persist every round multiplier across Player and Admin'
+          git push
