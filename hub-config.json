@@ -3,50 +3,10 @@
   "repository": "igaming-crash-hub",
   "games_path": "games",
   "fallback_games": [
-    {
-      "folder": "camel-rush",
-      "name": "Camel Rush",
-      "version": "v1.9.1",
-      "status": "LIVE DEMO",
-      "category": "Race · Crash · Cashout",
-      "description": "Always-on desert race with rising multiplier, Auto Play, Auto Cashout and live-room simulation.",
-      "tags": [
-        "Crash",
-        "Race",
-        "Cashout"
-      ],
-      "art": "camel",
-      "order": 10
-    },
-    {
-      "folder": "goal-rush",
-      "name": "Goal Rush",
-      "version": "v6.4.02",
-      "status": "LIVE DEMO",
-      "category": "Football · Run · Cashout",
-      "description": "Football-driven progressive cashout experience with manual play, Auto Play and live-result presentation.",
-      "tags": [
-        "Football",
-        "Cashout",
-        "Auto Play"
-      ],
-      "art": "goal",
-      "order": 20
-    },
-    {
-      "folder": "penalty",
-      "name": "Casino Penalty",
-      "version": "v25.14",
-      "status": "LIVE DEMO",
-      "category": "Football · Penalty · Progressive",
-      "description": "Penalty-based progressive prototype with player/admin views, treasury controls and multiplier logic.",
-      "tags": [
-        "Penalty",
-        "Progressive",
-        "Treasury"
-      ],
-      "art": "penalty",
-      "order": 30
-    }
+    {"folder":"camel-rush","name":"Camel Rush","version":"v1.9.1","status":"LIVE DEMO","category":"Race · Crash · Cashout","description":"Always-on desert race with rising multiplier, Auto Play, Auto Cashout and live-room simulation.","tags":["Crash","Race","Cashout"],"art":"camel","order":10},
+    {"folder":"goal-rush","name":"Goal Rush","version":"v6.4.02","status":"LIVE DEMO","category":"Football · Run · Cashout","description":"Football-driven progressive cashout experience with manual play, Auto Play and live-result presentation.","tags":["Football","Cashout","Auto Play"],"art":"goal","order":20},
+    {"folder":"penalty","name":"Casino Penalty","version":"v25.14","status":"LIVE DEMO","category":"Football · Penalty · Progressive","description":"Penalty-based progressive prototype with player/admin views, treasury controls and multiplier logic.","tags":["Penalty","Progressive","Treasury"],"art":"penalty","order":30},
+    {"folder":"horse-rush","name":"Horse Rush","version":"1.2","status":"LIVE DEMO","category":"Race · Crash · Cashout","description":"Real-time horse racing crash game with manual and auto staking, live cashout, simulation and treasury-aware risk controls.","tags":["Crash","Horse Racing","Cashout"],"art":"horse","order":40},
+    {"folder":"Greyhound-Rush","name":"Greyhound Rush","version":"1.2","status":"LIVE DEMO","category":"Race · Crash · Cashout","description":"Real-time greyhound racing crash game with animated runners, manual and auto staking, live cashout and simulation.","tags":["Crash","Greyhound Racing","Cashout"],"art":"greyhound","order":50}
   ]
 }
