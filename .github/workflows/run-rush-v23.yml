@@ -1,0 +1,56 @@
+name: Run Rush V23
+'on':
+  push:
+    paths:
+      - '.github/rush-v23-trigger.txt'
+permissions:
+  contents: write
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Restore Sonic and V2 admins
+        run: |
+          V2=ffda15c31ff0af4cc8bf081a71e628d35a6f80e3
+          git checkout "$V2" -- games/sonic-rush games/camel-rush/admin.html games/horse-rush/admin.html games/Greyhound-Rush/admin.html
+      - name: Execute reviewed logic merge
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          src=Path('.github/workflows/apply-rush-v23.yml').read_text()
+          marker="          python3 - <<'PY'\n"
+          start=src.index(marker)+len(marker)
+          end=src.index("\n          PY",start)
+          code='\n'.join(line[10:] if line.startswith('          ') else line for line in src[start:end].splitlines())
+          exec(compile(code,'rush_v23_merge.py','exec'))
+          PY
+      - name: Validate JavaScript
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re,subprocess
+          for f in ['games/camel-rush/index.html','games/horse-rush/index.html','games/Greyhound-Rush/index.html','games/sonic-rush/index.html','games/camel-rush/admin.html','games/horse-rush/admin.html','games/Greyhound-Rush/admin.html','games/sonic-rush/admin.html']:
+            for i,js in enumerate(re.findall(r'<script[^>]*>(.*?)</script>',Path(f).read_text(),re.S|re.I)):
+              q=Path('/tmp')/f'check_{i}.js';q.write_text(js);subprocess.run(['node','--check',str(q)],check=True)
+          PY
+      - name: Package
+        run: |
+          mkdir -p rush-v23-zips
+          (cd games/camel-rush && zip -q ../../rush-v23-zips/Camel_Rush_V2_3_GitHub.zip index.html admin.html hub.json README.md)
+          (cd games/horse-rush && zip -q ../../rush-v23-zips/Horse_Rush_V2_3_GitHub.zip index.html admin.html hub.json README.md)
+          (cd games/Greyhound-Rush && zip -q ../../rush-v23-zips/Greyhound_Rush_V2_3_GitHub.zip index.html admin.html hub.json README.md)
+          (cd games/sonic-rush && zip -q ../../rush-v23-zips/Sonic_Rush_V2_3_GitHub.zip index.html admin.html hub.json README.md)
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Rush-Family-V2.3-Final
+          path: rush-v23-zips/*.zip
+      - name: Commit
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add games
+          git commit -m 'Rush V2.3 logic only final' || true
+          git push
