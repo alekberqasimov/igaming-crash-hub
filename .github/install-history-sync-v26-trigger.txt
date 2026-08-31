@@ -1,0 +1,2 @@
+2026-08-31T20:42:00+04:00
+Fix confirmed from Horse screenshot: history was RAM-only and previous V2.6 workflow failed. Install direct persistent history sync in all four games.
