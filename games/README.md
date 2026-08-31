@@ -1,12 +1,14 @@
-# Games
+# Horse Rush
 
-The first GitHub Actions migration will create:
+**Current version:** v1.2  
+**Player URL:** https://alekberqasimov.github.io/igaming-crash-hub/games/horse-rush/  
+**Admin URL:** https://alekberqasimov.github.io/igaming-crash-hub/games/horse-rush/admin.html
 
-- `games/camel-rush/`
-- `games/goal-rush/`
-- `games/penalty/`
+## Short description
+A real-time horse racing crash game with manual and auto staking, live cashout, simulation, and treasury-aware risk controls.
 
-Each game folder will contain its current `index.html`, `admin.html`, `README.md` and a `hub.json`.
+## Main gameplay logic
+Players join an automatically running race, follow a rising multiplier, and cash out before the mathematically pre-locked round endpoint. Manual and Auto Play share one compact stake-control block; the admin layer exposes configuration, treasury/risk, simulation, and round logs.
 
-For future games, create a new folder under `games/` and add at least an `index.html`.
-A `hub.json` is recommended for the card title, version, description, tags and visual type.
+## Update date
+2026-08-31
