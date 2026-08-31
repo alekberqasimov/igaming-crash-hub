@@ -1,0 +1,14 @@
+{
+  "name": "New Game",
+  "version": "v1.0",
+  "status": "LIVE DEMO",
+  "category": "Crash · Interactive",
+  "description": "Short public description for the Hub card.",
+  "tags": [
+    "Crash",
+    "Realtime",
+    "Cashout"
+  ],
+  "art": "generic",
+  "order": 40
+}

@@ -1,0 +1,87 @@
+IGAMING CRASH HUB — GITHUB-A YERLƏŞDİRMƏ
+
+1) GitHub → + → New repository
+
+Repository name:
+igaming-crash-hub
+
+Visibility:
+Public
+
+Create repository.
+
+2) Bu ZIP-i kompüterdə Extract All et.
+
+ZIP-in özünü GitHub-a upload ETMƏ.
+
+3) Açılmış qovluğun İÇİNDƏKİ bütün fayl və qovluqları yeni repo-nun ROOT hissəsinə upload et.
+
+Mütləq bunlar görünməlidir:
+
+.github/
+assets/
+games/
+index.html
+hub-config.json
+hub.example.json
+README.md
+UPLOAD_STEP_BY_STEP_AZ.txt
+.nojekyll
+robots.txt
+
+4) Commit changes.
+
+5) GitHub-da Actions tabına keç.
+
+"Migrate games into IGAMING CRASH HUB" workflow-u avtomatik başlamalıdır.
+
+Yaşıl ✓ olana qədər gözlə.
+
+Workflow bitəndən sonra games/ qovluğunda bunlar yaranacaq:
+
+camel-rush/
+goal-rush/
+penalty/
+
+6) Əgər workflow git push zamanı permission xətası verərsə:
+
+Settings
+→ Actions
+→ General
+→ Workflow permissions
+→ Read and write permissions
+→ Save
+
+Sonra:
+Actions
+→ Migrate games into IGAMING CRASH HUB
+→ Run workflow
+
+7) Sonra GitHub Pages:
+
+Settings
+→ Pages
+→ Source: Deploy from a branch
+→ Branch: main
+→ Folder: /(root)
+→ Save
+
+8) Hub URL:
+https://alekberqasimov.github.io/igaming-crash-hub/
+
+9) Oyun URL-lərini test et:
+
+https://alekberqasimov.github.io/igaming-crash-hub/games/camel-rush/
+https://alekberqasimov.github.io/igaming-crash-hub/games/goal-rush/
+https://alekberqasimov.github.io/igaming-crash-hub/games/penalty/
+
+10) Köhnə repository-ləri hələ silmə.
+Əvvəl Hub, 3 oyun və admin səhifələrini tam test et.
+
+SONRAKI YENİ OYUN:
+games/yeni-oyun/ adlı qovluq yarat.
+İçinə index.html qoy.
+İstəsən hub.json da əlavə et.
+Hub yeni qovluğu özü aşkar edə bilir.
+
+BU MONOREPO MODELİNDƏ TOPIC LAZIM DEYİL.

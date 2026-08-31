@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#07110e">
+  <meta name="description" content="IGAMING CRASH HUB — playable iGaming prototypes in one GitHub Pages monorepo.">
+  <title>IGAMING CRASH HUB</title>
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <div class="ambient ambient-a"></div>
+  <div class="ambient ambient-b"></div>
+
+  <header class="site-header">
+    <a class="brand" href="#top" aria-label="IGAMING CRASH HUB">
+      <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span class="brand-copy">
+        <strong>IGAMING CRASH</strong>
+        <small>HUB</small>
+      </span>
+    </a>
+    <nav>
+      <a href="#games">Games</a>
+      <a href="#about">About</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="hero-copy">
+        <div class="eyebrow"><i></i> ONE REPOSITORY · MULTIPLE GAMES</div>
+        <h1>One hub.<br><em>Every game inside.</em></h1>
+        <p>A clean monorepo for playable iGaming prototypes. Every game lives in its own folder, while one GitHub Pages deployment publishes the complete collection.</p>
+
+        <a class="primary-cta" href="#games">EXPLORE GAMES <span>↓</span></a>
+
+        <div class="hero-stats">
+          <div><strong id="gameCount">3</strong><span>Playable games</span></div>
+          <div><strong>1</strong><span>Repository</span></div>
+          <div><strong>AUTO</strong><span>Folder discovery</span></div>
+        </div>
+      </div>
+
+      <div class="hero-visual" aria-hidden="true">
+        <div class="orbit orbit-one"></div>
+        <div class="orbit orbit-two"></div>
+        <div class="hub-core"><strong>iG</strong><span>CRASH<br>HUB</span></div>
+        <div class="node node-one"><small>01</small><b>RACE</b></div>
+        <div class="node node-two"><small>02</small><b>GOAL</b></div>
+        <div class="node node-three"><small>03</small><b>PENALTY</b></div>
+      </div>
+    </section>
+
+    <section class="games-section" id="games">
+      <div class="section-heading">
+        <div>
+          <span class="section-kicker">MONOREPO COLLECTION</span>
+          <h2>Playable builds</h2>
+        </div>
+        <div class="section-note">
+          <p>Each game opens from a local <code>games/...</code> folder inside this same repository.</p>
+          <span class="sync-badge" id="syncBadge"><i></i> Loading game folders…</span>
+        </div>
+      </div>
+      <div class="games-grid" id="gamesGrid" aria-live="polite"></div>
+    </section>
+
+    <section class="about-section" id="about">
+      <div class="about-card">
+        <span class="section-kicker">ARCHITECTURE</span>
+        <h2>Simple monorepo structure.</h2>
+        <p>The Hub stays at repository root. Every game is isolated under <code>games/game-name/</code> with its own player, admin and optional Hub metadata.</p>
+        <div class="feature-grid">
+          <div><span>01</span><strong>Single Repo</strong><small>One repository to manage and publish.</small></div>
+          <div><span>02</span><strong>Local URLs</strong><small>All games share one GitHub Pages project URL.</small></div>
+          <div><span>03</span><strong>Independent Updates</strong><small>Update only the game folder you are changing.</small></div>
+          <div><span>04</span><strong>Auto Discovery</strong><small>New game folders can appear without editing the homepage.</small></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div><strong>IGAMING CRASH HUB</strong><span>Interactive game portfolio</span></div>
+    <p>Prototype / portfolio demonstration only. Not a certified real-money gambling platform.</p>
+  </footer>
+
+  <script src="assets/app.js"></script>
+</body>
+</html>
