@@ -1,0 +1,129 @@
+name: Fix Rush Family V2.4 Live Simulation
+on:
+  push:
+    paths:
+      - '.github/rush-family-v24-trigger.txt'
+permissions:
+  contents: write
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch Camel Horse Greyhound live simulation
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re, json
+
+          games=[
+            ('camel-rush','Camel_Rush_V2_4_GitHub.zip','camelrushv2lc_reset_v2'),
+            ('horse-rush','Horse_Rush_V2_4_GitHub.zip','horserushv2lc_reset_v2'),
+            ('Greyhound-Rush','Greyhound_Rush_V2_4_GitHub.zip','greyhoundrushv2lc_reset_v2'),
+          ]
+
+          # Horse/Greyhound: make invisible admin engine reliable on mobile and reset-safe.
+          for slug in ['horse-rush','Greyhound-Rush']:
+            p=Path('games')/slug/'index.html'; s=p.read_text()
+            if "const ENGINE_MODE=new URLSearchParams(location.search).get('engine')==='1';" not in s:
+              s=s.replace("let raf=0,timer=0,roundHistory=[];let auto=", "const ENGINE_MODE=new URLSearchParams(location.search).get('engine')==='1';let raf=0,timer=0,loopTimer=0,roundHistory=[];let auto=",1)
+              marker="function secure(){if(globalThis.crypto?.getRandomValues){const a=new Uint32Array(1);crypto.getRandomValues(a);return(a[0]+1)/4294967297}return Math.random()||Number.EPSILON}"
+              if marker not in s: raise SystemExit(slug+' secure marker missing')
+              s=s.replace(marker,marker+"function scheduleLoop(fn){if(ENGINE_MODE){clearTimeout(loopTimer);loopTimer=setTimeout(fn,70)}else{raf=requestAnimationFrame(fn)}}",1)
+              s=s.replace("function newRound(){cancelAnimationFrame(raf);clearTimeout(timer);", "function newRound(){cancelAnimationFrame(raf);clearTimeout(timer);clearTimeout(loopTimer);",1)
+              s=s.replace("raf=requestAnimationFrame(bettingTick)","scheduleLoop(bettingTick)")
+              s=s.replace("raf=requestAnimationFrame(raceTick)","scheduleLoop(raceTick)")
+            if "if(e.key===KEY.reset)location.reload()" not in s:
+              s=s.replace("bind();\n})();", "window.addEventListener('storage',e=>{if(e.key===KEY.reset)location.reload()});\nbind();\n})();",1)
+            p.write_text(s)
+
+          # Camel: add reset key and reload on Admin reset. Existing live-room bot timing/visuals stay untouched.
+          p=Path('games/camel-rush/index.html'); s=p.read_text()
+          if "reset: 'camelrushv2lc_reset_v2'" not in s:
+            s=s.replace("logs: 'camelrushv2lc_logs_v2',", "logs: 'camelrushv2lc_logs_v2',\n    reset: 'camelrushv2lc_reset_v2',",1)
+          # Add reset handling to the existing storage listener.
+          needle="window.addEventListener('storage', (event) => {\n        if (event.key === keys.config) {"
+          if needle in s and "event.key === keys.reset" not in s:
+            s=s.replace(needle,"window.addEventListener('storage', (event) => {\n        if (event.key === keys.reset) { location.reload(); return; }\n        if (event.key === keys.config) {",1)
+          p.write_text(s)
+
+          # Admins: keep the same live demo engine running while Admin is open.
+          for slug,zipname,resetkey in games:
+            p=Path('games')/slug/'admin.html'; a=p.read_text()
+            if 'data-live-engine' not in a:
+              iframe='<iframe data-live-engine src="index.html?engine=1" title="Live demo engine" aria-hidden="true" tabindex="-1" style="position:fixed;right:1px;bottom:1px;width:2px;height:2px;border:0;opacity:.001;pointer-events:none;z-index:-1"></iframe>'
+              a=a.replace('<div class="toast" data-toast></div>', '<div class="toast" data-toast></div>'+iframe,1)
+            # Camel finance schema needs both reserve and reserveBalance for compatibility.
+            if slug=='camel-rush':
+              old="finance={houseCash:config.houseInitialCash,reserveBalance:config.reserveTargetAmount,reserveTarget:config.reserveTargetAmount,totalStake:0,totalPayout:0,rounds:0,openExposure:0,reserveUsed:0,reserveRestored:0};"
+              new="finance={houseCash:config.houseInitialCash,reserve:config.reserveTargetAmount,reserveBalance:config.reserveTargetAmount,reserveTarget:config.reserveTargetAmount,initialReserve:config.reserveTargetAmount,totalStake:0,totalPayout:0,rounds:0,openLiability:0,openExposure:0,reserveUsed:0,reserveRestored:0};"
+              a=a.replace(old,new)
+            # Reset must immediately restart background engine from the fresh balances.
+            if "function restartLiveEngine()" not in a:
+              a=a.replace("function resetDemo(){", "function restartLiveEngine(){const e=$('[data-live-engine]');if(e)e.src='index.html?engine=1&t='+Date.now()}function resetDemo(){",1)
+              a=a.replace("render();toast('Reset complete')}", "render();restartLiveEngine();toast('Reset complete')}",1)
+            # Faster realtime dashboard refresh on storage writes.
+            if "[KEY.finance,KEY.metrics,KEY.logs,KEY.config].includes(e.key)" not in a:
+              a=a.replace("const unlockAdmin=()=>{", "window.addEventListener('storage',e=>{if([KEY.finance,KEY.metrics,KEY.logs,KEY.config].includes(e.key))render()});const unlockAdmin=()=>{",1)
+            p.write_text(a)
+
+          # Metadata version bump, no visual changes.
+          for slug,zipname,resetkey in games:
+            hp=Path('games')/slug/'hub.json'
+            if hp.exists():
+              h=json.loads(hp.read_text());h['version']='2.4';h['description']=h.get('description','').split(' V2.4')[0]+' V2.4 with reset-safe persistent live simulation and selectable Liability Coverage.';hp.write_text(json.dumps(h,ensure_ascii=False,indent=2)+'\n')
+            rp=Path('games')/slug/'README.md'
+            if rp.exists():
+              r=rp.read_text()
+              if 'V2.4 Live Simulation Fix' not in r:
+                r+='\n## V2.4 Live Simulation Fix\n- Reset clears demo finance and immediately restarts simulated player betting.\n- Admin keeps a background live engine active, so House Cash / Payout / GGR / Reserve continue changing while Admin is open.\n- Player Live Room continues showing simulated winners and losers after reset.\n- Liability Coverage ON/OFF remains unchanged.\n- Existing player visual design and animation are unchanged.\n'
+              rp.write_text(r)
+
+          # Assertions: exact visual fingerprints remain present.
+          checks={
+            'games/camel-rush/index.html':['camel-wrap','mountains-front','Camel Rush V1.8'],
+            'games/horse-rush/index.html':['horse-body','gallopA','Track Cashout Race'],
+            'games/Greyhound-Rush/index.html':['Greyhound Rush','greyhound']
+          }
+          for path,needles in checks.items():
+            txt=Path(path).read_text()
+            for n in needles:
+              if n not in txt: raise SystemExit(path+' missing visual fingerprint '+n)
+          for slug,_,_ in games:
+            adm=(Path('games')/slug/'admin.html').read_text()
+            if 'data-live-engine' not in adm: raise SystemExit(slug+' admin engine missing')
+            if 'type="password"' not in adm or 'placeholder="12345"' in adm: raise SystemExit(slug+' PIN regression')
+          PY
+      - name: Validate JavaScript
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re, subprocess
+          files=['games/camel-rush/index.html','games/camel-rush/admin.html','games/horse-rush/index.html','games/horse-rush/admin.html','games/Greyhound-Rush/index.html','games/Greyhound-Rush/admin.html']
+          for f in files:
+            for i,js in enumerate(re.findall(r'<script[^>]*>(.*?)</script>',Path(f).read_text(),re.S|re.I)):
+              q=Path('/tmp')/f'rushv24_{abs(hash(f))}_{i}.js';q.write_text(js)
+              r=subprocess.run(['node','--check',str(q)],capture_output=True,text=True)
+              if r.returncode:
+                print(f,r.stderr);raise SystemExit(1)
+          PY
+      - name: Package
+        run: |
+          mkdir -p rush-family-v24
+          (cd games/camel-rush && zip -q ../../rush-family-v24/Camel_Rush_V2_4_GitHub.zip index.html admin.html hub.json README.md)
+          (cd games/horse-rush && zip -q ../../rush-family-v24/Horse_Rush_V2_4_GitHub.zip index.html admin.html hub.json README.md)
+          (cd games/Greyhound-Rush && zip -q ../../rush-family-v24/Greyhound_Rush_V2_4_GitHub.zip index.html admin.html hub.json README.md)
+          if [ -d games/sonic-rush ]; then (cd games/sonic-rush && zip -q ../../rush-family-v24/Sonic_Rush_V2_4_GitHub.zip index.html admin.html hub.json README.md); fi
+          zip -q -j rush-family-v24/Rush_Family_V2_4_All_Games.zip rush-family-v24/*_GitHub.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Rush-Family-V2.4-Live-Simulation-Fix
+          path: rush-family-v24/*.zip
+          retention-days: 30
+      - name: Commit
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add games/camel-rush games/horse-rush games/Greyhound-Rush
+          git commit -m 'Rush V2.4: keep live simulation active after reset and in admin' || true
+          git push
