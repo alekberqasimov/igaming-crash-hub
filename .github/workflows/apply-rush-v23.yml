@@ -1,0 +1,165 @@
+name: Apply Rush V2.3 Logic Only
+on:
+  push:
+permissions:
+  contents: write
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Restore Sonic and V2 admins
+        run: |
+          set -e
+          V2=ffda15c31ff0af4cc8bf081a71e628d35a6f80e3
+          git checkout "$V2" -- games/sonic-rush
+          git checkout "$V2" -- games/camel-rush/admin.html games/horse-rush/admin.html games/Greyhound-Rush/admin.html
+      - name: Merge V2 math into approved player visuals
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          def must_replace(s, old, new, label, count=1):
+              n=s.count(old)
+              if n < count:
+                  raise SystemExit(f'{label}: expected at least {count}, found {n}')
+              return s.replace(old,new,count)
+
+          def patch_track(path,prefix,animal):
+              p=Path(path); s=p.read_text()
+              old=f"const KEY={{config:'{prefix}_config_v1',finance:'{prefix}_finance_v1',metrics:'{prefix}_metrics_v1',wallet:'{prefix}_wallet_v1',logs:'{prefix}_logs_v1',lang:'{prefix}_lang_v1'}};"
+              new=f"const KEY={{config:'{prefix}v2lc_config_v2',finance:'{prefix}v2lc_finance_v2',metrics:'{prefix}v2lc_metrics_v2',wallet:'{prefix}v2lc_wallet_v2',logs:'{prefix}v2lc_logs_v2',lang:'{prefix}v2lc_lang_v2',reset:'{prefix}v2lc_reset_v2'}};"
+              s=must_replace(s,old,new,animal+' keys')
+              olddef="configVersion:1,gameName:"
+              s=must_replace(s,olddef,"configVersion:2,gameName:",animal+' version')
+              s=must_replace(s,"currency:'AZN',targetRtp:.95,","currency:'AZN',targetProfitMargin:.50,targetRtp:.50,payoutBudgetPct:.50,",animal+' target model')
+              s=must_replace(s,"reserveInitialAmount:100000","reserveTargetAmount:20000",animal+' reserve target')
+              s=must_replace(s,"treasuryProtectionEnabled:true,riskThresholds:","treasuryProtectionEnabled:true,liabilityCoverageEnabled:true,riskPressure:{reserveWeight:.45,marginWeight:.35,budgetWeight:.20,coverageWeight:.35,maxRtpReduction:.70},riskThresholds:",animal+' risk config')
+              oldnorm="function norm(c){c=merge(DEF,c||{});c.targetRtp=clamp(c.targetRtp,.5,.999,DEF.targetRtp);c.minBet=clamp(c.minBet,.01,1e6,DEF.minBet);c.maxBet=clamp(c.maxBet,c.minBet,1e8,DEF.maxBet);c.maxPayoutPerBet=clamp(c.maxPayoutPerBet,c.minBet,1e12,DEF.maxPayoutPerBet);c.maxPayoutPerRound=clamp(c.maxPayoutPerRound,c.maxPayoutPerBet,1e13,DEF.maxPayoutPerRound);c.maxSessionExposure=clamp(c.maxSessionExposure,c.maxPayoutPerRound,1e14,DEF.maxSessionExposure);c.maxMultiplier=clamp(c.maxMultiplier,2,1e5,DEF.maxMultiplier);c.growthRate=clamp(c.growthRate,.03,1,DEF.growthRate);c.animationSpeed=clamp(c.animationSpeed,.4,3,DEF.animationSpeed);c.autoPlayMaxRounds=Math.round(clamp(c.autoPlayMaxRounds,1,1e4,DEF.autoPlayMaxRounds));c.usableReservePct=clamp(c.usableReservePct,0,1,DEF.usableReservePct);c.reserveRestorePct=clamp(c.reserveRestorePct,0,1,DEF.reserveRestorePct);c.configVersion=Math.max(1,Math.round(Number(c.configVersion)||1));return c}"
+              newnorm="function norm(c){c=merge(DEF,c||{});c.targetProfitMargin=clamp(c.targetProfitMargin,.01,.95,DEF.targetProfitMargin);c.targetRtp=1-c.targetProfitMargin;c.payoutBudgetPct=clamp(c.payoutBudgetPct,.05,1,DEF.payoutBudgetPct);c.minBet=clamp(c.minBet,.01,1e6,DEF.minBet);c.maxBet=clamp(c.maxBet,c.minBet,1e8,DEF.maxBet);c.maxPayoutPerBet=clamp(c.maxPayoutPerBet,c.minBet,1e12,DEF.maxPayoutPerBet);c.maxPayoutPerRound=clamp(c.maxPayoutPerRound,c.maxPayoutPerBet,1e13,DEF.maxPayoutPerRound);c.maxSessionExposure=clamp(c.maxSessionExposure,c.maxPayoutPerRound,1e14,DEF.maxSessionExposure);c.maxMultiplier=clamp(c.maxMultiplier,2,1e5,DEF.maxMultiplier);c.growthRate=clamp(c.growthRate,.03,1,DEF.growthRate);c.animationSpeed=clamp(c.animationSpeed,.4,3,DEF.animationSpeed);c.autoPlayMaxRounds=Math.round(clamp(c.autoPlayMaxRounds,1,1e4,DEF.autoPlayMaxRounds));c.reserveTargetAmount=clamp(c.reserveTargetAmount,0,1e12,DEF.reserveTargetAmount);c.usableReservePct=clamp(c.usableReservePct,0,1,DEF.usableReservePct);c.reserveRestorePct=clamp(c.reserveRestorePct,0,1,DEF.reserveRestorePct);c.liabilityCoverageEnabled=c.liabilityCoverageEnabled!==false;c.riskPressure=merge(DEF.riskPressure,c.riskPressure||{});c.configVersion=Math.max(2,Math.round(Number(c.configVersion)||2));return c}"
+              s=must_replace(s,oldnorm,newnorm,animal+' normalize')
+              s=must_replace(s,"let finance=load(KEY.finance,{houseCash:config.houseInitialCash,reserve:config.reserveInitialAmount,totalStake:0,totalPayout:0,rounds:0,openExposure:0});","let finance=load(KEY.finance,{houseCash:config.houseInitialCash,reserve:config.reserveTargetAmount,totalStake:0,totalPayout:0,rounds:0,openExposure:0,reserveRestored:0});",animal+' finance')
+              oldb="function bust(cfg=config){if(cfg.testMode?.enabled&&cfg.testMode.forcedOutcome!=='RANDOM')return Math.min(cfg.maxMultiplier,Math.max(1,Number(cfg.testMode.forcedOutcome)||1));const u=secure();let x=cfg.targetRtp/(1-u);x=Math.max(1,Math.min(cfg.maxMultiplier,x));return Math.floor(x*100)/100}"
+              newb="function riskSnapshot(cfg=config){const target=Math.max(0,cfg.reserveTargetAmount||0),balance=Math.max(0,finance.reserve||0),reserveHealth=target>0?Math.min(1,balance/target):1,profit=(finance.totalStake||0)-(finance.totalPayout||0),actualMargin=finance.totalStake>0?profit/finance.totalStake:cfg.targetProfitMargin,handle=Math.min(1,(finance.totalStake||0)/5000),marginDeficit=Math.max(0,cfg.targetProfitMargin-actualMargin),marginPressure=Math.min(1,(marginDeficit/Math.max(.08,cfg.targetProfitMargin*.5))*handle),budget=Math.max(0,finance.houseCash*cfg.payoutBudgetPct),exp=Math.max(0,finance.openExposure||0),budgetPressure=exp>0?Math.min(1,Math.max(0,1-budget/exp)):0,reservePressure=1-reserveHealth,rp=cfg.riskPressure||DEF.riskPressure,base=Math.min(1,reservePressure*rp.reserveWeight+marginPressure*rp.marginWeight+budgetPressure*rp.budgetWeight),liquidity=Math.max(0,finance.houseCash)+balance*cfg.usableReservePct,rawCoverage=exp>0?liquidity/exp:999;let coveragePressure=0;if(cfg.liabilityCoverageEnabled&&exp>0){const warning=Math.max(cfg.riskThresholds.warningCoverage,cfg.riskThresholds.criticalCoverage+.01),critical=Math.max(.01,cfg.riskThresholds.criticalCoverage);if(rawCoverage<=critical)coveragePressure=1;else if(rawCoverage<warning)coveragePressure=Math.min(1,Math.max(0,(warning-rawCoverage)/(warning-critical)))}const pressure=Math.min(1,base+(cfg.liabilityCoverageEnabled?coveragePressure*(rp.coverageWeight??.35)*(1-base):0)),effectiveRtp=Math.max(.05,cfg.targetRtp*(1-pressure*rp.maxRtpReduction)),coverage=cfg.liabilityCoverageEnabled?rawCoverage:999;let zone='NORMAL';if((cfg.liabilityCoverageEnabled&&coverage<=cfg.riskThresholds.criticalCoverage)||pressure>=.78)zone='CRITICAL';else if((cfg.liabilityCoverageEnabled&&coverage<=cfg.riskThresholds.stressCoverage)||pressure>=.55)zone='STRESS';else if((cfg.liabilityCoverageEnabled&&coverage<=cfg.riskThresholds.warningCoverage)||pressure>=.30)zone='WARNING';return{reserveHealth,profit,actualMargin,budget,pressure,effectiveRtp,coverage,liquidity,zone}}function bust(cfg=config){if(cfg.testMode?.enabled&&cfg.testMode.forcedOutcome!=='RANDOM')return Math.min(cfg.maxMultiplier,Math.max(1,Number(cfg.testMode.forcedOutcome)||1));const snap=riskSnapshot(cfg),u=secure();let x=snap.effectiveRtp/(1-u);x=Math.max(1,Math.min(cfg.maxMultiplier,x));if(snap.pressure>.35&&x<1.01)x=Math.min(cfg.maxMultiplier,1.01+secure()*(.11-.06*snap.pressure));return Math.floor(x*100)/100}"
+              s=must_replace(s,oldb,newb,animal+' bust')
+              oldrisk="function riskZone(){const available=finance.houseCash+finance.reserve*config.usableReservePct;const exp=Math.max(finance.openExposure,config.maxPayoutPerBet);const cov=available/Math.max(1,exp);if(cov<=config.riskThresholds.criticalCoverage)return'CRITICAL';if(cov<=config.riskThresholds.stressCoverage)return'STRESS';if(cov<=config.riskThresholds.warningCoverage)return'WARNING';return'NORMAL'}\nfunction maxAllowedStake(){let mult=config.treasuryStakeMultipliers[riskZone().toLowerCase()]??1;let m=config.maxBet*mult;const avail=Math.max(0,finance.houseCash+finance.reserve*config.usableReservePct);const roundHead=Math.max(0,config.maxPayoutPerRound-finance.openExposure);const sessionHead=Math.max(0,config.maxSessionExposure-finance.openExposure);m=Math.min(m,config.maxPayoutPerBet/config.maxMultiplier,roundHead/config.maxMultiplier,sessionHead/config.maxMultiplier,avail/config.maxMultiplier);return Math.max(0,Math.floor(m*100)/100)}"
+              newrisk="function riskZone(){return riskSnapshot().zone}\nfunction maxAllowedStake(){const snap=riskSnapshot();let mult=config.treasuryStakeMultipliers[snap.zone.toLowerCase()]??1,m=config.maxBet*mult;const roundHead=Math.max(0,config.maxPayoutPerRound-finance.openExposure),sessionHead=Math.max(0,config.maxSessionExposure-finance.openExposure);m=Math.min(m,config.maxPayoutPerBet/config.maxMultiplier,roundHead/config.maxMultiplier,sessionHead/config.maxMultiplier);if(config.liabilityCoverageEnabled){const critical=Math.max(.01,config.riskThresholds.criticalCoverage),head=Math.max(0,snap.liquidity/critical-finance.openExposure);m=Math.min(m,head/config.maxMultiplier)}return Math.max(0,Math.floor(m*100)/100)}"
+              s=must_replace(s,oldrisk,newrisk,animal+' risk zone')
+              s=must_replace(s,"function restoreReserve(){const deficit=Math.max(0,config.reserveInitialAmount-finance.reserve);if(deficit<=0||finance.houseCash<=0)return;const move=Math.min(deficit,finance.houseCash*config.reserveRestorePct);finance.houseCash-=move;finance.reserve+=move}","function restoreReserve(){const deficit=Math.max(0,config.reserveTargetAmount-finance.reserve);if(deficit<=0||finance.houseCash<=0)return;const positiveGgr=Math.max(0,(finance.totalStake||0)-(finance.totalPayout||0));const eligible=Math.max(0,positiveGgr-(finance.reserveRestored||0)/Math.max(.0001,config.reserveRestorePct));const move=Math.min(deficit,finance.houseCash,eligible*config.reserveRestorePct);if(move<=0)return;finance.houseCash-=move;finance.reserve+=move;finance.reserveRestored=(finance.reserveRestored||0)+move}",animal+' reserve restore')
+              s=s.replace("||finance.openExposure+liability>availableAfterStake)continue;","||(config.liabilityCoverageEnabled&&finance.openExposure+liability>availableAfterStake))continue;")
+              s=s.replace("function openAdmin(){$('#playerHost').hidden=true;$('#adminHost').hidden=false;if(location.hash!=='#admin')window.history.replaceState(null,'','#admin');renderAdmin();loadConfigForm()}","function openAdmin(){window.location.href='admin.html'}")
+              s=s.replace("finance={houseCash:config.houseInitialCash,reserve:config.reserveInitialAmount,totalStake:0,totalPayout:0,rounds:0,openExposure:0};","finance={houseCash:config.houseInitialCash,reserve:config.reserveTargetAmount,totalStake:0,totalPayout:0,rounds:0,openExposure:0,reserveRestored:0};")
+              s=s.replace("Math/RNG is independent from treasury state.","Active round is locked at start. The next round uses the risk model selected by Admin.")
+              s=s.replace("Riyazi nəticə kassadan asılı deyil.","Aktiv raund startda kilidlənir. Növbəti raund Admin-də seçilən risk modeli ilə hesablanır.")
+              s=s.replace("Математический исход не зависит от кассы.","Активный раунд фиксируется при старте. Следующий раунд использует модель риска, выбранную в Admin.")
+              p.write_text(s)
+
+          patch_track('games/horse-rush/index.html','horserush','Horse')
+          patch_track('games/Greyhound-Rush/index.html','greyhoundrush','Greyhound')
+
+          # Camel: keep every existing HTML/CSS/SVG/animation byte except JS logic and admin navigation.
+          p=Path('games/camel-rush/index.html'); s=p.read_text()
+          for old,new in {
+              'camelrush_config_v2':'camelrushv2lc_config_v2','camelrush_finance_v2':'camelrushv2lc_finance_v2','camelrush_metrics_v2':'camelrushv2lc_metrics_v2','camelrush_wallet_v2':'camelrushv2lc_wallet_v2','camelrush_round_logs_v2':'camelrushv2lc_logs_v2','camelrush_active_round_v2':'camelrushv2lc_active_round_v2','camelrush_house_metrics_v2':'camelrushv2lc_house_metrics_v2'
+          }.items(): s=s.replace(old,new)
+          s=s.replace('configVersion: 1,','configVersion: 2,')
+          s=s.replace('targetRtp: 0.95,','targetProfitMargin: 0.50,\n    targetRtp: 0.50,\n    payoutBudgetPct: 0.50,')
+          s=s.replace('reserveInitialAmount: 100000,','reserveInitialAmount: 20000,\n    reserveTargetAmount: 20000,')
+          s=s.replace('treasuryProtectionEnabled: true,','treasuryProtectionEnabled: true,\n    liabilityCoverageEnabled: true,\n    riskPressure: { reserveWeight: 0.45, marginWeight: 0.35, budgetWeight: 0.20, coverageWeight: 0.35, maxRtpReduction: 0.70 },')
+          s=s.replace('c.targetRtp = clampNumber(c.targetRtp, 0.5, 0.999, DEFAULT_CONFIG.targetRtp);','c.targetProfitMargin = clampNumber(c.targetProfitMargin, 0.01, 0.95, DEFAULT_CONFIG.targetProfitMargin);\n    c.targetRtp = 1 - c.targetProfitMargin;\n    c.payoutBudgetPct = clampNumber(c.payoutBudgetPct, 0.05, 1, DEFAULT_CONFIG.payoutBudgetPct);\n    c.reserveTargetAmount = clampNumber(c.reserveTargetAmount, 0, 1e12, DEFAULT_CONFIG.reserveTargetAmount);\n    c.reserveInitialAmount = c.reserveTargetAmount;\n    c.liabilityCoverageEnabled = c.liabilityCoverageEnabled !== false;\n    c.riskPressure = mergeDeep(DEFAULT_CONFIG.riskPressure, c.riskPressure || {});')
+          s=s.replace('const rtp = config.targetRtp;','const rtp = Number(config.__effectiveRtp ?? config.targetRtp);')
+          s=s.replace('reserveUsed: 0,\n      updatedAt: Date.now()','reserveUsed: 0,\n      totalStake: 0,\n      totalPayout: 0,\n      reserveRestored: 0,\n      updatedAt: Date.now()')
+          oldsnap="""    snapshot(extraLiability = 0) {
+      const f = this.finance;
+      const usableReserve = Math.max(0, f.reserve * this.config.usableReservePct);
+      const availableLiquidity = Math.max(0, f.houseCash + usableReserve);
+      const liability = Math.max(0, f.openLiability + extraLiability);
+      const coverage = liability > 0 ? availableLiquidity / liability : 999;
+      const riskCapacity = availableLiquidity - liability;
+      const zone = this.zoneForCoverage(coverage);
+      return {
+        houseCash: money(f.houseCash),
+        reserve: money(f.reserve),
+        usableReserve: money(usableReserve),
+        availableLiquidity: money(availableLiquidity),
+        openLiability: money(f.openLiability),
+        maxPotentialLiability: money(liability),
+        liquidityCoverage: coverage,
+        riskCapacity: money(riskCapacity),
+        zone
+      };
+    }
+"""
+          newsnap="""    snapshot(extraLiability = 0) {
+      const f=this.finance,cfg=this.config,target=Math.max(0,Number(cfg.reserveTargetAmount||cfg.reserveInitialAmount||f.initialReserve||0)),balance=Math.max(0,Number(f.reserve||0)),reserveHealth=target>0?Math.min(1,balance/target):1,totalStake=Number(f.totalStake||0),totalPayout=Number(f.totalPayout||0),profit=totalStake-totalPayout,actualMargin=totalStake>0?profit/totalStake:cfg.targetProfitMargin,handle=Math.min(1,totalStake/5000),marginDeficit=Math.max(0,cfg.targetProfitMargin-actualMargin),marginPressure=Math.min(1,(marginDeficit/Math.max(.08,cfg.targetProfitMargin*.5))*handle),payoutBudget=Math.max(0,Number(f.houseCash||0)*cfg.payoutBudgetPct),liability=Math.max(0,Number(f.openLiability||0)+Number(extraLiability||0)),budgetPressure=liability>0?Math.min(1,Math.max(0,1-payoutBudget/liability)):0,reservePressure=1-reserveHealth,rp=cfg.riskPressure||DEFAULT_CONFIG.riskPressure,base=Math.min(1,reservePressure*rp.reserveWeight+marginPressure*rp.marginWeight+budgetPressure*rp.budgetWeight),usableReserve=Math.max(0,balance*cfg.usableReservePct),availableLiquidity=Math.max(0,Number(f.houseCash||0)+usableReserve),rawCoverage=liability>0?availableLiquidity/liability:999;
+      let coveragePressure=0;if(cfg.liabilityCoverageEnabled&&liability>0){const warning=Math.max(Number(cfg.riskThresholds.warningCoverage)||2,(Number(cfg.riskThresholds.criticalCoverage)||1.05)+.01),critical=Math.max(.01,Number(cfg.riskThresholds.criticalCoverage)||1.05);if(rawCoverage<=critical)coveragePressure=1;else if(rawCoverage<warning)coveragePressure=Math.min(1,Math.max(0,(warning-rawCoverage)/(warning-critical)))}
+      const pressure=Math.min(1,base+(cfg.liabilityCoverageEnabled?coveragePressure*Number(rp.coverageWeight??.35)*(1-base):0)),effectiveRtp=Math.max(.05,cfg.targetRtp*(1-pressure*rp.maxRtpReduction)),coverage=cfg.liabilityCoverageEnabled?rawCoverage:999,riskCapacity=cfg.liabilityCoverageEnabled?availableLiquidity-liability:availableLiquidity;let zone='NORMAL';if((cfg.liabilityCoverageEnabled&&coverage<=cfg.riskThresholds.criticalCoverage)||pressure>=.78)zone='CRITICAL';else if((cfg.liabilityCoverageEnabled&&coverage<=cfg.riskThresholds.stressCoverage)||pressure>=.55)zone='STRESS';else if((cfg.liabilityCoverageEnabled&&coverage<=cfg.riskThresholds.warningCoverage)||pressure>=.30)zone='WARNING';
+      return {houseCash:money(f.houseCash),reserve:money(balance),usableReserve:money(usableReserve),availableLiquidity:money(availableLiquidity),openLiability:money(f.openLiability),maxPotentialLiability:money(liability),liquidityCoverage:coverage,riskCapacity:money(riskCapacity),zone,reserveHealth,realizedProfit:money(profit),actualMargin,payoutBudget:money(payoutBudget),pressure,effectiveRtp};
+    }
+"""
+          if oldsnap not in s: raise SystemExit('Camel snapshot pattern missing')
+          s=s.replace(oldsnap,newsnap)
+          s=s.replace('this.finance.houseCash = money(this.finance.houseCash + stake);\n      this.finance.openLiability','this.finance.houseCash = money(this.finance.houseCash + stake);\n      this.finance.totalStake = money(Number(this.finance.totalStake || 0) + Number(stake || 0));\n      this.finance.openLiability')
+          s=s.replace('saveFinance(this.finance);\n      return {\n        paid: money(payout - due),','const paid = money(payout - due);\n      this.finance.totalPayout = money(Number(this.finance.totalPayout || 0) + paid);\n      saveFinance(this.finance);\n      return {\n        paid,')
+          s=s.replace('const outcome = MathEngine.generateOutcome(this.config);','const riskNow=this.risk.snapshot();\n      const outcome = MathEngine.generateOutcome({ ...this.config, __effectiveRtp:riskNow.effectiveRtp });')
+          # Redirect existing Admin control to separate V2 admin without changing its button markup/style.
+          s=s.replace('</body>',"<script>document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-open-admin]');if(b){e.preventDefault();e.stopImmediatePropagation();location.href='admin.html'}},true);</script></body>",1)
+          p.write_text(s)
+
+          # Fix V2 admins: password is never prefilled or revealed in placeholder.
+          for path in ['games/camel-rush/admin.html','games/horse-rush/admin.html','games/Greyhound-Rush/admin.html','games/sonic-rush/admin.html']:
+              p=Path(path); a=p.read_text()
+              a=a.replace('placeholder="12345" value=""','placeholder="PIN" value=""')
+              a=a.replace('autocomplete="off" type="password"','autocomplete="new-password" type="password"')
+              p.write_text(a)
+
+          # Preserve approved player visual fingerprints.
+          checks={
+            'games/camel-rush/index.html':['Camel Rush V1.8','camel-wrap','mountains-front'],
+            'games/horse-rush/index.html':['horse-body','gallopA','Track Cashout Race'],
+            'games/Greyhound-Rush/index.html':['Greyhound Rush','greyhound']
+          }
+          for path,needles in checks.items():
+              txt=Path(path).read_text()
+              for needle in needles:
+                  if needle not in txt: raise SystemExit(f'{path}: visual fingerprint missing {needle}')
+              if 'liabilityCoverageEnabled:true' not in txt and 'liabilityCoverageEnabled: true' not in txt: raise SystemExit(f'{path}: liability toggle logic missing')
+          for path in ['games/camel-rush/admin.html','games/horse-rush/admin.html','games/Greyhound-Rush/admin.html','games/sonic-rush/admin.html']:
+              txt=Path(path).read_text()
+              if 'placeholder="12345"' in txt: raise SystemExit(path+' PIN placeholder still visible')
+              if 'type="password"' not in txt or 'liabilityCoverageEnabled' not in txt: raise SystemExit(path+' admin validation failed')
+          PY
+      - name: JavaScript syntax validation
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re,subprocess
+          files=['games/camel-rush/index.html','games/horse-rush/index.html','games/Greyhound-Rush/index.html','games/sonic-rush/index.html','games/camel-rush/admin.html','games/horse-rush/admin.html','games/Greyhound-Rush/admin.html','games/sonic-rush/admin.html']
+          for f in files:
+              for i,js in enumerate(re.findall(r'<script[^>]*>(.*?)</script>',Path(f).read_text(),re.S|re.I)):
+                  q=Path('/tmp')/('rushcheck_'+str(abs(hash(f)))+'_'+str(i)+'.js');q.write_text(js)
+                  r=subprocess.run(['node','--check',str(q)],capture_output=True,text=True)
+                  if r.returncode: print(f,r.stderr);raise SystemExit(1)
+          PY
+      - name: Build GitHub ZIPs
+        run: |
+          mkdir -p rush-v23-zips
+          (cd games/camel-rush && zip -q ../../rush-v23-zips/Camel_Rush_V2_3_GitHub.zip index.html admin.html hub.json README.md)
+          (cd games/horse-rush && zip -q ../../rush-v23-zips/Horse_Rush_V2_3_GitHub.zip index.html admin.html hub.json README.md)
+          (cd games/Greyhound-Rush && zip -q ../../rush-v23-zips/Greyhound_Rush_V2_3_GitHub.zip index.html admin.html hub.json README.md)
+          (cd games/sonic-rush && zip -q ../../rush-v23-zips/Sonic_Rush_V2_3_GitHub.zip index.html admin.html hub.json README.md)
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Rush-Family-V2.3-Final
+          path: rush-v23-zips/*.zip
+          retention-days: 30
+      - name: Commit final files
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add games
+          git commit -m 'Rush V2.3: preserve visuals, restore Sonic, add selectable liability math'
+          git push
