@@ -1090,21 +1090,23 @@ input,select{max-width:100%}
   'use strict';
 
   const STORAGE_KEYS = {
-    config: 'camelrush_config_v2',
-    finance: 'camelrush_finance_v2',
-    metrics: 'camelrush_metrics_v2',
-    wallet: 'camelrush_wallet_v2',
-    logs: 'camelrush_round_logs_v2',
-    activeRound: 'camelrush_active_round_v2',
-    houseMetrics: 'camelrush_house_metrics_v2'
+    config: 'camelrushv2lc_config_v2',
+    finance: 'camelrushv2lc_finance_v2',
+    metrics: 'camelrushv2lc_metrics_v2',
+    wallet: 'camelrushv2lc_wallet_v2',
+    logs: 'camelrushv2lc_logs_v2',
+    activeRound: 'camelrushv2lc_active_round_v2',
+    houseMetrics: 'camelrushv2lc_house_metrics_v2'
   };
 
   const DEFAULT_CONFIG = {
-    configVersion: 1,
+    configVersion: 2,
     gameName: 'Camel Rush',
     subtitle: 'Desert Cashout Race',
     currency: 'AZN',
-    targetRtp: 0.95,
+    targetProfitMargin: 0.50,
+    targetRtp: 0.50,
+    payoutBudgetPct: 0.50,
     minBet: 1,
     maxBet: 500,
     maxPayoutPerBet: 50000,
@@ -1118,10 +1120,13 @@ input,select{max-width:100%}
     animationSpeed: 1,
     autoPlayMaxRounds: 100,
     houseInitialCash: 0,
-    reserveInitialAmount: 100000,
+    reserveInitialAmount: 20000,
+    reserveTargetAmount: 20000,
     usableReservePct: 1,
     reserveRestorePct: 0.25,
     treasuryProtectionEnabled: true,
+    liabilityCoverageEnabled: true,
+    riskPressure: { reserveWeight: 0.45, marginWeight: 0.35, budgetWeight: 0.20, coverageWeight: 0.35, maxRtpReduction: 0.70 },
     riskThresholds: {
       warningCoverage: 2.0,
       stressCoverage: 1.35,
@@ -1169,7 +1174,13 @@ input,select{max-width:100%}
 
   function normalizeConfig(raw) {
     const c = mergeDeep(DEFAULT_CONFIG, raw || {});
-    c.targetRtp = clampNumber(c.targetRtp, 0.5, 0.999, DEFAULT_CONFIG.targetRtp);
+    c.targetProfitMargin = clampNumber(c.targetProfitMargin, 0.01, 0.95, DEFAULT_CONFIG.targetProfitMargin);
+    c.targetRtp = 1 - c.targetProfitMargin;
+    c.payoutBudgetPct = clampNumber(c.payoutBudgetPct, 0.05, 1, DEFAULT_CONFIG.payoutBudgetPct);
+    c.reserveTargetAmount = clampNumber(c.reserveTargetAmount, 0, 1e12, DEFAULT_CONFIG.reserveTargetAmount);
+    c.reserveInitialAmount = c.reserveTargetAmount;
+    c.liabilityCoverageEnabled = c.liabilityCoverageEnabled !== false;
+    c.riskPressure = mergeDeep(DEFAULT_CONFIG.riskPressure, c.riskPressure || {});
     c.minBet = clampNumber(c.minBet, 0.01, 1000000, DEFAULT_CONFIG.minBet);
     c.maxBet = clampNumber(c.maxBet, c.minBet, 100000000, DEFAULT_CONFIG.maxBet);
     c.maxPayoutPerBet = clampNumber(c.maxPayoutPerBet, c.minBet, 1e12, DEFAULT_CONFIG.maxPayoutPerBet);
@@ -1344,7 +1355,7 @@ input,select{max-width:100%}
   }
 
   function generateOutcome(config, rng) {
-    const rtp = config.targetRtp;
+    const rtp = Number(config.__effectiveRtp ?? config.targetRtp);
     const maxMultiplier = config.maxMultiplier;
     const test = config.testMode || {};
     let rawBust;
@@ -1438,6 +1449,9 @@ input,select{max-width:100%}
       openLiability: 0,
       peakLiability: 0,
       reserveUsed: 0,
+      totalStake: 0,
+      totalPayout: 0,
+      reserveRestored: 0,
       updatedAt: Date.now()
     };
   }
@@ -1473,24 +1487,10 @@ input,select{max-width:100%}
     }
 
     snapshot(extraLiability = 0) {
-      const f = this.finance;
-      const usableReserve = Math.max(0, f.reserve * this.config.usableReservePct);
-      const availableLiquidity = Math.max(0, f.houseCash + usableReserve);
-      const liability = Math.max(0, f.openLiability + extraLiability);
-      const coverage = liability > 0 ? availableLiquidity / liability : 999;
-      const riskCapacity = availableLiquidity - liability;
-      const zone = this.zoneForCoverage(coverage);
-      return {
-        houseCash: money(f.houseCash),
-        reserve: money(f.reserve),
-        usableReserve: money(usableReserve),
-        availableLiquidity: money(availableLiquidity),
-        openLiability: money(f.openLiability),
-        maxPotentialLiability: money(liability),
-        liquidityCoverage: coverage,
-        riskCapacity: money(riskCapacity),
-        zone
-      };
+      const f=this.finance,cfg=this.config,target=Math.max(0,Number(cfg.reserveTargetAmount||cfg.reserveInitialAmount||f.initialReserve||0)),balance=Math.max(0,Number(f.reserve||0)),reserveHealth=target>0?Math.min(1,balance/target):1,totalStake=Number(f.totalStake||0),totalPayout=Number(f.totalPayout||0),profit=totalStake-totalPayout,actualMargin=totalStake>0?profit/totalStake:cfg.targetProfitMargin,handle=Math.min(1,totalStake/5000),marginDeficit=Math.max(0,cfg.targetProfitMargin-actualMargin),marginPressure=Math.min(1,(marginDeficit/Math.max(.08,cfg.targetProfitMargin*.5))*handle),payoutBudget=Math.max(0,Number(f.houseCash||0)*cfg.payoutBudgetPct),liability=Math.max(0,Number(f.openLiability||0)+Number(extraLiability||0)),budgetPressure=liability>0?Math.min(1,Math.max(0,1-payoutBudget/liability)):0,reservePressure=1-reserveHealth,rp=cfg.riskPressure||DEFAULT_CONFIG.riskPressure,base=Math.min(1,reservePressure*rp.reserveWeight+marginPressure*rp.marginWeight+budgetPressure*rp.budgetWeight),usableReserve=Math.max(0,balance*cfg.usableReservePct),availableLiquidity=Math.max(0,Number(f.houseCash||0)+usableReserve),rawCoverage=liability>0?availableLiquidity/liability:999;
+      let coveragePressure=0;if(cfg.liabilityCoverageEnabled&&liability>0){const warning=Math.max(Number(cfg.riskThresholds.warningCoverage)||2,(Number(cfg.riskThresholds.criticalCoverage)||1.05)+.01),critical=Math.max(.01,Number(cfg.riskThresholds.criticalCoverage)||1.05);if(rawCoverage<=critical)coveragePressure=1;else if(rawCoverage<warning)coveragePressure=Math.min(1,Math.max(0,(warning-rawCoverage)/(warning-critical)))}
+      const pressure=Math.min(1,base+(cfg.liabilityCoverageEnabled?coveragePressure*Number(rp.coverageWeight??.35)*(1-base):0)),effectiveRtp=Math.max(.05,cfg.targetRtp*(1-pressure*rp.maxRtpReduction)),coverage=cfg.liabilityCoverageEnabled?rawCoverage:999,riskCapacity=cfg.liabilityCoverageEnabled?availableLiquidity-liability:availableLiquidity;let zone='NORMAL';if((cfg.liabilityCoverageEnabled&&coverage<=cfg.riskThresholds.criticalCoverage)||pressure>=.78)zone='CRITICAL';else if((cfg.liabilityCoverageEnabled&&coverage<=cfg.riskThresholds.stressCoverage)||pressure>=.55)zone='STRESS';else if((cfg.liabilityCoverageEnabled&&coverage<=cfg.riskThresholds.warningCoverage)||pressure>=.30)zone='WARNING';
+      return {houseCash:money(f.houseCash),reserve:money(balance),usableReserve:money(usableReserve),availableLiquidity:money(availableLiquidity),openLiability:money(f.openLiability),maxPotentialLiability:money(liability),liquidityCoverage:coverage,riskCapacity:money(riskCapacity),zone,reserveHealth,realizedProfit:money(profit),actualMargin,payoutBudget:money(payoutBudget),pressure,effectiveRtp};
     }
 
     zoneForCoverage(coverage) {
@@ -1543,6 +1543,7 @@ input,select{max-width:100%}
 
     acceptBet(stake, liability) {
       this.finance.houseCash = money(this.finance.houseCash + stake);
+      this.finance.totalStake = money(Number(this.finance.totalStake || 0) + Number(stake || 0));
       this.finance.openLiability = money(this.finance.openLiability + liability);
       this.finance.peakLiability = Math.max(this.finance.peakLiability, this.finance.openLiability);
       saveFinance(this.finance);
@@ -1567,9 +1568,11 @@ input,select{max-width:100%}
         this.finance.reserveUsed = money(this.finance.reserveUsed + reserveDraw);
         due = money(due - reserveDraw);
       }
+      const paid = money(payout - due);
+      this.finance.totalPayout = money(Number(this.finance.totalPayout || 0) + paid);
       saveFinance(this.finance);
       return {
-        paid: money(payout - due),
+        paid,
         unpaid: due,
         reserveDraw: money(reserveDraw)
       };
@@ -2496,7 +2499,8 @@ input,select{max-width:100%}
         autoCashout = Math.max(1.01, Math.min(this.config.maxMultiplier, autoCashout));
       }
 
-      const outcome = MathEngine.generateOutcome(this.config);
+      const riskNow=this.risk.snapshot();
+      const outcome = MathEngine.generateOutcome({ ...this.config, __effectiveRtp:riskNow.effectiveRtp });
       const now = Date.now();
       const financeBefore = this.risk.snapshot();
       this.round = {
@@ -3600,5 +3604,5 @@ input,select{max-width:100%}
 })();
 </script>
 
-</body>
+<script>document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-open-admin]');if(b){e.preventDefault();e.stopImmediatePropagation();location.href='admin.html'}},true);</script></body>
 </html>
