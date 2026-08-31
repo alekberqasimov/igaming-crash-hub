@@ -1,15 +1,15 @@
 {
-  "name": "Greyhound Rush",
+  "name": "Horse Rush",
   "version": "1.2",
   "status": "LIVE DEMO",
   "category": "Crash Racing",
-  "description": "A real-time greyhound racing crash game with animated runners, manual and auto staking, live cashout, simulation, and treasury-aware risk controls.",
+  "description": "A real-time horse racing crash game with manual and auto staking, live cashout, simulation, and treasury-aware risk controls.",
   "tags": [
     "crash",
-    "greyhound-racing",
+    "horse-racing",
     "cashout"
   ],
   "cover": "cover.webp",
-  "art": "greyhound",
-  "order": 50
+  "art": "horse",
+  "order": 40
 }
