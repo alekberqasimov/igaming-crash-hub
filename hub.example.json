@@ -4,11 +4,12 @@
   "status": "LIVE DEMO",
   "category": "Crash · Interactive",
   "description": "Short public description for the Hub card.",
-  "tags": [
-    "Crash",
-    "Realtime",
-    "Cashout"
-  ],
-  "art": "generic",
+  "tags": ["Crash", "Realtime", "Cashout"],
+  "cover": "cover.webp",
+  "art": "auto",
+  "icon": "",
+  "theme": "",
+  "label": "",
+  "subtitle": "",
   "order": 40
 }
