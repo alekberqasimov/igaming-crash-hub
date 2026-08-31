@@ -1,46 +1,47 @@
-/* Hub-generated art for Horse Rush and Greyhound Rush. No external cover image required. */
+/* Universal Hub art engine: real cover first, generated visual fallback. */
+.art-auto{
+  isolation:isolate;
+  background:
+    radial-gradient(circle at 76% 28%,hsl(var(--auto-hue) 92% 64% / .30),transparent 12rem),
+    radial-gradient(circle at 62% 72%,hsl(var(--auto-hue2) 88% 58% / .18),transparent 13rem),
+    linear-gradient(145deg,hsl(var(--auto-hue) 42% 12%),#07110d 62%,hsl(var(--auto-hue2) 34% 9%));
+}
+.art-auto .auto-orb{
+  position:absolute;right:34px;top:35px;width:124px;height:124px;border-radius:34px;z-index:1;
+  border:1px solid hsl(var(--auto-hue) 90% 70% / .32);
+  background:linear-gradient(145deg,hsl(var(--auto-hue) 90% 65% / .13),hsl(var(--auto-hue2) 85% 60% / .05));
+  transform:rotate(8deg);box-shadow:0 24px 45px rgba(0,0,0,.28),inset 0 0 30px rgba(255,255,255,.025)
+}
+.art-auto .auto-streaks{
+  position:absolute;right:12px;top:52px;width:190px;height:100px;z-index:1;opacity:.52;
+  background:repeating-linear-gradient(174deg,transparent 0 13px,hsl(var(--auto-hue2) 92% 72% / .28) 14px 16px,transparent 17px 29px);
+  mask-image:linear-gradient(90deg,transparent,#000 35%,#000)
+}
+.art-auto .auto-symbol{
+  position:absolute;right:54px;top:62px;z-index:2;min-width:82px;height:82px;display:grid;place-items:center;
+  font-size:57px;font-weight:950;line-height:1;color:hsl(var(--auto-hue) 95% 78%);
+  text-shadow:0 0 24px hsl(var(--auto-hue) 92% 60% / .34);filter:drop-shadow(0 14px 10px rgba(0,0,0,.38));
+  transform:rotate(-5deg)
+}
+.art-cover .cover-image{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;z-index:2
+}
+.art-cover .cover-shade{
+  position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:linear-gradient(to top,rgba(4,12,8,.80) 0%,rgba(4,12,8,.24) 52%,rgba(4,12,8,.05) 100%)
+}
+.art-cover .art-tag,.art-cover .art-title{z-index:4}
+
+/* Preserved named art styles for the existing catalogue when no cover exists. */
 .art-horse{
-  background:
-    radial-gradient(circle at 75% 30%,rgba(255,196,90,.42),transparent 11rem),
-    radial-gradient(circle at 62% 62%,rgba(186,255,76,.10),transparent 13rem),
-    linear-gradient(145deg,#21170b 0%,#10170f 55%,#06100d 100%);
+  background:radial-gradient(circle at 75% 30%,rgba(255,196,90,.42),transparent 11rem),radial-gradient(circle at 62% 62%,rgba(186,255,76,.10),transparent 13rem),linear-gradient(145deg,#21170b 0%,#10170f 55%,#06100d 100%)
 }
-.art-horse .race-streaks,.art-greyhound .race-streaks{
-  position:absolute;right:17px;top:54px;width:170px;height:90px;z-index:1;opacity:.55;
-  background:repeating-linear-gradient(174deg,transparent 0 13px,rgba(255,255,255,.16) 14px 16px,transparent 17px 28px);
-  mask-image:linear-gradient(90deg,transparent,#000 35%,#000);
-}
-.art-horse .horse-shape{
-  position:absolute;right:38px;top:48px;z-index:2;font-size:82px;line-height:1;
-  transform:scaleX(-1) rotate(-5deg);filter:drop-shadow(0 18px 15px rgba(0,0,0,.48)) saturate(.9);
-}
-.art-horse:before{
-  content:"";position:absolute;right:25px;bottom:47px;width:190px;height:2px;z-index:1;
-  background:linear-gradient(90deg,transparent,rgba(255,196,90,.85));box-shadow:0 0 18px rgba(255,196,90,.45);
-}
-.art-greyhound{
-  background:
-    radial-gradient(circle at 78% 32%,rgba(80,228,255,.28),transparent 12rem),
-    radial-gradient(circle at 87% 66%,rgba(255,76,175,.24),transparent 11rem),
-    radial-gradient(circle at 61% 72%,rgba(255,139,55,.16),transparent 10rem),
-    linear-gradient(145deg,#07101e 0%,#091022 50%,#100914 100%);
-}
-.art-greyhound .race-streaks{
-  background:repeating-linear-gradient(176deg,transparent 0 11px,rgba(80,228,255,.34) 12px 14px,transparent 15px 24px);
-}
-.art-greyhound .greyhound-shape{
-  position:absolute;right:39px;top:47px;z-index:2;font-size:78px;line-height:1;
-  transform:scaleX(-1) skewX(-8deg) rotate(-5deg);
-  filter:drop-shadow(0 0 13px rgba(80,228,255,.38)) drop-shadow(0 18px 15px rgba(0,0,0,.5));
-}
-.art-greyhound .track-arc{
-  position:absolute;right:-35px;bottom:24px;width:235px;height:98px;border:3px solid rgba(255,91,91,.65);border-left-color:rgba(231,70,255,.48);border-top-color:transparent;border-radius:50%;z-index:1;transform:rotate(-8deg);box-shadow:0 0 15px rgba(255,80,120,.2);
-}
-.art-greyhound:before{
-  content:"";position:absolute;right:24px;bottom:67px;width:170px;height:2px;z-index:1;
-  background:linear-gradient(90deg,transparent,#50e4ff,#ff4caf);box-shadow:0 0 16px rgba(80,228,255,.4);
-}
-.art-cover{background-size:cover;background-position:center}
-@media(max-width:680px){
-  .art-horse .horse-shape,.art-greyhound .greyhound-shape{right:28px;font-size:70px}
-}
+.art-horse .race-streaks,.art-greyhound .race-streaks{position:absolute;right:17px;top:54px;width:170px;height:90px;z-index:1;opacity:.55;background:repeating-linear-gradient(174deg,transparent 0 13px,rgba(255,255,255,.16) 14px 16px,transparent 17px 28px);mask-image:linear-gradient(90deg,transparent,#000 35%,#000)}
+.art-horse .horse-shape{position:absolute;right:38px;top:48px;z-index:2;font-size:82px;line-height:1;transform:scaleX(-1) rotate(-5deg);filter:drop-shadow(0 18px 15px rgba(0,0,0,.48)) saturate(.9)}
+.art-horse:before{content:"";position:absolute;right:25px;bottom:47px;width:190px;height:2px;z-index:1;background:linear-gradient(90deg,transparent,rgba(255,196,90,.85));box-shadow:0 0 18px rgba(255,196,90,.45)}
+.art-greyhound{background:radial-gradient(circle at 78% 32%,rgba(80,228,255,.28),transparent 12rem),radial-gradient(circle at 87% 66%,rgba(255,76,175,.24),transparent 11rem),radial-gradient(circle at 61% 72%,rgba(255,139,55,.16),transparent 10rem),linear-gradient(145deg,#07101e 0%,#091022 50%,#100914 100%)}
+.art-greyhound .race-streaks{background:repeating-linear-gradient(176deg,transparent 0 11px,rgba(80,228,255,.34) 12px 14px,transparent 15px 24px)}
+.art-greyhound .greyhound-shape{position:absolute;right:39px;top:47px;z-index:2;font-size:78px;line-height:1;transform:scaleX(-1) skewX(-8deg) rotate(-5deg);filter:drop-shadow(0 0 13px rgba(80,228,255,.38)) drop-shadow(0 18px 15px rgba(0,0,0,.5))}
+.art-greyhound .track-arc{position:absolute;right:-35px;bottom:24px;width:235px;height:98px;border:3px solid rgba(255,91,91,.65);border-left-color:rgba(231,70,255,.48);border-top-color:transparent;border-radius:50%;z-index:1;transform:rotate(-8deg);box-shadow:0 0 15px rgba(255,80,120,.2)}
+.art-greyhound:before{content:"";position:absolute;right:24px;bottom:67px;width:170px;height:2px;z-index:1;background:linear-gradient(90deg,transparent,#50e4ff,#ff4caf);box-shadow:0 0 16px rgba(80,228,255,.4)}
+@media(max-width:680px){.art-horse .horse-shape,.art-greyhound .greyhound-shape{right:28px;font-size:70px}.art-auto .auto-orb{right:24px}.art-auto .auto-symbol{right:43px}}
