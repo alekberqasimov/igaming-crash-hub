@@ -1,9 +1,9 @@
 {
   "name": "Horse Rush",
-  "version": "1.2",
+  "version": "2.5",
   "status": "LIVE DEMO",
   "category": "Crash Racing",
-  "description": "A real-time horse racing crash game with manual and auto staking, live cashout, simulation, and treasury-aware risk controls.",
+  "description": "A real-time horse racing crash game with manual and auto staking, live cashout, simulation, and treasury-aware risk controls. Continuous live rounds remain active in Admin; reset-safe treasury monitoring.",
   "tags": [
     "crash",
     "horse-racing",
