@@ -1,10 +1,19 @@
 {
   "name": "Camel Rush",
-  "version": "v1.9.1",
+  "version": "2.1",
   "status": "LIVE DEMO",
   "category": "Race · Crash · Cashout",
-  "description": "Always-on desert race with rising multiplier, Auto Play, Auto Cashout and live-room simulation.",
-  "tags": ["Crash", "Race", "Cashout"],
-  "art": "camel",
-  "order": 10
+  "description": "Camel Rush V2.1 with selectable V2 Treasury and V2 Treasury + Liability Coverage risk models.",
+  "tags": [
+    "Crash",
+    "Race",
+    "Cashout",
+    "V2.1"
+  ],
+  "art": "auto",
+  "icon": "🐪",
+  "theme": "camel",
+  "label": "RACE / CRASH",
+  "subtitle": "DESERT CASHOUT RACE",
+  "order": 40
 }

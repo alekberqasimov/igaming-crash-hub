@@ -1,15 +1,19 @@
 {
   "name": "Horse Rush",
-  "version": "1.2",
+  "version": "2.1",
   "status": "LIVE DEMO",
-  "category": "Crash Racing",
-  "description": "A real-time horse racing crash game with manual and auto staking, live cashout, simulation, and treasury-aware risk controls.",
+  "category": "Race · Crash · Cashout",
+  "description": "Horse Rush V2.1 with selectable V2 Treasury and V2 Treasury + Liability Coverage risk models.",
   "tags": [
-    "crash",
-    "horse-racing",
-    "cashout"
+    "Crash",
+    "Race",
+    "Cashout",
+    "V2.1"
   ],
-  "cover": "cover.webp",
-  "art": "horse",
-  "order": 40
+  "art": "auto",
+  "icon": "🏇",
+  "theme": "horse",
+  "label": "RACE / CRASH",
+  "subtitle": "TRACK CASHOUT RACE",
+  "order": 50
 }
