@@ -1,0 +1,1579 @@
+<!doctype html>
+<html lang="az">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="generator" content="GOAL RUSH v6.4.02 GitHub Split"/>
+<title>GOAL RUSH v6.4.02 — Player Demo</title>
+<style>
+:root{
+  --bg:#07100c;--panel:#0d1e17;--panel2:#11261d;--line:#214736;--txt:#f5fff8;--muted:#9eb9ac;
+  --green:#54f090;--green2:#1cc266;--lime:#ccff69;--cyan:#5edfff;--gold:#ffd65a;--red:#ff6574;
+  --shadow:0 16px 46px rgba(0,0,0,.28);
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:radial-gradient(circle at 50% -10%,#153728 0,#08120e 46%,#040806 100%);color:var(--txt);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+button,input,select{font:inherit}
+button{border:0;cursor:pointer}
+.app{width:min(1440px,100%);margin:0 auto;padding:14px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:56px;height:56px;border-radius:18px;background:linear-gradient(145deg,#69ffa0,#18bd61);display:grid;place-items:center;color:#062413;font-weight:1000;font-size:26px}
+.brand h1{margin:0;font-size:24px;letter-spacing:.08em}.sub{color:var(--muted);font-size:12px;margin-top:3px}
+.badges{display:flex;gap:8px;flex-wrap:wrap}.badge{padding:8px 11px;border-radius:999px;background:#0f2219;border:1px solid #2a5b42;color:#d8ffea;font-size:11px;font-weight:900;letter-spacing:.05em}
+.layout{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(380px,.85fr);gap:14px}
+.card{background:linear-gradient(180deg,rgba(14,31,23,.98),rgba(8,18,14,.98));border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow)}
+.sectionTitle{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.06)}
+.sectionTitle h2{margin:0;font-size:15px;letter-spacing:.06em}.sectionTitle small{color:var(--muted);font-size:11px}
+.userBox{overflow:hidden}
+.userGrid{display:grid;grid-template-columns:minmax(0,1fr) 350px;gap:12px;padding:12px}
+.kpiGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:0 12px 12px}
+.kpi{background:#091711;border:1px solid #1f4332;border-radius:16px;padding:11px 12px}.kpi span{display:block;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.07em}.kpi b{display:block;margin-top:5px;font-size:19px}
+.kpi b.good{color:var(--green)} .kpi b.warn{color:var(--gold)} .kpi b.bad{color:var(--red)}
+.gameArea{display:grid;grid-template-rows:auto 1fr auto;gap:10px}
+.gameHead{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;background:#091711;border:1px solid #1f4332;border-radius:18px;padding:12px}
+.metric small{display:block;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.08em}.metric b{display:block;margin-top:5px;font-size:18px}.metric.right{text-align:right}
+.big{text-align:center}.big b{display:block;color:var(--lime);font-size:42px;line-height:.95}.big span{display:block;font-size:11px;color:var(--muted);margin-top:4px}
+.pitch{position:relative;height:640px;border-radius:22px;border:1px solid rgba(255,255,255,.14);overflow:hidden;background:
+ linear-gradient(90deg,transparent 49.65%,rgba(255,255,255,.28) 49.65%,rgba(255,255,255,.28) 50.35%,transparent 50.35%),
+ repeating-linear-gradient(90deg,#117844 0,#117844 12%,#0e6d3d 12%,#0e6d3d 24%);}
+.pitch:before{content:"";position:absolute;inset:14px;border:2px solid rgba(255,255,255,.36);pointer-events:none}
+.goal{position:absolute;left:50%;top:10px;transform:translateX(-50%);width:140px;height:52px;border:4px solid rgba(255,255,255,.94);border-bottom:0;background:repeating-linear-gradient(45deg,rgba(255,255,255,.13) 0 5px,transparent 5px 11px);z-index:2}
+.penaltyBox{position:absolute;left:50%;top:20px;transform:translateX(-50%);width:280px;height:110px;border:2px solid rgba(255,255,255,.34);border-top:0}
+.zone{position:absolute;left:7%;right:7%;height:44px;border-radius:14px;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.14);display:flex;align-items:center;justify-content:space-between;padding:0 12px;z-index:3}
+.zone .zn{font-size:10px;color:#d5eadf;font-weight:800;text-transform:uppercase;letter-spacing:.05em}.zone .zx{font-size:18px;font-weight:1000;color:#eaffef}.zone.active{border-color:#c9ff6d;background:rgba(177,255,98,.12)}.zone.done{opacity:.32}.zone.locked{opacity:.32}
+.player,.def{position:absolute;width:66px;height:98px;z-index:12;transform-origin:50% 94%;will-change:left,top,transform;pointer-events:none;--lean:0deg;--depth:1;--face:1;transform:rotate(var(--lean)) scale(var(--depth)) scaleX(var(--face));filter:drop-shadow(0 5px 4px rgba(0,0,0,.18))}
+.player{display:block}.def{display:none;z-index:10}.def.active{display:block}.def.gk{display:block;width:70px;height:102px;z-index:12}
+.footballer-svg{width:100%;height:100%;overflow:visible}
+.footballer-svg .shadow{fill:rgba(0,0,0,.28);filter:blur(.6px)}
+.footballer-svg .skin{fill:#d99c74}.footballer-svg .skinHi{fill:#efc3a0}.footballer-svg .hair{fill:#20211f}.footballer-svg .boot{fill:#111713}.footballer-svg .sock{fill:#eaf2ee}
+.player .footballer-svg .shirt{fill:#1768cf;stroke:#8fc8ff;stroke-width:1.2}.player .footballer-svg .shorts{fill:#f3f5f6}.player .footballer-svg .sock{fill:#1768cf}.player .footballer-svg .trim{fill:#dff1ff}
+.def .footballer-svg .shirt{fill:#d92f42;stroke:#ff9da7;stroke-width:1.2}.def .footballer-svg .shorts{fill:#171b1a}.def .footballer-svg .sock{fill:#d92f42}.def .footballer-svg .trim{fill:#ffd9dd}
+.def.gk .footballer-svg .shirt{fill:#f2ae20;stroke:#ffe7a3;stroke-width:1.2}.def.gk .footballer-svg .shorts{fill:#222a26}.def.gk .footballer-svg .sock{fill:#f2ae20}.def.gk .footballer-svg .trim{fill:#fff1bd}
+.footballer-svg .torso,.footballer-svg .head,.footballer-svg .neck,.footballer-svg .shorts,.footballer-svg .armL,.footballer-svg .armR,.footballer-svg .legL,.footballer-svg .legR{transform-box:fill-box}
+.footballer-svg .armL,.footballer-svg .armR{transform-origin:50% 8%}.footballer-svg .legL,.footballer-svg .legR{transform-origin:50% 6%}.footballer-svg .torso{transform-origin:50% 86%}
+.footballer-svg .eye{fill:#272522}.footballer-svg .number{fill:#fff;font:900 12px Arial;text-anchor:middle;paint-order:stroke;stroke:rgba(0,0,0,.16);stroke-width:1px}.def.gk .footballer-svg .number{fill:#372600;font-size:9px}
+.player.running .footballer-svg .armL,.def.chasing .footballer-svg .armL{animation:v8ArmL .34s ease-in-out infinite alternate}
+.player.running .footballer-svg .armR,.def.chasing .footballer-svg .armR{animation:v8ArmR .34s ease-in-out infinite alternate}
+.player.running .footballer-svg .legL,.def.chasing .footballer-svg .legL{animation:v8LegL .34s ease-in-out infinite alternate}
+.player.running .footballer-svg .legR,.def.chasing .footballer-svg .legR{animation:v8LegR .34s ease-in-out infinite alternate}
+.player.running .footballer-svg .torso,.def.chasing .footballer-svg .torso{animation:v8Bob .34s ease-in-out infinite alternate}
+.player.running .footballer-svg .head,.def.chasing .footballer-svg .head{animation:v8Head .34s ease-in-out infinite alternate}
+.def.tackle .footballer-svg .legL{animation:v8TackleLeg .28s cubic-bezier(.2,.9,.3,1) 1}.def.tackle .footballer-svg .torso{animation:v8TackleBody .28s ease-out 1}.def.tackle{z-index:15}
+.def.gk .footballer-svg .armL{transform:rotate(34deg)}.def.gk .footballer-svg .armR{transform:rotate(-34deg)}
+@keyframes v8ArmL{from{transform:rotate(35deg)}to{transform:rotate(-31deg)}}
+@keyframes v8ArmR{from{transform:rotate(-31deg)}to{transform:rotate(35deg)}}
+@keyframes v8LegL{from{transform:rotate(26deg)}to{transform:rotate(-22deg)}}
+@keyframes v8LegR{from{transform:rotate(-22deg)}to{transform:rotate(26deg)}}
+@keyframes v8Bob{from{transform:translateY(0) rotate(-1deg)}to{transform:translateY(-2px) rotate(1deg)}}
+@keyframes v8Head{from{transform:translateY(0)}to{transform:translateY(-1px)}}
+@keyframes v8TackleLeg{0%{transform:rotate(12deg)}62%{transform:rotate(-68deg) translate(-3px,3px)}100%{transform:rotate(12deg)}}
+@keyframes v8TackleBody{0%{transform:rotate(0)}58%{transform:rotate(-15deg) translateY(3px)}100%{transform:rotate(0)}}
+.ball{position:absolute;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:28px;z-index:14;filter:drop-shadow(0 6px 6px rgba(0,0,0,.32));cursor:grab;touch-action:none;user-select:none;transform-origin:50% 50%}
+.ball.rolling{animation:ballRoll .42s linear infinite}.ball.drag{cursor:grabbing;animation:none;transform:scale(1.08)}.ball.kicked{animation:kickBall .42s ease-out 1}
+@keyframes ballRoll{0%{transform:rotate(0deg) translateY(0)}50%{transform:rotate(180deg) translateY(-2px)}100%{transform:rotate(360deg) translateY(0)}}
+@keyframes kickBall{0%{transform:scale(1) rotate(0)}45%{transform:scale(.88) rotate(220deg)}100%{transform:scale(1) rotate(420deg)}}
+.pitch.sprint:after{content:"";position:absolute;inset:0;pointer-events:none;z-index:8;background:repeating-linear-gradient(100deg,transparent 0 34px,rgba(255,255,255,.07) 36px 38px,transparent 40px 72px);animation:speedField .42s linear 1}
+@keyframes speedField{from{transform:translateY(55px);opacity:0}35%{opacity:1}to{transform:translateY(-55px);opacity:0}}
+.penaltyScene{position:absolute;inset:0;display:none;z-index:30;background:linear-gradient(180deg,rgba(0,0,0,.1),rgba(0,0,0,.18));}
+.penaltyScene.show{display:block}
+.penGoal{position:absolute;left:50%;top:110px;transform:translateX(-50%);width:min(78%,420px);height:200px;border:4px solid rgba(255,255,255,.95);background:linear-gradient(180deg,rgba(0,0,0,.08),rgba(0,0,0,.18));box-shadow:0 14px 28px rgba(0,0,0,.25)}
+.penGoal:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(255,255,255,.18) 0 1px,transparent 1px 22px),linear-gradient(180deg,rgba(255,255,255,.18) 0 1px,transparent 1px 22px);opacity:.45}
+.shotZone{position:absolute;top:14px;bottom:14px;width:30%;border-radius:14px;display:grid;place-items:center;text-align:center;font-weight:1000;z-index:2}
+.shotZone .tag{font-size:54px;line-height:1}.shotZone .cap{font-size:11px;margin-top:4px;letter-spacing:.08em;text-transform:uppercase}
+.shotZone.left{left:2.5%;background:rgba(25,155,77,.16);border:2px solid rgba(101,255,154,.7)}
+.shotZone.center{left:35%;background:rgba(252,184,28,.16);border:2px solid rgba(255,215,93,.9)}
+.shotZone.right{right:2.5%;background:rgba(25,155,77,.16);border:2px solid rgba(101,255,154,.7)}
+.shotZone.active{transform:scale(1.03);filter:brightness(1.1)}
+.penKeeper{position:absolute;left:50%;top:218px;transform:translateX(-50%);width:100px;height:130px;z-index:6;transition:left .18s linear, transform .24s ease}
+.penKeeper .head{position:absolute;left:50%;top:8px;transform:translateX(-50%);width:24px;height:24px;border-radius:50%;background:#efc39f}.penKeeper .body{position:absolute;left:50%;top:29px;transform:translateX(-50%);width:52px;height:52px;border-radius:16px;background:linear-gradient(180deg,#1cb75f,#0c7239)}.penKeeper .arm{position:absolute;top:40px;width:34px;height:10px;border-radius:999px;background:#1cb75f}.penKeeper .arm:after{content:"";position:absolute;right:-8px;top:-4px;width:14px;height:14px;border-radius:50%;background:#fff}.penKeeper .arm.l{left:18px;transform:rotate(160deg)} .penKeeper .arm.r{right:18px;transform:rotate(20deg)}.penKeeper .leg{position:absolute;top:84px;width:10px;height:38px;border-radius:999px;background:#197d41}.penKeeper .leg.l{left:39px;transform:rotate(10deg)} .penKeeper .leg.r{right:39px;transform:rotate(-10deg)}
+
+.penKeeper:not(.dive-left):not(.dive-right):not(.dive-center) .arm.l{animation:gkReadyL .7s ease-in-out infinite alternate}.penKeeper:not(.dive-left):not(.dive-right):not(.dive-center) .arm.r{animation:gkReadyR .7s ease-in-out infinite alternate}
+@keyframes gkReadyL{from{transform:rotate(154deg)}to{transform:rotate(172deg)}}
+@keyframes gkReadyR{from{transform:rotate(26deg)}to{transform:rotate(8deg)}}
+.penKeeper.dive-left{transform:translateX(-50%) rotate(-14deg) translate(-30px,5px)}.penKeeper.dive-right{transform:translateX(-50%) rotate(14deg) translate(30px,5px)}.penKeeper.dive-center{transform:translateX(-50%) scale(1.03)}
+.penBall{position:absolute;left:50%;top:500px;transform:translate(-50%,-50%);width:88px;height:88px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#fff,#ececec 58%,#d7d7d7 100%);box-shadow:0 10px 22px rgba(0,0,0,.32);z-index:8;touch-action:none;cursor:grab}.penBall.drag{cursor:grabbing;transform:translate(-50%,-50%) scale(1.03)}
+.penBall:before{content:"";position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 50% 50%,transparent 0 16%,#111 16.4% 23%,transparent 23.4%),radial-gradient(circle at 29% 33%,#111 0 11%,transparent 11.6%),radial-gradient(circle at 73% 34%,#111 0 11%,transparent 11.6%),radial-gradient(circle at 34% 72%,#111 0 11%,transparent 11.6%),radial-gradient(circle at 68% 72%,#111 0 11%,transparent 11.6%)}
+.penHint{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);width:min(92%,420px);padding:11px 14px;border-radius:16px;background:rgba(5,16,10,.88);border:1px solid rgba(255,255,255,.12);font-size:12px;text-align:center;z-index:9}
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn{min-height:54px;border-radius:16px;font-weight:1000}.cash{background:linear-gradient(180deg,#d4ff72,#84eb40);color:#102907}.action{background:linear-gradient(180deg,#66e7ff,#23a0cf);color:#042533}.start{background:linear-gradient(180deg,#59f292,#20c769);color:#052514}
+.sideBox{display:grid;grid-template-rows:auto auto 1fr;gap:10px}
+.betCard,.riverCard,.tickerCard{background:#091711;border:1px solid #1f4332;border-radius:18px;padding:12px}
+.betRow{display:grid;grid-template-columns:1fr auto auto auto;gap:8px}.betRow input{min-width:0;background:#07150e;border:1px solid #2a5f44;color:#fff;border-radius:14px;padding:12px;outline:none}.chip{padding:0 12px;border-radius:14px;background:#143726;color:#d9ffe8;border:1px solid #2d6549;font-weight:900}
+.infoNote{font-size:11px;color:var(--muted);line-height:1.45;margin-top:8px}
+.tickerWrap{overflow:hidden;border-radius:14px;background:#07130f;border:1px solid #1c3f2f;height:44px;display:flex;align-items:center}
+.tickerInner{white-space:nowrap;display:inline-block;padding-left:100%;animation:marquee 28s linear infinite;font-size:13px;color:#e8fff0}
+@keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}
+.river{height:520px;overflow:hidden;display:grid;gap:8px;align-content:start}
+.riverItem{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;background:#081510;border:1px solid #18392b;border-radius:14px;padding:9px 10px;font-size:11px}
+.dot{width:10px;height:10px;border-radius:50%}.win{background:var(--green)}.loss{background:var(--red)}.play{background:var(--cyan)}.reject{background:var(--gold)}
+.riverItem b{font-size:11px}.riverItem .meta{color:#a8c3b5}.riverItem .cashNow{font-weight:900}
+.adminBox{overflow:hidden}
+.adminBody{padding:12px;display:grid;gap:12px}
+.adminTwo{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.adminBlock{background:#091711;border:1px solid #1f4332;border-radius:18px;overflow:hidden}
+.adminBlock h3{margin:0;padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.06);font-size:13px;letter-spacing:.06em}
+.adminBlock .inner{padding:12px}
+.statGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.mini{background:#08140f;border:1px solid #1a3a2d;border-radius:14px;padding:10px}.mini span{display:block;color:var(--muted);font-size:10px;text-transform:uppercase}.mini b{display:block;margin-top:5px;font-size:18px}
+.feed, .activeList{height:260px;overflow:auto;display:grid;gap:8px;align-content:start}.feedItem,.activeItem{background:#08140f;border:1px solid #173728;border-radius:12px;padding:8px 9px;font-size:11px;line-height:1.35}.feedItem .t,.activeItem .t{color:#a5beaf;font-size:10px}
+.formGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field{display:grid;gap:6px}.field label{font-size:11px;color:#d7ebe0}.field input,.field select{background:#07150e;border:1px solid #2a5f44;color:#fff;border-radius:12px;padding:11px;outline:none}
+.actionRow{display:grid;grid-template-columns:1fr 1fr;gap:10px}.ghost{background:#153b29;color:#d3ffe1;border:1px solid #2d6549;border-radius:14px;padding:12px;font-weight:900}.warnBtn{background:linear-gradient(180deg,#ffd868,#f1b623);color:#342300;border-radius:14px;padding:12px;font-weight:1000}
+.math{font-size:11px;color:var(--muted);line-height:1.55}
+.meter{height:12px;border-radius:999px;background:#07120e;border:1px solid #1f4332;overflow:hidden}.meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,#6ef49b,#ffd95d,#ff6876)}
+.resultFlash{position:absolute;inset:0;display:grid;place-items:center;background:radial-gradient(circle,rgba(0,0,0,.04),rgba(0,0,0,.62));z-index:40;opacity:0;pointer-events:none;transition:.18s}.resultFlash.show{opacity:1}.resultFlash b{display:block;text-align:center;font-size:56px;letter-spacing:-.04em}.resultFlash span{display:block;text-align:center;margin-top:6px;font-size:13px}
+.toast{position:fixed;left:50%;bottom:18px;transform:translate(-50%,18px);background:#f6fff8;color:#0a2415;padding:10px 13px;border-radius:12px;opacity:0;pointer-events:none;transition:.2s;z-index:99;font-weight:800;font-size:11px;box-shadow:0 13px 35px rgba(0,0,0,.35)}.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:1180px){.layout{grid-template-columns:1fr}.userGrid{grid-template-columns:1fr}.kpiGrid{grid-template-columns:repeat(2,1fr)}.adminTwo{grid-template-columns:1fr}}
+@media(max-width:640px){.app{padding:8px}.topbar{align-items:flex-start;flex-direction:column}.kpiGrid{grid-template-columns:1fr 1fr}.gameHead{grid-template-columns:1fr;gap:10px}.metric.right{text-align:left}.big{text-align:left}.pitch{height:560px}.goal{width:120px}.penaltyBox{width:230px}.zone{left:5%;right:5%;height:40px}.userGrid{padding:8px}.betRow{grid-template-columns:1fr 1fr 1fr}.betRow input{grid-column:1/-1}.controls,.actionRow,.formGrid,.statGrid{grid-template-columns:1fr}.shotZone .tag{font-size:46px}.penGoal{top:95px;height:190px}.penKeeper{top:205px}.penBall{top:480px;width:78px;height:78px}}
+
+/* v7.4 WORKING VIEW SWITCH + RESPONSIVE BET PANEL */
+.layout{display:block!important;min-width:0}
+.viewNav{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 12px;position:relative;z-index:80}
+.viewTab{appearance:none;-webkit-appearance:none;width:100%;min-height:58px;border-radius:16px;border:1px solid #285740;background:linear-gradient(180deg,#10271d,#0a1913);color:var(--txt);display:flex;align-items:center;gap:11px;padding:10px 14px;text-align:left;cursor:pointer;position:relative;z-index:81;touch-action:manipulation}
+.viewTab .tabIcon{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:#091711;border:1px solid #2c6248;flex:0 0 auto}
+.viewTab b{display:block;font-size:14px;letter-spacing:.07em}.viewTab small{display:block;color:var(--muted);font-size:10px;margin-top:2px}
+.viewTab.active{border-color:#5df298;background:linear-gradient(180deg,rgba(65,226,128,.18),#0c1e16);box-shadow:0 0 0 1px rgba(93,242,152,.10) inset}
+.viewPanel{display:none!important;min-width:0}.viewPanel.active{display:block!important}
+.userBox,.adminBox,.userGrid,.gameArea,.sideBox{min-width:0}
+.userGrid{grid-template-columns:minmax(0,1fr) minmax(270px,320px)!important}
+.sideBox{width:100%;max-width:320px}
+.betCard{overflow:hidden}.betTitle{font-size:10px;font-weight:1000;letter-spacing:.08em;color:#d8eee2;margin-bottom:8px}
+.betRow{display:grid!important;grid-template-columns:minmax(0,1fr) 46px 46px 46px!important;gap:6px!important;width:100%}
+.betRow input{width:100%!important;min-width:0!important;font-size:16px!important}
+.betRow .chip{min-width:0!important;padding:0!important;height:44px}
+.start{min-height:50px;font-size:13px}
+.app{width:min(1240px,100%)!important;overflow-x:hidden}
+.card{max-width:100%}
+@media(max-width:900px){.userGrid{grid-template-columns:1fr!important}.sideBox{max-width:none!important}.river{height:330px!important}.viewNav{position:sticky;top:0;background:var(--bg);padding-top:6px;z-index:90}}
+@media(max-width:520px){.viewNav{gap:6px}.viewTab{min-height:52px;padding:8px 10px}.viewTab small{display:none}.kpiGrid{grid-template-columns:1fr 1fr!important}.betRow{grid-template-columns:minmax(0,1fr) 44px 44px 44px!important}.pitch{height:540px!important}}
+
+
+/* v7.5 stake visibility fix */
+.layout{display:block!important;width:100%!important}
+.viewPanel{width:100%!important;max-width:none!important}
+.userBox{width:100%!important}
+.userGrid{grid-template-columns:minmax(0,1fr) minmax(280px,330px)!important}
+.stakeMainPanel{margin:0 12px 12px;background:linear-gradient(180deg,#0d2319,#091711);border:1px solid #2a5f44;border-radius:18px;padding:12px;display:grid;grid-template-columns:auto minmax(150px,1fr) auto auto auto minmax(170px,240px);gap:8px;align-items:center}
+.stakeMainPanel .stakeLabel{font-size:11px;font-weight:1000;color:#d8eee2;letter-spacing:.08em;white-space:nowrap}
+.stakeMainPanel input{width:100%;min-width:0;background:#06130d;border:1px solid #3b7658;color:#fff;border-radius:13px;padding:12px 13px;font-size:18px;font-weight:900;outline:none}
+.stakeMainPanel .chip{height:46px;min-width:52px;font-size:14px}
+.stakeMainPanel .start{height:46px;white-space:nowrap}
+@media(max-width:900px){.stakeMainPanel{grid-template-columns:1fr 1fr 1fr 1fr}.stakeMainPanel .stakeLabel{grid-column:1/-1}.stakeMainPanel input{grid-column:1/-1}.stakeMainPanel .start{grid-column:1/-1}.userGrid{grid-template-columns:1fr!important}.sideBox{max-width:none!important}}
+@media(max-width:520px){.stakeMainPanel{margin:0 8px 8px;grid-template-columns:1fr 1fr 1fr}.stakeMainPanel input{grid-column:1/-1}.stakeMainPanel .start{grid-column:1/-1}}
+
+
+/* ===== FINAL PLAYER WALLET / DEPOSIT ===== */
+.walletBar{margin:0 12px 12px;padding:12px 14px;border:1px solid #2b6548;border-radius:18px;background:linear-gradient(180deg,#10291e,#091711);display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.walletInfo{display:flex;align-items:center;gap:12px;min-width:0}.walletCoin{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(180deg,#6ef49b,#1dc665);color:#062714;font-weight:1000;font-size:18px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.28)}
+.walletText span{display:block;color:#a9c3b5;font-size:10px;font-weight:900;letter-spacing:.08em}.walletText b{display:block;margin-top:3px;font-size:22px;color:#f3fff7;letter-spacing:-.02em}.walletActions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.walletHint{font-size:11px;color:#9eb9ac}.depositBtn{min-height:44px;padding:0 18px;border-radius:14px;background:linear-gradient(180deg,#6af49a,#20c86b);color:#062714;font-weight:1000;border:1px solid rgba(255,255,255,.2)}
+.depositOverlay,.adminLoginOverlay{position:fixed;inset:0;background:rgba(1,7,4,.78);backdrop-filter:blur(8px);z-index:200;display:none;align-items:center;justify-content:center;padding:18px}.depositOverlay.show,.adminLoginOverlay.show{display:flex}.modalCard{width:min(440px,100%);background:linear-gradient(180deg,#10251b,#07130e);border:1px solid #326a4d;border-radius:24px;box-shadow:0 26px 80px rgba(0,0,0,.55);overflow:hidden}.modalHead{padding:17px 18px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:space-between;gap:10px}.modalHead h3{margin:0;font-size:16px;letter-spacing:.04em}.modalClose{width:38px;height:38px;border-radius:12px;background:#122f22;color:#e9fff1;border:1px solid #2c5e45;font-weight:1000}.modalBody{padding:18px}.modalLead{font-size:12px;color:#acc5b7;line-height:1.5;margin-bottom:14px}.quickDeposit{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}.quickDeposit button{min-height:48px;border-radius:14px;background:#143b2a;color:#eafff1;border:1px solid #31684c;font-weight:1000}.customDeposit{display:grid;grid-template-columns:1fr auto;gap:8px}.customDeposit input,.adminLoginForm input{width:100%;min-width:0;background:#06130d;border:1px solid #397657;color:#fff;border-radius:14px;padding:13px 14px;font-size:16px;outline:none}.depositConfirm,.adminLoginBtn{min-height:48px;padding:0 18px;border-radius:14px;background:linear-gradient(180deg,#6af49a,#20c86b);color:#062714;font-weight:1000}.modalStatus{min-height:18px;margin-top:10px;font-size:11px;color:#ffcb6a}.walletEmpty{color:#ffcb6a!important}.adminLockNote{font-size:11px;color:#a8c3b5;margin-top:10px;line-height:1.45}.adminLogoutBtn{min-height:36px;padding:0 12px;border-radius:11px;background:#182d24;color:#d9ffea;border:1px solid #335c49;font-size:11px;font-weight:900}
+@media(max-width:640px){.walletBar{margin:0 8px 8px}.walletActions{width:100%;justify-content:space-between}.walletText b{font-size:20px}.quickDeposit{grid-template-columns:1fr}.customDeposit{grid-template-columns:1fr}.depositConfirm{width:100%}}
+
+
+/* Player-safe public view */
+#userView .kpiGrid{display:none!important}#userView #modeBadge{display:none!important}
+
+
+/* ===== FINAL RESPONSIVE GAME FLOW ===== */
+html{scroll-behavior:smooth}
+body{overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.app,.layout,.viewPanel,.userBox,.userGrid,.gameArea,.sideBox{min-width:0;max-width:100%}
+.userGrid{align-items:start!important}
+.gameArea{overflow:visible!important}
+/* Stake belongs to the game flow, directly below the pitch */
+.gameArea>.stakeMainPanel{
+  margin:10px 0 0!important;
+  width:100%!important;
+  display:grid!important;
+  grid-template-columns:auto minmax(140px,1fr) repeat(3,minmax(58px,76px)) minmax(170px,230px)!important;
+  gap:8px!important;
+  align-items:center!important;
+  position:static!important;
+  overflow:visible!important;
+}
+.gameArea>.stakeMainPanel .stakeLabel{white-space:nowrap}
+.gameArea>.stakeMainPanel input{min-width:0;width:100%!important;font-size:18px!important}
+.gameArea>.stakeMainPanel .chip{min-width:0!important;width:100%!important;height:46px!important}
+.gameArea>.stakeMainPanel .start{width:100%!important;min-width:0!important;height:46px!important}
+.gameArea>.controls{margin-top:10px!important}
+.pitch{max-width:100%;touch-action:pan-y}
+.ball,.penBall{touch-action:none}
+.sideBox{align-self:start}
+
+@media(max-width:900px){
+  .app{padding:8px 10px 24px!important;overflow:visible!important}
+  .layout{overflow:visible!important}
+  .userGrid{grid-template-columns:1fr!important;gap:12px!important;padding:8px!important}
+  .gameArea{order:1!important;width:100%!important}
+  .sideBox{order:2!important;width:100%!important;max-width:none!important}
+  .gameHead{position:relative!important}
+  .pitch{height:620px!important;border-radius:18px!important}
+  .gameArea>.stakeMainPanel{
+    grid-template-columns:repeat(3,1fr)!important;
+    margin-top:10px!important;
+    padding:10px!important;
+    border-radius:16px!important;
+  }
+  .gameArea>.stakeMainPanel .stakeLabel{grid-column:1/-1!important}
+  .gameArea>.stakeMainPanel input{grid-column:1/-1!important;min-height:48px!important}
+  .gameArea>.stakeMainPanel .chip{min-height:46px!important}
+  .gameArea>.stakeMainPanel .start{grid-column:1/-1!important;min-height:52px!important}
+  .gameArea>.controls{grid-template-columns:1fr 1fr!important;gap:8px!important}
+  .gameArea>.controls .btn{min-height:54px!important}
+  .tickerCard,.riverCard{width:100%!important}
+  .river{height:300px!important;overflow-y:auto!important;-webkit-overflow-scrolling:touch}
+  .walletBar{position:static!important}
+}
+
+@media(max-width:560px){
+  .app{padding:6px 6px 26px!important}
+  .topbar{gap:8px!important;margin-bottom:8px!important}
+  .brand h1{font-size:19px!important}
+  .brand .logo{width:46px!important;height:46px!important;border-radius:14px!important}
+  .badges{display:none!important}
+  .walletBar{margin:0 6px 8px!important;padding:10px 11px!important;border-radius:15px!important}
+  .walletInfo{width:100%!important}
+  .walletActions{width:100%!important;display:grid!important;grid-template-columns:1fr auto!important}
+  .depositBtn{min-height:46px!important}
+  .sectionTitle{padding:11px 12px!important}
+  .userGrid{padding:6px!important}
+  .gameHead{padding:10px!important;border-radius:15px!important;grid-template-columns:1fr auto 1fr!important}
+  .gameHead .big b{font-size:34px!important}
+  .gameHead .metric b{font-size:14px!important}
+  .pitch{height:600px!important;border-radius:16px!important}
+  .gameArea>.stakeMainPanel{margin-top:8px!important;padding:9px!important;gap:7px!important}
+  .gameArea>.stakeMainPanel .stakeLabel{font-size:10px!important}
+  .gameArea>.stakeMainPanel input{font-size:17px!important}
+  .gameArea>.stakeMainPanel .chip{font-size:12px!important;padding:0 4px!important}
+  .gameArea>.stakeMainPanel .start{font-size:13px!important}
+  .gameArea>.controls{grid-template-columns:1fr 1fr!important;position:static!important}
+  .gameArea>.controls .btn{font-size:13px!important;padding:8px!important}
+  .tickerWrap{height:48px!important}
+  .river{height:260px!important}
+  .viewNav{position:sticky!important;top:0!important;z-index:95!important;padding:4px 0 6px!important;background:var(--bg)!important}
+}
+
+@media(max-width:360px){
+  .gameHead{grid-template-columns:1fr 1fr!important}
+  .gameHead .big{grid-column:1/-1!important;grid-row:1!important;text-align:center!important}
+  .gameHead .metric.right{text-align:right!important}
+  .pitch{height:580px!important}
+  .gameArea>.stakeMainPanel{grid-template-columns:repeat(3,1fr)!important}
+  .gameArea>.controls{grid-template-columns:1fr!important}
+  .walletActions{grid-template-columns:1fr!important}
+  .depositBtn{width:100%!important}
+}
+
+
+/* ===== FINAL V2: LANGUAGE + FOOTBALL LOSS EVENTS ===== */
+.langBox{display:flex;align-items:center;gap:8px;background:#0d2017;border:1px solid #2a5b42;border-radius:14px;padding:6px 8px;flex:0 0 auto}
+.langBox label{font-size:10px;font-weight:900;letter-spacing:.08em;color:#9eb9ac}
+.languageSelect{min-height:36px;background:#07150e;color:#f4fff7;border:1px solid #397657;border-radius:10px;padding:0 28px 0 10px;font-size:12px;font-weight:900;outline:none;cursor:pointer}
+.lossEventLine{position:absolute;left:5%;right:5%;top:21%;height:4px;background:linear-gradient(90deg,transparent,#ffd95d 12%,#ffd95d 88%,transparent);box-shadow:0 0 16px rgba(255,217,93,.72);z-index:28;opacity:0;pointer-events:none;transform:scaleX(.25)}
+.lossEventLine span{position:absolute;left:50%;top:-34px;transform:translateX(-50%);padding:7px 11px;border-radius:999px;background:#ffcc43;color:#2b2000;font-size:11px;font-weight:1000;letter-spacing:.08em;white-space:nowrap}
+.lossEventLine.show{animation:offsideFlash .76s ease both}
+@keyframes offsideFlash{0%{opacity:0;transform:scaleX(.25)}18%,68%{opacity:1;transform:scaleX(1)}100%{opacity:0;transform:scaleX(1)}}
+.player.loss-stumble .footballer-svg{animation:playerStumble .48s ease-in-out both!important}
+@keyframes playerStumble{0%{transform:scale(var(--depth,1)) scaleX(var(--face,1)) rotate(0)}45%{transform:scale(var(--depth,1)) scaleX(var(--face,1)) rotate(15deg) translateY(7px)}100%{transform:scale(var(--depth,1)) scaleX(var(--face,1)) rotate(-3deg)}}
+.pitch.loss-pulse{animation:lossPulse .42s ease}
+@keyframes lossPulse{0%,100%{filter:none}45%{filter:saturate(.7) brightness(.84)}}
+@media(max-width:640px){.langBox{width:100%;justify-content:space-between}.languageSelect{min-width:112px}.lossEventLine span{font-size:10px;top:-31px}}
+
+</style>
+
+
+<style id="goal-rush-v6-3-auto-ui">
+/* v4+ penalty isolation */
+.player,.def,.ball,.penBall,.penKeeper{will-change:transform,left,top;backface-visibility:hidden;transform-style:preserve-3d}.pitch{contain:layout paint style}
+.pitch.penalty-mode > .goal,.pitch.penalty-mode > .penaltyBox,.pitch.penalty-mode > .zone,.pitch.penalty-mode > .player,.pitch.penalty-mode > .ball,.pitch.penalty-mode > .def{opacity:0!important;pointer-events:none!important}
+.pitch.penalty-mode .penaltyScene{display:block;background:linear-gradient(180deg,#16814b 0%,#0f6f3e 48%,#0a5d33 100%)}
+.pitch.penalty-mode .penaltyScene:before{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(90deg,rgba(255,255,255,.025) 0 12%,rgba(0,0,0,.025) 12% 24%),linear-gradient(180deg,rgba(0,0,0,.08),transparent 32%,rgba(0,0,0,.12));z-index:0}
+.penaltyScene.penalty-ready{animation:penaltyIn .24s ease-out both}@keyframes penaltyIn{from{opacity:0}to{opacity:1}}
+
+/* v6.3 compact controls + all AUTO targets */
+.compactControlGrid{display:grid;grid-template-columns:minmax(0,1.28fr) minmax(0,.92fr);gap:10px;margin:0 12px 12px;align-items:stretch}
+.compactControlGrid .stakeMainPanel,.compactControlGrid .autoPlayPanel{margin:0!important;min-width:0;height:100%}
+.controls.compactTopActions{order:3;margin:0 12px 10px}
+.compactControlGrid{order:4}.gameArea{grid-template-rows:auto 1fr auto auto!important}
+.stakeMainPanel{padding:12px!important;display:grid!important;grid-template-columns:1fr!important;gap:8px!important;align-items:start!important}
+.stakeLabel{font-size:11px;font-weight:1000;letter-spacing:.08em;color:#d9efe2;text-transform:uppercase}
+.stakeMainPanel #betInput{width:100%;min-width:0;background:#06130d;border:1px solid #397657;color:#fff;border-radius:14px;padding:13px 14px;font-size:16px;font-weight:900;outline:none}
+.stakeQuickRow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.stakeQuickRow .chip{height:44px;min-width:0;padding:0!important;border-radius:13px;font-size:12px}
+.stakeMainPanel .start{width:100%;min-height:46px!important;border-radius:14px;font-size:13px;padding:0 12px}
+.autoPlayPanel{padding:12px!important;display:grid!important;grid-template-columns:1fr!important;gap:8px!important;align-items:start!important;background:linear-gradient(180deg,#0d2319,#091711);border:1px solid #2a5f44;border-radius:18px}
+.autoPlayInfo{min-width:0;display:flex;align-items:flex-start;justify-content:space-between;gap:6px}.autoPlayInfo b{font-size:11px;letter-spacing:.08em}.autoPlayInfo small{font-size:10px;color:var(--muted);line-height:1.3;text-align:right}
+.autoCashoutSelect{width:100%;min-width:0;min-height:44px;border-radius:12px;background:#06130d;color:#f5fff8;border:1px solid #397657;padding:0 10px;font-weight:1000;outline:none}
+.autoPlayBtn{width:100%;min-height:44px;border-radius:12px;background:linear-gradient(180deg,#63e9ff,#25a9d7);color:#052734;font-weight:1000;padding:0 12px}.autoPlayBtn.on{background:linear-gradient(180deg,#ffbd65,#f0912f);color:#351a00}
+.autoPlayBtn:focus-visible,.autoCashoutSelect:focus-visible{outline:2px solid #c9ff6d;outline-offset:2px}.controls .btn{min-height:50px!important;border-radius:16px!important;font-size:13px}
+
+/* v6.1 content order: live flow -> game -> actions/setup -> recent players */
+.userGrid{display:grid!important;grid-template-columns:1fr!important;gap:10px!important;padding:12px!important;min-width:0}.userGrid>.tickerCard{order:1;margin:0!important;min-width:0}.userGrid>.gameArea{order:2;min-width:0}.userGrid>.riverCard{order:3;margin:0!important;min-width:0}
+.gameArea{display:grid!important;grid-template-rows:auto auto auto auto!important;gap:10px!important}.gameArea>.gameHead{order:1}.gameArea>.pitch{order:2}.gameArea>.controls.compactTopActions{order:3!important}.gameArea>.compactControlGrid{order:4!important}
+.tickerCard,.riverCard{width:100%!important;max-width:none!important}.riverCard .river{height:auto!important;max-height:330px!important;overflow-y:auto!important;-webkit-overflow-scrolling:touch}
+.sideBox{display:contents!important}
+
+/* v6.2 calm live stream */
+.tickerWrap{height:44px!important;overflow:hidden!important}.tickerInner{display:inline-flex!important;align-items:center;gap:18px;white-space:nowrap;padding-left:100%;animation:marquee 52s linear infinite!important;font-size:12px!important;color:inherit!important}.tickerResult{display:inline-flex;align-items:center;gap:7px;font-weight:1000;letter-spacing:.025em}.tickerResult:before{content:"";width:9px;height:9px;border-radius:50%;display:inline-block;flex:0 0 auto}.tickerResult.win{color:var(--green)}.tickerResult.win:before{background:var(--green)}.tickerResult.loss{color:var(--red)}.tickerResult.loss:before{background:var(--red)}.tickerEmpty{color:var(--muted);font-weight:800}
+
+@media(max-width:900px){.compactControlGrid{grid-template-columns:minmax(0,1.18fr) minmax(0,.92fr)!important}.pitch{height:clamp(470px,118vw,600px)!important}}
+@media(max-width:640px){
+  .app{padding:4px 5px 18px!important}.sectionTitle{display:none!important}.userGrid{padding:8px!important;gap:8px!important}.tickerCard,.riverCard{padding:10px!important;border-radius:16px!important}.tickerWrap{height:40px!important}.tickerInner{font-size:11px!important;animation-duration:60s!important}.riverCard .river{max-height:315px!important}
+  .pitch{height:clamp(430px,126vw,535px)!important;border-radius:14px!important}.pitch:before{inset:8px!important}.goal{width:112px!important;height:43px!important;top:8px!important;border-width:3px!important}.penaltyBox{width:210px!important;height:88px!important;top:14px!important}.zone{left:5%!important;right:5%!important;height:34px!important;border-radius:11px!important;padding:0 9px!important}.zone .zn{font-size:8px!important}.zone .zx{font-size:14px!important}.player,.def{width:55px!important;height:82px!important}.def.gk{width:59px!important;height:86px!important}.ball{width:28px!important;height:28px!important;font-size:23px!important}
+  .compactControlGrid{grid-template-columns:minmax(0,1.18fr) minmax(0,.92fr)!important;gap:8px!important;margin:0 8px 10px!important}.controls.compactTopActions{margin:0 8px 8px!important}.stakeMainPanel,.autoPlayPanel{padding:10px!important;border-radius:16px!important}.stakeLabel{font-size:10px!important}.stakeMainPanel #betInput{padding:11px 12px!important;font-size:15px!important}.stakeQuickRow{gap:6px!important}.stakeQuickRow .chip{height:42px!important;font-size:11px!important;border-radius:12px!important}.stakeMainPanel .start,.autoCashoutSelect,.autoPlayBtn{min-height:42px!important;height:42px!important;font-size:11px!important;border-radius:12px!important}.autoPlayInfo{display:grid!important;grid-template-columns:1fr!important;gap:3px!important}.autoPlayInfo small{text-align:left!important;font-size:9px!important}.controls .btn{min-height:46px!important;font-size:12px!important}
+  .penGoal{top:76px!important;width:86%!important;height:160px!important}.shotZone .tag{font-size:34px!important}.shotZone .cap{font-size:9px!important}.penKeeper{top:177px!important;transform:translateX(-50%) scale(.86)!important;transform-origin:50% 100%!important}.penBall{width:68px!important;height:68px!important}.penHint{bottom:10px!important;font-size:10px!important;padding:8px 10px!important}
+}
+@media(max-width:390px){.pitch{height:clamp(410px,128vw,495px)!important}.player,.def{width:51px!important;height:76px!important}.def.gk{width:55px!important;height:80px!important}.zone{height:31px!important}.zone .zn{font-size:7.5px!important}.zone .zx{font-size:13px!important}.compactControlGrid{grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr)!important;gap:7px!important}.stakeMainPanel,.autoPlayPanel{padding:9px!important}.stakeMainPanel #betInput{font-size:14px!important}.stakeQuickRow .chip{font-size:10px!important}.controls .btn{font-size:11px!important}}
+@media(max-width:340px){.compactControlGrid{grid-template-columns:1fr!important}.autoPlayInfo{grid-template-columns:auto 1fr!important;align-items:center!important}}
+</style>
+
+
+<style id="v6-4-live-result-card">
+/* v6.4 readable live-result card */
+.tickerWrap{height:52px!important;display:flex!important;align-items:center!important;overflow:hidden!important;padding:5px!important}
+.tickerInner{display:flex!important;align-items:center!important;width:100%!important;min-width:0!important;padding:0!important;animation:none!important;transform:none!important;white-space:normal!important;font-size:12px!important;color:inherit!important}
+.tickerResult{display:flex!important;align-items:center!important;gap:8px!important;width:100%!important;min-width:0!important;padding:9px 11px!important;border-radius:12px!important;font-weight:1000!important;letter-spacing:.015em!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;border:1px solid currentColor!important}
+.tickerResult:before{content:"";width:10px;height:10px;border-radius:50%;display:inline-block;flex:0 0 auto}
+.tickerResult.win{color:var(--green)!important;background:rgba(84,240,144,.08)!important}
+.tickerResult.win:before{background:var(--green)!important}
+.tickerResult.loss{color:var(--red)!important;background:rgba(255,101,116,.08)!important}
+.tickerResult.loss:before{background:var(--red)!important}
+.tickerResult .tickerWho{color:var(--txt);flex:0 0 auto}
+.tickerResult .tickerMult,.tickerResult .tickerStatus{color:inherit;flex:0 0 auto}
+.tickerResult .tickerPayout{color:var(--txt);overflow:hidden;text-overflow:ellipsis}
+.tickerEmpty{display:block;width:100%;padding:0 8px;color:var(--muted);font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:640px){.tickerInner{font-size:11px!important}.tickerResult{padding:8px 9px!important;gap:6px!important}}
+</style>
+
+<style id="github-pages-split-mode">
+/* GitHub Pages split mode: public player + protected admin route */
+.admin-corner-link,.back-game-link{
+  position:fixed;z-index:180;display:grid;place-items:center;text-decoration:none;
+  border:1px solid #2d6549;background:rgba(7,21,14,.88);color:#d8ffea;
+  box-shadow:0 10px 30px rgba(0,0,0,.30);backdrop-filter:blur(10px)
+}
+.admin-corner-link{right:14px;bottom:14px;width:42px;height:42px;border-radius:14px;font-size:17px;opacity:.48;transition:.18s}
+.admin-corner-link:hover,.admin-corner-link:focus-visible{opacity:1;border-color:#5df298;transform:translateY(-1px)}
+.back-game-link{left:14px;bottom:14px;min-height:42px;padding:0 14px;border-radius:14px;font-size:11px;font-weight:1000;letter-spacing:.06em}
+body[data-page-mode="player"] .viewNav{display:none!important}
+body[data-page-mode="player"] #adminView{display:none!important}
+body[data-page-mode="player"] #userView{display:block!important}
+body[data-page-mode="admin"] .viewNav{display:none!important}
+body[data-page-mode="admin"] #userView{display:none!important}
+body[data-page-mode="admin"] #adminView{display:block!important}
+body[data-page-mode="admin"].admin-locked #adminView{filter:blur(7px);pointer-events:none;user-select:none}
+body[data-page-mode="admin"] .walletBar,body[data-page-mode="admin"] .stakeMainPanel{display:none!important}
+@media(max-width:640px){.admin-corner-link{right:9px;bottom:9px;width:38px;height:38px}.back-game-link{left:9px;bottom:9px}}
+</style>
+
+</head>
+<body data-page-mode="player">
+<div class="app">
+  <div class="topbar">
+    <div class="brand">
+      <div class="logo">GR</div>
+      <div>
+        <h1>GOAL RUSH</h1>
+        <div class="sub">v6.4.02 · LIVE RESULT · ALL AUTO · GitHub split</div>
+      </div>
+    </div>
+    <div class="badges">
+      <div class="badge">LIVE GAME</div>
+      <div class="badge">PLAYER WALLET</div>
+      <div class="badge">CASH OUT</div>
+    </div>
+    <div class="langBox"><label for="languageSelect">LANG</label><select id="languageSelect" class="languageSelect" aria-label="Language"><option value="az">AZ · Azərbaycan</option><option value="ru">RU · Русский</option><option value="en">EN · English</option></select></div>
+  </div>
+
+  <div class="viewNav" role="tablist" aria-label="GOAL RUSH views">
+    <button type="button" class="viewTab active" id="switchUser" role="tab" aria-selected="true" aria-controls="userView">
+      <span class="tabIcon">⚽</span><span><b>USER</b><small>Game & live wins</small></span>
+    </button>
+    <button type="button" class="viewTab" id="switchAdmin" role="tab" aria-selected="false" aria-controls="adminView">
+      <span class="tabIcon">🔒</span><span><b>ADMIN</b><small>Protected backoffice</small></span>
+    </button>
+  </div>
+
+  <div class="layout">
+    <div class="viewPanel active" id="userView">
+<section class="card userBox">
+      <div class="sectionTitle"><div><h2>GOAL RUSH</h2><small>Game · stake · live player river</small></div><small id="modeBadge">Mode: BUILD</small></div>
+
+      <div class="walletBar" aria-label="Player wallet">
+        <div class="walletInfo">
+          <div class="walletCoin">₼</div>
+          <div class="walletText"><span>PLAYER BALANCE</span><b id="playerBalance">1,000.00 AZN</b></div>
+        </div>
+        <div class="walletActions"><span class="walletHint" id="walletHint">Ready to play</span><button type="button" class="depositBtn" id="depositBtn">+ DEPOSIT</button></div>
+      </div>
+
+      <div class="kpiGrid">
+        <div class="kpi"><span>House Cash</span><b class="good" id="houseCashTop">0.00 AZN</b></div>
+        <div class="kpi"><span>Reserve</span><b id="reserveTop">100,000.00 AZN</b></div>
+        <div class="kpi"><span>Live Margin</span><b id="marginTop">0.00%</b></div>
+        <div class="kpi"><span>Active Players</span><b id="activeCountTop">0</b></div>
+      </div>
+      <div class="userGrid">
+<div class="tickerCard">
+            <div style="font-size:11px;color:#d7ebe0;font-weight:900;margin-bottom:8px">FLOWING INFO</div>
+            <div class="tickerWrap"><div class="tickerInner" id="tickerInner">Waiting for live rounds...</div></div>
+          </div>
+        <div class="gameArea">
+          <div class="gameHead">
+            <div class="metric"><small>Stake</small><b id="stakeTop">10.00 AZN</b></div>
+            <div class="big"><b id="multTop">1.00x</b><span id="stageTop">Round ready</span></div>
+            <div class="metric right"><small>Potential</small><b id="potentialTop">10.00 AZN</b></div>
+          </div>
+          <div class="pitch" id="pitch">
+            <div class="goal"></div>
+            <div class="penaltyBox"></div>
+            <div class="lossEventLine" id="offsideLine"><span id="offsideLabel">OFFSIDE</span></div>
+            <div class="zone active" data-zone="0" style="top:520px"><span class="zn">1 defender</span><span class="zx">1.17x</span></div>
+            <div class="zone" data-zone="1" style="top:455px"><span class="zn">2 defenders</span><span class="zx">1.39x</span></div>
+            <div class="zone" data-zone="2" style="top:390px"><span class="zn">3 defenders</span><span class="zx">1.72x</span></div>
+            <div class="zone" data-zone="3" style="top:325px"><span class="zn">4 defenders</span><span class="zx">2.25x</span></div>
+            <div class="zone" data-zone="4" style="top:260px"><span class="zn">5 defenders</span><span class="zx">3.10x</span></div>
+            <div class="zone" data-zone="5" style="top:195px"><span class="zn">6 defenders</span><span class="zx">4.80x</span></div>
+            <div class="zone" data-zone="6" style="top:130px"><span class="zn">6 defenders + GK</span><span class="zx">8.00x</span></div>
+            <div class="def gk" id="gk"><svg class="footballer-svg" viewBox="0 0 64 96" aria-hidden="true">
+<ellipse class="shadow" cx="32" cy="91" rx="20" ry="5"/>
+<g class="legL"><rect class="skin" x="20" y="61" width="8" height="22" rx="4"/><rect class="sock" x="20" y="73" width="8" height="12" rx="3"/><path class="boot" d="M17 83h13c2 0 4 2 4 4v2H18c-3 0-4-4-1-6z"/></g>
+<g class="legR"><rect class="skin" x="36" y="61" width="8" height="22" rx="4"/><rect class="sock" x="36" y="73" width="8" height="12" rx="3"/><path class="boot" d="M34 84h13c3 1 4 4 1 6H31v-2c0-2 1-3 3-4z"/></g>
+<path class="shorts" d="M18 52 Q32 48 46 52 L43 67 Q37 69 32 64 Q27 69 21 67z"/>
+<g class="armL"><rect class="skin" x="11" y="35" width="8" height="29" rx="4"/><circle class="skinHi" cx="15" cy="64" r="4"/></g>
+<g class="armR"><rect class="skin" x="45" y="35" width="8" height="29" rx="4"/><circle class="skinHi" cx="49" cy="64" r="4"/></g>
+<g class="torso"><path class="shirt" d="M19 28 Q24 24 32 24 Q40 24 45 28 L49 49 Q45 55 32 56 Q19 55 15 49z"/><path class="trim" d="M25 26 Q32 31 39 26 L37 31 Q32 34 27 31z"/><text class="number" x="32" y="45">GK</text></g>
+<rect class="skin" x="28" y="20" width="8" height="8" rx="3"/>
+<g class="head"><ellipse class="skinHi" cx="32" cy="15" rx="10" ry="11"/><path class="hair" d="M22 13Q23 2 33 3Q43 3 42 13Q37 8 31 8Q26 8 22 13z"/><circle class="eye" cx="28.5" cy="15" r="1"/><circle class="eye" cx="35.5" cy="15" r="1"/><path d="M29 20 Q32 22 35 20" fill="none" stroke="#935f47" stroke-width="1.2" stroke-linecap="round"/></g>
+</svg></div>
+            <div class="def" id="def0"><svg class="footballer-svg" viewBox="0 0 64 96" aria-hidden="true">
+<ellipse class="shadow" cx="32" cy="91" rx="20" ry="5"/>
+<g class="legL"><rect class="skin" x="20" y="61" width="8" height="22" rx="4"/><rect class="sock" x="20" y="73" width="8" height="12" rx="3"/><path class="boot" d="M17 83h13c2 0 4 2 4 4v2H18c-3 0-4-4-1-6z"/></g>
+<g class="legR"><rect class="skin" x="36" y="61" width="8" height="22" rx="4"/><rect class="sock" x="36" y="73" width="8" height="12" rx="3"/><path class="boot" d="M34 84h13c3 1 4 4 1 6H31v-2c0-2 1-3 3-4z"/></g>
+<path class="shorts" d="M18 52 Q32 48 46 52 L43 67 Q37 69 32 64 Q27 69 21 67z"/>
+<g class="armL"><rect class="skin" x="11" y="35" width="8" height="29" rx="4"/><circle class="skinHi" cx="15" cy="64" r="4"/></g>
+<g class="armR"><rect class="skin" x="45" y="35" width="8" height="29" rx="4"/><circle class="skinHi" cx="49" cy="64" r="4"/></g>
+<g class="torso"><path class="shirt" d="M19 28 Q24 24 32 24 Q40 24 45 28 L49 49 Q45 55 32 56 Q19 55 15 49z"/><path class="trim" d="M25 26 Q32 31 39 26 L37 31 Q32 34 27 31z"/><text class="number" x="32" y="45">2</text></g>
+<rect class="skin" x="28" y="20" width="8" height="8" rx="3"/>
+<g class="head"><ellipse class="skinHi" cx="32" cy="15" rx="10" ry="11"/><path class="hair" d="M22 13Q23 2 33 3Q43 3 42 13Q37 8 31 8Q26 8 22 13z"/><circle class="eye" cx="28.5" cy="15" r="1"/><circle class="eye" cx="35.5" cy="15" r="1"/><path d="M29 20 Q32 22 35 20" fill="none" stroke="#935f47" stroke-width="1.2" stroke-linecap="round"/></g>
+</svg></div><div class="def" id="def1"><svg class="footballer-svg" viewBox="0 0 64 96" aria-hidden="true">
+<ellipse class="shadow" cx="32" cy="91" rx="20" ry="5"/>
+<g class="legL"><rect class="skin" x="20" y="61" width="8" height="22" rx="4"/><rect class="sock" x="20" y="73" width="8" height="12" rx="3"/><path class="boot" d="M17 83h13c2 0 4 2 4 4v2H18c-3 0-4-4-1-6z"/></g>
+<g class="legR"><rect class="skin" x="36" y="61" width="8" height="22" rx="4"/><rect class="sock" x="36" y="73" width="8" height="12" rx="3"/><path class="boot" d="M34 84h13c3 1 4 4 1 6H31v-2c0-2 1-3 3-4z"/></g>
+<path class="shorts" d="M18 52 Q32 48 46 52 L43 67 Q37 69 32 64 Q27 69 21 67z"/>
+<g class="armL"><rect class="skin" x="11" y="35" width="8" height="29" rx="4"/><circle class="skinHi" cx="15" cy="64" r="4"/></g>
+<g class="armR"><rect class="skin" x="45" y="35" width="8" height="29" rx="4"/><circle class="skinHi" cx="49" cy="64" r="4"/></g>
+<g class="torso"><path class="shirt" d="M19 28 Q24 24 32 24 Q40 24 45 28 L49 49 Q45 55 32 56 Q19 55 15 49z"/><path class="trim" d="M25 26 Q32 31 39 26 L37 31 Q32 34 27 31z"/><text class="number" x="32" y="45">4</text></g>
+<rect class="skin" x="28" y="20" width="8" height="8" rx="3"/>
+<g class="head"><ellipse class="skinHi" cx="32" cy="15" rx="10" ry="11"/><path class="hair" d="M22 13Q23 2 33 3Q43 3 42 13Q37 8 31 8Q26 8 22 13z"/><circle class="eye" cx="28.5" cy="15" r="1"/><circle class="eye" cx="35.5" cy="15" r="1"/><path d="M29 20 Q32 22 35 20" fill="none" stroke="#935f47" stroke-width="1.2" stroke-linecap="round"/></g>
+</svg></div><div class="def" id="def2"><svg class="footballer-svg" viewBox="0 0 64 96" aria-hidden="true">
+<ellipse class="shadow" cx="32" cy="91" rx="20" ry="5"/>
+<g class="legL"><rect class="skin" x="20" y="61" width="8" height="22" rx="4"/><rect class="sock" x="20" y="73" width="8" height="12" rx="3"/><path class="boot" d="M17 83h13c2 0 4 2 4 4v2H18c-3 0-4-4-1-6z"/></g>
+<g class="legR"><rect class="skin" x="36" y="61" width="8" height="22" rx="4"/><rect class="sock" x="36" y="73" width="8" height="12" rx="3"/><path class="boot" d="M34 84h13c3 1 4 4 1 6H31v-2c0-2 1-3 3-4z"/></g>
+<path class="shorts" d="M18 52 Q32 48 46 52 L43 67 Q37 69 32 64 Q27 69 21 67z"/>
+<g class="armL"><rect class="skin" x="11" y="35" width="8" height="29" rx="4"/><circle class="skinHi" cx="15" cy="64" r="4"/></g>
+<g class="armR"><rect class="skin" x="45" y="35" width="8" height="29" rx="4"/><circle class="skinHi" cx="49" cy="64" r="4"/></g>
+<g class="torso"><path class="shirt" d="M19 28 Q24 24 32 24 Q40 24 45 28 L49 49 Q45 55 32 56 Q19 55 15 49z"/><path class="trim" d="M25 26 Q32 31 39 26 L37 31 Q32 34 27 31z"/><text class="number" x="32" y="45">6</text></g>
+<rect class="skin" x="28" y="20" width="8" height="8" rx="3"/>
+<g class="head"><ellipse class="skinHi" cx="32" cy="15" rx="10" ry="11"/><path class="hair" d="M22 13Q23 2 33 3Q43 3 42 13Q37 8 31 8Q26 8 22 13z"/><circle class="eye" cx="28.5" cy="15" r="1"/><circle class="eye" cx="35.5" cy="15" r="1"/><path d="M29 20 Q32 22 35 20" fill="none" stroke="#935f47" stroke-width="1.2" stroke-linecap="round"/></g>
+</svg></div><div class="def" id="def3"><svg class="footballer-svg" viewBox="0 0 64 96" aria-hidden="true">
+<ellipse class="shadow" cx="32" cy="91" rx="20" ry="5"/>
+<g class="legL"><rect class="skin" x="20" y="61" width="8" height="22" rx="4"/><rect class="sock" x="20" y="73" width="8" height="12" rx="3"/><path class="boot" d="M17 83h13c2 0 4 2 4 4v2H18c-3 0-4-4-1-6z"/></g>
+<g class="legR"><rect class="skin" x="36" y="61" width="8" height="22" rx="4"/><rect class="sock" x="36" y="73" width="8" height="12" rx="3"/><path class="boot" d="M34 84h13c3 1 4 4 1 6H31v-2c0-2 1-3 3-4z"/></g>
+<path class="shorts" d="M18 52 Q32 48 46 52 L43 67 Q37 69 32 64 Q27 69 21 67z"/>
+<g class="armL"><rect class="skin" x="11" y="35" width="8" height="29" rx="4"/><circle class="skinHi" cx="15" cy="64" r="4"/></g>
+<g class="armR"><rect class="skin" x="45" y="35" width="8" height="29" rx="4"/><circle class="skinHi" cx="49" cy="64" r="4"/></g>
+<g class="torso"><path class="shirt" d="M19 28 Q24 24 32 24 Q40 24 45 28 L49 49 Q45 55 32 56 Q19 55 15 49z"/><path class="trim" d="M25 26 Q32 31 39 26 L37 31 Q32 34 27 31z"/><text class="number" x="32" y="45">8</text></g>
+<rect class="skin" x="28" y="20" width="8" height="8" rx="3"/>
+<g class="head"><ellipse class="skinHi" cx="32" cy="15" rx="10" ry="11"/><path class="hair" d="M22 13Q23 2 33 3Q43 3 42 13Q37 8 31 8Q26 8 22 13z"/><circle class="eye" cx="28.5" cy="15" r="1"/><circle class="eye" cx="35.5" cy="15" r="1"/><path d="M29 20 Q32 22 35 20" fill="none" stroke="#935f47" stroke-width="1.2" stroke-linecap="round"/></g>
+</svg></div><div class="def" id="def4"><svg class="footballer-svg" viewBox="0 0 64 96" aria-hidden="true">
+<ellipse class="shadow" cx="32" cy="91" rx="20" ry="5"/>
+<g class="legL"><rect class="skin" x="20" y="61" width="8" height="22" rx="4"/><rect class="sock" x="20" y="73" width="8" height="12" rx="3"/><path class="boot" d="M17 83h13c2 0 4 2 4 4v2H18c-3 0-4-4-1-6z"/></g>
+<g class="legR"><rect class="skin" x="36" y="61" width="8" height="22" rx="4"/><rect class="sock" x="36" y="73" width="8" height="12" rx="3"/><path class="boot" d="M34 84h13c3 1 4 4 1 6H31v-2c0-2 1-3 3-4z"/></g>
+<path class="shorts" d="M18 52 Q32 48 46 52 L43 67 Q37 69 32 64 Q27 69 21 67z"/>
+<g class="armL"><rect class="skin" x="11" y="35" width="8" height="29" rx="4"/><circle class="skinHi" cx="15" cy="64" r="4"/></g>
+<g class="armR"><rect class="skin" x="45" y="35" width="8" height="29" rx="4"/><circle class="skinHi" cx="49" cy="64" r="4"/></g>
+<g class="torso"><path class="shirt" d="M19 28 Q24 24 32 24 Q40 24 45 28 L49 49 Q45 55 32 56 Q19 55 15 49z"/><path class="trim" d="M25 26 Q32 31 39 26 L37 31 Q32 34 27 31z"/><text class="number" x="32" y="45">3</text></g>
+<rect class="skin" x="28" y="20" width="8" height="8" rx="3"/>
+<g class="head"><ellipse class="skinHi" cx="32" cy="15" rx="10" ry="11"/><path class="hair" d="M22 13Q23 2 33 3Q43 3 42 13Q37 8 31 8Q26 8 22 13z"/><circle class="eye" cx="28.5" cy="15" r="1"/><circle class="eye" cx="35.5" cy="15" r="1"/><path d="M29 20 Q32 22 35 20" fill="none" stroke="#935f47" stroke-width="1.2" stroke-linecap="round"/></g>
+</svg></div><div class="def" id="def5"><svg class="footballer-svg" viewBox="0 0 64 96" aria-hidden="true">
+<ellipse class="shadow" cx="32" cy="91" rx="20" ry="5"/>
+<g class="legL"><rect class="skin" x="20" y="61" width="8" height="22" rx="4"/><rect class="sock" x="20" y="73" width="8" height="12" rx="3"/><path class="boot" d="M17 83h13c2 0 4 2 4 4v2H18c-3 0-4-4-1-6z"/></g>
+<g class="legR"><rect class="skin" x="36" y="61" width="8" height="22" rx="4"/><rect class="sock" x="36" y="73" width="8" height="12" rx="3"/><path class="boot" d="M34 84h13c3 1 4 4 1 6H31v-2c0-2 1-3 3-4z"/></g>
+<path class="shorts" d="M18 52 Q32 48 46 52 L43 67 Q37 69 32 64 Q27 69 21 67z"/>
+<g class="armL"><rect class="skin" x="11" y="35" width="8" height="29" rx="4"/><circle class="skinHi" cx="15" cy="64" r="4"/></g>
+<g class="armR"><rect class="skin" x="45" y="35" width="8" height="29" rx="4"/><circle class="skinHi" cx="49" cy="64" r="4"/></g>
+<g class="torso"><path class="shirt" d="M19 28 Q24 24 32 24 Q40 24 45 28 L49 49 Q45 55 32 56 Q19 55 15 49z"/><path class="trim" d="M25 26 Q32 31 39 26 L37 31 Q32 34 27 31z"/><text class="number" x="32" y="45">5</text></g>
+<rect class="skin" x="28" y="20" width="8" height="8" rx="3"/>
+<g class="head"><ellipse class="skinHi" cx="32" cy="15" rx="10" ry="11"/><path class="hair" d="M22 13Q23 2 33 3Q43 3 42 13Q37 8 31 8Q26 8 22 13z"/><circle class="eye" cx="28.5" cy="15" r="1"/><circle class="eye" cx="35.5" cy="15" r="1"/><path d="M29 20 Q32 22 35 20" fill="none" stroke="#935f47" stroke-width="1.2" stroke-linecap="round"/></g>
+</svg></div>
+            <div class="player" id="player"><svg class="footballer-svg" viewBox="0 0 64 96" aria-hidden="true">
+<ellipse class="shadow" cx="32" cy="91" rx="20" ry="5"/>
+<g class="legL"><rect class="skin" x="20" y="61" width="8" height="22" rx="4"/><rect class="sock" x="20" y="73" width="8" height="12" rx="3"/><path class="boot" d="M17 83h13c2 0 4 2 4 4v2H18c-3 0-4-4-1-6z"/></g>
+<g class="legR"><rect class="skin" x="36" y="61" width="8" height="22" rx="4"/><rect class="sock" x="36" y="73" width="8" height="12" rx="3"/><path class="boot" d="M34 84h13c3 1 4 4 1 6H31v-2c0-2 1-3 3-4z"/></g>
+<path class="shorts" d="M18 52 Q32 48 46 52 L43 67 Q37 69 32 64 Q27 69 21 67z"/>
+<g class="armL"><rect class="skin" x="11" y="35" width="8" height="29" rx="4"/><circle class="skinHi" cx="15" cy="64" r="4"/></g>
+<g class="armR"><rect class="skin" x="45" y="35" width="8" height="29" rx="4"/><circle class="skinHi" cx="49" cy="64" r="4"/></g>
+<g class="torso"><path class="shirt" d="M19 28 Q24 24 32 24 Q40 24 45 28 L49 49 Q45 55 32 56 Q19 55 15 49z"/><path class="trim" d="M25 26 Q32 31 39 26 L37 31 Q32 34 27 31z"/><text class="number" x="32" y="45">10</text></g>
+<rect class="skin" x="28" y="20" width="8" height="8" rx="3"/>
+<g class="head"><ellipse class="skinHi" cx="32" cy="15" rx="10" ry="11"/><path class="hair" d="M22 13Q23 2 33 3Q43 3 42 13Q37 8 31 8Q26 8 22 13z"/><circle class="eye" cx="28.5" cy="15" r="1"/><circle class="eye" cx="35.5" cy="15" r="1"/><path d="M29 20 Q32 22 35 20" fill="none" stroke="#935f47" stroke-width="1.2" stroke-linecap="round"/></g>
+</svg></div>
+            <div class="ball" id="ball">⚽</div>
+            <div class="penaltyScene" id="penaltyScene">
+              <div class="penGoal">
+                <div class="shotZone left" data-shot="left"><div><div class="tag" id="penLeftTag">50x</div><div class="cap">LEFT</div></div></div>
+                <div class="shotZone center" data-shot="center"><div><div class="tag" id="penCenterTag">100x</div><div class="cap">CENTER</div></div></div>
+                <div class="shotZone right" data-shot="right"><div><div class="tag" id="penRightTag">50x</div><div class="cap">RIGHT</div></div></div>
+              </div>
+              <div class="penKeeper" id="penKeeper"><div class="head"></div><div class="body"></div><div class="arm l"></div><div class="arm r"></div><div class="leg l"></div><div class="leg r"></div></div>
+              <div class="penBall" id="penBall"></div>
+              <div class="penHint">Swipe the ball upward or tap left / center / right. Center has higher payout and lower probability.</div>
+            </div>
+            <div class="resultFlash" id="resultFlash"><div><b id="flashBig"></b><span id="flashMini"></span></div></div>
+          </div>
+          <div class="controls compactTopActions">
+            <button class="btn cash" id="cashBtn" disabled>CASH OUT</button>
+            <button class="btn action" id="continueBtn" disabled>CONTINUE ↑</button>
+          </div>
+          <div class="compactControlGrid">
+            <div class="stakeMainPanel" aria-label="Stake selection">
+              <div class="stakeLabel">STAKE AMOUNT</div>
+              <input id="betInput" type="number" value="10" min="1" step="1" aria-label="Stake amount in AZN"/>
+              <div class="stakeQuickRow">
+                <button type="button" class="chip" data-bet="5">5 AZN</button>
+                <button type="button" class="chip" data-bet="10">10 AZN</button>
+                <button type="button" class="chip" data-bet="50">50 AZN</button>
+              </div>
+              <button type="button" class="btn start" id="startBtn">START · 10 AZN</button>
+            </div>
+            <div class="autoPlayPanel" aria-label="Auto play controls">
+              <div class="autoPlayInfo"><b>AUTO PLAY</b><small id="autoPlayStatus">Auto cash out at 3.10x</small></div>
+              <select id="autoCashoutSelect" class="autoCashoutSelect" aria-label="Auto cash out target">
+                <option value="1.17">1.17x</option><option value="1.39">1.39x</option><option value="1.72">1.72x</option><option value="2.25">2.25x</option><option value="3.10" selected>3.10x</option><option value="4.80">4.80x</option><option value="8.00">8.00x</option>
+              </select>
+              <button type="button" id="autoPlayBtn" class="autoPlayBtn">START AUTO</button>
+            </div>
+          </div>
+        </div>
+<div class="riverCard">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px"><div style="font-size:11px;color:#d7ebe0;font-weight:900">LIVE PLAYER RIVER</div><div style="font-size:10px;color:var(--muted)">stable · no shaking</div></div>
+            <div class="river" id="river"></div>
+          </div>
+      </div>
+    </section>
+    </div>
+    <div class="viewPanel" id="adminView">
+<section class="card adminBox">
+      <div class="sectionTitle"><div><h2>ADMIN CONTROL CENTER</h2><small>Treasury · simulation · payout · risk</small></div><button type="button" class="adminLogoutBtn" id="adminLogoutBtn">LOG OUT</button></div>
+      <div class="adminBody">
+        <div class="adminTwo">
+          <div class="adminBlock">
+            <h3>01 · LIVE CASINO / PLAYERS</h3>
+            <div class="inner">
+              <div class="formGrid">
+                <div class="field"><label>Parallel players</label><select id="simPlayers"><option>1</option><option>5</option><option selected>10</option><option>100</option></select></div>
+                <div class="field"><label>Speed</label><select id="simSpeed"><option value="1" selected>1x · Slow</option><option value="2">2x · Medium</option><option value="5">5x · Fast</option><option value="10">10x · Stress</option></select></div>
+              </div>
+              <div class="infoNote" style="margin-top:8px">1x ≈ 1 live cycle every 3.2s · 2x ≈ 1.7s · 5x ≈ 0.85s · 10x ≈ 0.45s</div>
+              <div style="height:10px"></div>
+              <div class="actionRow">
+                <button class="ghost" id="startLiveBtn">START LIVE</button>
+                <button class="warnBtn" id="stopLiveBtn">STOP LIVE</button>
+              </div>
+              <div style="height:12px"></div>
+              <div class="statGrid">
+                <div class="mini"><span>Status</span><b id="liveStatus">RUNNING</b></div>
+                <div class="mini"><span>Accepted / Rejected</span><b id="acceptReject">0 / 0</b></div>
+                <div class="mini"><span>Round</span><b id="roundCounter">0</b></div>
+                <div class="mini"><span>Locked Liability</span><b id="lockedLiability">0.00 AZN</b></div>
+              </div>
+              <div style="height:12px"></div>
+              <div style="font-size:11px;color:#d7ebe0;font-weight:900;margin-bottom:8px">ACTIVE PLAYERS</div>
+              <div class="activeList" id="activeList"></div>
+              <div style="height:12px"></div>
+              <div style="font-size:11px;color:#d7ebe0;font-weight:900;margin-bottom:8px">ADMIN LIVE FEED</div>
+              <div class="feed" id="adminFeed"></div>
+            </div>
+          </div>
+          <div class="adminBlock">
+            <h3>02 · TREASURY / MATH / RISK</h3>
+            <div class="inner">
+              <div class="statGrid">
+                <div class="mini"><span>House Earned Cash</span><b id="houseCashAdmin">0.00 AZN</b></div>
+                <div class="mini"><span>Reserve Balance</span><b id="reserveAdmin">100,000.00 AZN</b></div>
+                <div class="mini"><span>Total Stakes</span><b id="stakesAdmin">0.00 AZN</b></div>
+                <div class="mini"><span>Total Payouts</span><b id="payoutAdmin">0.00 AZN</b></div>
+                <div class="mini"><span>GGR</span><b id="ggrAdmin">0.00 AZN</b></div>
+                <div class="mini"><span>Margin</span><b id="marginAdmin">0.00%</b></div>
+                <div class="mini"><span>Reserve Used</span><b id="reserveUsedAdmin">0.00 AZN</b></div>
+                <div class="mini"><span>Max Safe Bet</span><b id="safeBetAdmin">0.00 AZN</b></div>
+              </div>
+              <div style="height:12px"></div>
+              <div class="field"><label>Risk pressure</label><div class="meter"><i id="riskMeter"></i></div></div>
+              <div style="height:12px"></div>
+              <div class="formGrid">
+                <div class="field"><label>Target RTP, %</label><input id="cfgRtp" type="number" min="1" max="99" step="0.1" value="89"></div>
+                <div class="field"><label>Target margin, %</label><input id="cfgMargin" type="number" min="1" max="60" step="0.1" value="10"></div>
+                <div class="field"><label>Reserve capital, AZN</label><input id="cfgReserve" type="number" min="0" step="1000" value="100000"></div>
+                <div class="field"><label>Reserve floor, AZN</label><input id="cfgReserveFloor" type="number" min="0" step="1000" value="0"></div>
+                <div class="field"><label>Safety factor</label><input id="cfgSafety" type="number" min="1" max="2" step="0.01" value="1.08"></div>
+                <div class="field"><label>Build cash target, AZN</label><input id="cfgBuildCash" type="number" min="0" step="100" value="5000"></div>
+                <div class="field"><label>Min bet</label><input id="cfgMinBet" type="number" min="1" step="1" value="1"></div>
+                <div class="field"><label>Max bet</label><input id="cfgMaxBet" type="number" min="1" step="1" value="100"></div>
+                <div class="field"><label>Penalty left</label><input id="cfgPenLeft" type="number" min="1" step="1" value="50"></div>
+                <div class="field"><label>Penalty center</label><input id="cfgPenCenter" type="number" min="1" step="1" value="100"></div>
+                <div class="field"><label>Penalty right</label><input id="cfgPenRight" type="number" min="1" step="1" value="50"></div>
+              </div>
+              <div style="height:10px"></div>
+              <div class="actionRow">
+                <button class="ghost" id="saveCfgBtn">SAVE CONFIG</button>
+                <button class="warnBtn" id="resetTreasuryBtn">RESET TREASURY</button>
+              </div>
+              <div style="height:12px"></div>
+              <div class="math">
+                <b>Core logic</b><br>0) Player wallet starts at 1,000 AZN. Deposits increase the player balance only and remain separate from earned House Cash.<br>
+                1) <b>House Cash</b> starts from 0 and grows from net player losses.<br>
+                2) <b>Reserve</b> is emergency capital and is not the same as earned cash.<br>
+                3) For every accepted round: <code>Liability = Stake × (Multiplier − 1) × SafetyFactor</code>.<br>
+                4) A bet is accepted only if <code>HouseCash + UsableReserve − LockedLiability</code> can cover that liability.<br>
+                5) On settlement: <code>HouseCash += Stake − Payout</code>. If result is negative and HouseCash is not enough, only then reserve is used.<br>
+                6) The engine tries to keep theoretical margin at or above the target by limiting exposure before the bet is accepted — not by changing a result after acceptance.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    </div>
+  </div>
+</div>
+
+<a class="admin-corner-link" href="./admin.html" title="Admin" aria-label="Admin access">⚙</a>
+
+<div class="depositOverlay" id="depositOverlay" aria-hidden="true">
+  <div class="modalCard" role="dialog" aria-modal="true" aria-labelledby="depositTitle">
+    <div class="modalHead"><h3 id="depositTitle">DEPOSIT · Add balance</h3><button type="button" class="modalClose" id="depositCloseBtn" aria-label="Close">×</button></div>
+    <div class="modalBody">
+      <div class="modalLead" id="depositLead">Demo wallet: choose an amount to add to your player balance. A deposit is not casino GGR.</div>
+      <div class="quickDeposit">
+        <button type="button" data-deposit="100">+100 AZN</button>
+        <button type="button" data-deposit="500">+500 AZN</button>
+        <button type="button" data-deposit="1000">+1,000 AZN</button>
+      </div>
+      <div class="customDeposit"><input id="depositAmount" type="number" min="1" step="1" placeholder="Custom amount, AZN"/><button type="button" class="depositConfirm" id="depositConfirmBtn">DEPOSIT</button></div>
+      <div class="modalStatus" id="depositStatus"></div>
+    </div>
+  </div>
+</div>
+
+
+<div class="adminLoginOverlay" id="adminLoginOverlay" aria-hidden="true">
+  <div class="modalCard" role="dialog" aria-modal="true" aria-labelledby="adminLoginTitle">
+    <div class="modalHead"><h3 id="adminLoginTitle">ADMIN ACCESS</h3><button type="button" class="modalClose" id="adminLoginCloseBtn" aria-label="Close">×</button></div>
+    <div class="modalBody">
+      <div class="modalLead">Enter the admin password to open Treasury, RTP, simulation and risk controls.</div>
+      <div class="adminLoginForm"><input id="adminPasswordInput" type="password" autocomplete="off" placeholder="Admin password"/></div>
+      <div style="height:10px"></div><button type="button" class="adminLoginBtn" id="adminLoginBtn" style="width:100%">ENTER ADMIN</button>
+      <div class="modalStatus" id="adminLoginStatus"></div>
+      <div class="adminLockNote">Standalone HTML demo protection. Production authentication must be implemented server-side.</div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(() => {
+'use strict';
+const PAGE_MODE = document.body.dataset.pageMode || 'combined';
+const RUN_LEVELS = [1.17,1.39,1.72,2.25,3.10,4.80,8.00];
+const RUN_NAMES = ['1 defender','2 defenders','3 defenders','4 defenders','5 defenders','6 defenders','6 defenders + GK'];
+const YS = [.88,.78,.68,.58,.48,.36,.25];
+const $ = id => document.getElementById(id);
+const qsa = s => Array.from(document.querySelectorAll(s));
+const toast = $('toast');
+function t(msg){toast.textContent=msg;toast.classList.add('show');clearTimeout(t._);t._=setTimeout(()=>toast.classList.remove('show'),1200)}
+function money(v){return Number(v).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})+' AZN'}
+function pct(v){return (v*100).toFixed(2)+'%'}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+function rand(a,b){return a + Math.random()*(b-a)}
+function sample(arr){return arr[Math.floor(Math.random()*arr.length)]}
+
+
+const I18N = {
+  az: {"LANG": "DİL", "USER": "OYUN", "ADMIN": "ADMİN", "Game & live wins": "Oyun və canlı nəticələr", "Cash, RTP & simulation": "Kassa, RTP və simulyasiya", "Protected backoffice": "Qorunan idarəetmə", "PLAYER BALANCE": "OYUNÇU BALANSI", "PLAYER WALLET": "OYUNÇU BALANSI", "Ready to play": "Oyuna hazır", "+ DEPOSIT": "+ DEPOZİT", "LIVE GAME": "CANLI OYUN", "CASH OUT": "PULU GÖTÜR", "CONTINUE ↑": "DAVAM ET ↑", "House Cash": "Qazanılmış kassa", "Reserve": "Ehtiyat fondu", "Live Margin": "Canlı marja", "Active Players": "Aktiv oyunçular", "Stake": "Mərc", "Potential": "Potensial uduş", "Round ready": "Raund hazırdır", "Game · stake · live player river": "Oyun · mərc · canlı nəticələr", "Choose stake · play · cash out": "Mərci seç · oyna · pulu götür", "STAKE AMOUNT": "MƏRC MƏBLƏĞİ", "FLOWING INFO": "CANLI AXIN", "LIVE PLAYER RIVER": "CANLI OYUNÇULAR", "stable · no shaking": "sabit görünüş", "Waiting for live rounds...": "Canlı raundlar gözlənilir...", "1 defender": "1 müdafiəçi", "2 defenders": "2 müdafiəçi", "3 defenders": "3 müdafiəçi", "4 defenders": "4 müdafiəçi", "5 defenders": "5 müdafiəçi", "6 defenders": "6 müdafiəçi", "6 defenders + GK": "6 müdafiəçi + qapıçı", "Penalty area": "Cərimə meydançası", "Final burst": "Son sürətlənmə", "Shot gate": "Zərbə mərhələsi", "LEFT": "SOL", "CENTER": "MƏRKƏZ", "RIGHT": "SAĞ", "01 · LIVE CASINO / PLAYERS": "01 · CANLI KAZİNO / OYUNÇULAR", "02 · TREASURY / MATH / RISK": "02 · KASSA / RİYAZİYYAT / RİSK", "Parallel players": "Paralel oyunçular", "Speed": "Sürət", "START LIVE": "CANLINI BAŞLAT", "STOP LIVE": "CANLINI DAYANDIR", "Status": "Status", "Accepted / Rejected": "Qəbul / Rədd", "Round": "Raund", "Locked Liability": "Bloklanmış öhdəlik", "ACTIVE PLAYERS": "AKTİV OYUNÇULAR", "ADMIN LIVE FEED": "ADMİN CANLI AXINI", "House Earned Cash": "Qazanılmış kassa", "Reserve Balance": "Ehtiyat balansı", "Total Stakes": "Ümumi mərclər", "Total Payouts": "Ümumi ödənişlər", "GGR": "GGR", "Margin": "Marja", "Reserve Used": "İstifadə olunan ehtiyat", "Max Safe Bet": "Maks. təhlükəsiz mərc", "Risk pressure": "Risk təzyiqi", "Target RTP, %": "Hədəf RTP, %", "Target margin, %": "Hədəf marja, %", "Reserve capital, AZN": "Ehtiyat kapitalı, AZN", "Reserve floor, AZN": "Ehtiyat minimumu, AZN", "Safety factor": "Təhlükəsizlik əmsalı", "Build cash target, AZN": "Kassa yığım hədəfi, AZN", "Min bet": "Min. mərc", "Max bet": "Maks. mərc", "Penalty left": "Penalti sol", "Penalty center": "Penalti mərkəz", "Penalty right": "Penalti sağ", "SAVE CONFIG": "AYARLARI SAXLA", "RESET TREASURY": "KASSANI SIFIRLA", "Core logic": "Əsas məntiq", "DEPOSIT · Add balance": "DEPOZİT · Balansı artır", "Demo wallet: choose an amount to add to your player balance. A deposit is not casino GGR.": "Demo balans: oyunçu balansına əlavə etmək üçün məbləğ seç. Depozit kazino GGR-i deyil.", "DEPOSIT": "DEPOZİT", "Custom amount, AZN": "Fərdi məbləğ, AZN", "ADMIN ACCESS": "ADMİN GİRİŞİ", "ENTER ADMIN": "ADMİNƏ DAXİL OL", "Enter the admin password to open Treasury, RTP, simulation and risk controls.": "Kassa, RTP, simulyasiya və risk idarəetməsini açmaq üçün admin şifrəsini daxil et.", "Admin password": "Admin şifrəsi", "LOG OUT": "ÇIXIŞ", "ADMIN CONTROL CENTER": "ADMİN İDARƏETMƏ MƏRKƏZİ", "Treasury · simulation · payout · risk": "Kassa · simulyasiya · ödəniş · risk", "LIVE": "CANLI", "BALANCE & DEPOSIT": "BALANS VƏ DEPOZİT", "Player game · balance · cash out · live results": "Oyun · balans · cash out · canlı nəticələr", "RUNNING": "İŞLƏYİR", "STOPPED": "DAYANIB", "Mode: BUILD": "Rejim: YIĞIM", "Mode: CRITICAL": "Rejim: KRİTİK", "Mode: DEFENSIVE": "Rejim: MÜDAFİƏ", "Mode: NORMAL": "Rejim: NORMAL", "1x · Slow": "1x · Yavaş", "2x · Medium": "2x · Orta", "5x · Fast": "5x · Sürətli", "10x · Stress": "10x · Stress", "FINAL 01 RESPONSIVE · Full operator demo · Player wallet + treasury": "FINAL 01 · Tam operator demo · oyunçu balansı + kassa", "v6.4.02 · LIVE RESULT · ALL AUTO · GitHub split": "FINAL 02 · Oyunçu görünüşü + qorunan admin", "Penalty bonus": "Penalti bonusu", "Start dribble": "Driblinqə başla", "SHOOT BONUS": "BONUS ZƏRBƏSİ", "Continue or cash out": "Davam et və ya pulu götür", "Penalty bonus opened": "Penalti bonusu açıldı", "Dribble and continue": "Driblinq et və davam et", "LOSS": "UDUZDU", "WIN": "UDDU", "PLAYING": "OYUNDA", "REJECT": "RƏDD", "No payout": "Uduş yoxdur", "GOAL!": "QOL!", "SAVE": "QAPIÇI TOPU TUTDU", "OUT": "TOP AUTA ÇIXDI", "BALL LOST": "TOPU İTİRDİ", "TACKLED": "MÜDAFİƏÇİ TOPU ALDI", "INTERCEPTED": "HÜCUMUN QARŞISI KƏSİLDİ", "OFFSIDE": "OFSAYD", "SHOT BLOCKED": "ZƏRBƏNİN QARŞISI ALINDI", "HEAVY TOUCH": "TOPA NƏZARƏTİ İTİRDİ", "KEEPER CLAIM": "QAPIÇI TOPA SAHİB OLDU", "Ball went out": "Top yan xətdən auta çıxdı", "Lost control of the ball": "Topa nəzarəti itirdi", "Defender won the tackle": "Müdafiəçi topu təmiz müdaxilə ilə aldı", "Defender intercepted the ball": "Müdafiəçi hücumun qarşısını kəsdi və topa sahib oldu", "Offside flag near the goal": "Hakim ofsayd qeydə aldı", "Shot was blocked": "Müdafiəçi zərbənin qarşısını aldı", "Heavy touch sent the ball away": "Topu qabağa atdı və nəzarəti itirdi", "Goalkeeper collected the ball": "Qapıçı topa rahat sahib oldu", "Bet is above max bet": "Mərc maksimum limitdən böyükdür", "Bet is temporarily unavailable": "Bu mərc müvəqqəti əlçatan deyil", "Your balance is not enough for this stake. Add a deposit or reduce the stake.": "Bu mərc üçün balans kifayət etmir. Depozit et və ya məbləği azalt.", "Enter a valid deposit amount.": "Düzgün depozit məbləği daxil et.", "Your balance is empty. Add a deposit to continue playing.": "Balans sıfırdır. Davam etmək üçün depozit et.", "Balance empty · deposit to continue": "Balans sıfırdır · davam üçün depozit et", "Available to play": "Oynamaq üçün hazır", "Config saved": "Ayarlar saxlanıldı", "Treasury reset": "Kassa sıfırlandı", "Live simulation started": "Canlı simulyasiya başladı", "Live simulation stopped": "Canlı simulyasiya dayandı", "Admin unlocked": "Admin açıldı", "Admin locked": "Admin kilidləndi", "Wrong password.": "Şifrə yanlışdır."},
+  ru: {"LANG": "ЯЗЫК", "USER": "ИГРА", "ADMIN": "АДМИН", "Game & live wins": "Игра и живые результаты", "Cash, RTP & simulation": "Касса, RTP и симуляция", "Protected backoffice": "Защищённый бэкофис", "PLAYER BALANCE": "БАЛАНС ИГРОКА", "PLAYER WALLET": "БАЛАНС ИГРОКА", "Ready to play": "Готов к игре", "+ DEPOSIT": "+ ДЕПОЗИТ", "LIVE GAME": "ЖИВАЯ ИГРА", "CASH OUT": "ЗАБРАТЬ", "CONTINUE ↑": "ПРОДОЛЖИТЬ ↑", "House Cash": "Заработанная касса", "Reserve": "Резерв", "Live Margin": "Текущая маржа", "Active Players": "Активные игроки", "Stake": "Ставка", "Potential": "Возможный выигрыш", "Round ready": "Раунд готов", "Game · stake · live player river": "Игра · ставка · живые результаты", "Choose stake · play · cash out": "Выбери ставку · играй · забирай", "STAKE AMOUNT": "СУММА СТАВКИ", "FLOWING INFO": "ЖИВОЙ ПОТОК", "LIVE PLAYER RIVER": "ЖИВЫЕ ИГРОКИ", "stable · no shaking": "стабильный вид", "Waiting for live rounds...": "Ожидание живых раундов...", "1 defender": "1 защитник", "2 defenders": "2 защитника", "3 defenders": "3 защитника", "4 defenders": "4 защитника", "5 defenders": "5 защитников", "6 defenders": "6 защитников", "6 defenders + GK": "6 защитников + вратарь", "Penalty area": "Штрафная зона", "Final burst": "Финальный рывок", "Shot gate": "Этап удара", "LEFT": "ЛЕВО", "CENTER": "ЦЕНТР", "RIGHT": "ПРАВО", "01 · LIVE CASINO / PLAYERS": "01 · LIVE CASINO / ИГРОКИ", "02 · TREASURY / MATH / RISK": "02 · КАССА / МАТЕМАТИКА / РИСК", "Parallel players": "Параллельные игроки", "Speed": "Скорость", "START LIVE": "ЗАПУСТИТЬ LIVE", "STOP LIVE": "ОСТАНОВИТЬ LIVE", "Status": "Статус", "Accepted / Rejected": "Принято / Отклонено", "Round": "Раунд", "Locked Liability": "Заблокированная ответственность", "ACTIVE PLAYERS": "АКТИВНЫЕ ИГРОКИ", "ADMIN LIVE FEED": "LIVE ЛЕНТА АДМИНА", "House Earned Cash": "Заработанная касса", "Reserve Balance": "Баланс резерва", "Total Stakes": "Всего ставок", "Total Payouts": "Всего выплат", "GGR": "GGR", "Margin": "Маржа", "Reserve Used": "Использовано резерва", "Max Safe Bet": "Макс. безопасная ставка", "Risk pressure": "Риск-нагрузка", "Target RTP, %": "Целевой RTP, %", "Target margin, %": "Целевая маржа, %", "Reserve capital, AZN": "Резервный капитал, AZN", "Reserve floor, AZN": "Минимум резерва, AZN", "Safety factor": "Коэффициент безопасности", "Build cash target, AZN": "Цель накопления кассы, AZN", "Min bet": "Мин. ставка", "Max bet": "Макс. ставка", "Penalty left": "Пенальти слева", "Penalty center": "Пенальти центр", "Penalty right": "Пенальти справа", "SAVE CONFIG": "СОХРАНИТЬ", "RESET TREASURY": "СБРОСИТЬ КАССУ", "Core logic": "Основная логика", "DEPOSIT · Add balance": "ДЕПОЗИТ · Пополнить баланс", "Demo wallet: choose an amount to add to your player balance. A deposit is not casino GGR.": "Демо-кошелёк: выбери сумму пополнения. Депозит не является GGR казино.", "DEPOSIT": "ДЕПОЗИТ", "Custom amount, AZN": "Своя сумма, AZN", "ADMIN ACCESS": "ДОСТУП АДМИНА", "ENTER ADMIN": "ВОЙТИ В АДМИН", "Enter the admin password to open Treasury, RTP, simulation and risk controls.": "Введи пароль администратора, чтобы открыть кассу, RTP, симуляцию и риск-контроль.", "Admin password": "Пароль администратора", "LOG OUT": "ВЫЙТИ", "ADMIN CONTROL CENTER": "ЦЕНТР УПРАВЛЕНИЯ", "Treasury · simulation · payout · risk": "Касса · симуляция · выплаты · риск", "LIVE": "LIVE", "BALANCE & DEPOSIT": "БАЛАНС И ДЕПОЗИТ", "Player game · balance · cash out · live results": "Игра · баланс · cash out · живые результаты", "RUNNING": "РАБОТАЕТ", "STOPPED": "ОСТАНОВЛЕНО", "Mode: BUILD": "Режим: НАКОПЛЕНИЕ", "Mode: CRITICAL": "Режим: КРИТИЧЕСКИЙ", "Mode: DEFENSIVE": "Режим: ЗАЩИТНЫЙ", "Mode: NORMAL": "Режим: НОРМАЛЬНЫЙ", "1x · Slow": "1x · Медленно", "2x · Medium": "2x · Средне", "5x · Fast": "5x · Быстро", "10x · Stress": "10x · Стресс", "FINAL 01 RESPONSIVE · Full operator demo · Player wallet + treasury": "FINAL 01 · Полный операторский демо · баланс + касса", "v6.4.02 · LIVE RESULT · ALL AUTO · GitHub split": "FINAL 02 · Игрок + защищённый админ", "Penalty bonus": "Бонус-пенальти", "Start dribble": "Начни дриблинг", "SHOOT BONUS": "БОНУСНЫЙ УДАР", "Continue or cash out": "Продолжить или забрать", "Penalty bonus opened": "Бонус-пенальти открыт", "Dribble and continue": "Веди мяч и продолжай", "LOSS": "ПРОИГРЫШ", "WIN": "ВЫИГРЫШ", "PLAYING": "В ИГРЕ", "REJECT": "ОТКЛОНЕНО", "No payout": "Без выплаты", "GOAL!": "ГОЛ!", "SAVE": "СЕЙВ", "OUT": "АУТ", "BALL LOST": "ПОТЕРЯ МЯЧА", "TACKLED": "ОТБОР", "INTERCEPTED": "ПЕРЕХВАТ", "OFFSIDE": "ОФСАЙД", "SHOT BLOCKED": "УДАР ЗАБЛОКИРОВАН", "HEAVY TOUCH": "ДАЛЕКО ОТПУСТИЛ МЯЧ", "KEEPER CLAIM": "МЯЧ У ВРАТАРЯ", "Ball went out": "Мяч ушёл за боковую линию", "Lost control of the ball": "Потерял контроль и отдал мяч сопернику", "Defender won the tackle": "Защитник чисто отобрал мяч", "Defender intercepted the ball": "Защитник прервал атаку и завладел мячом", "Offside flag near the goal": "Арбитр зафиксировал офсайд", "Shot was blocked": "Защитник накрыл удар", "Heavy touch sent the ball away": "Неудачно сыграл с мячом и потерял контроль", "Goalkeeper collected the ball": "Вратарь уверенно забрал мяч", "Bet is above max bet": "Ставка выше максимального лимита", "Bet is temporarily unavailable": "Эта ставка временно недоступна", "Your balance is not enough for this stake. Add a deposit or reduce the stake.": "Баланса недостаточно для этой ставки. Пополни баланс или уменьши ставку.", "Enter a valid deposit amount.": "Введи корректную сумму депозита.", "Your balance is empty. Add a deposit to continue playing.": "Баланс равен нулю. Пополни счёт, чтобы продолжить.", "Balance empty · deposit to continue": "Баланс пуст · пополни для продолжения", "Available to play": "Доступно для игры", "Config saved": "Настройки сохранены", "Treasury reset": "Касса сброшена", "Live simulation started": "Live-симуляция запущена", "Live simulation stopped": "Live-симуляция остановлена", "Admin unlocked": "Админ открыт", "Admin locked": "Админ заблокирован", "Wrong password.": "Неверный пароль."},
+  en: {}
+};
+
+
+Object.assign(I18N.az, {
+  "AUTO PLAY":"AVTO OYUN",
+  "Auto cash out at":"Avtomatik çıxış:",
+  "START AUTO":"AVTO OYUNU BAŞLAT",
+  "STOP AUTO":"AVTO OYUNU DAYANDIR",
+  "Auto play started":"Avto oyun başladı",
+  "Auto play stopped":"Avto oyun dayandırıldı",
+  "Auto play stopped: balance is not enough":"Avto oyun dayandı: balans kifayət etmir"
+});
+Object.assign(I18N.ru, {
+  "AUTO PLAY":"АВТОИГРА",
+  "Auto cash out at":"Автовывод:",
+  "START AUTO":"ЗАПУСТИТЬ АВТО",
+  "STOP AUTO":"ОСТАНОВИТЬ АВТО",
+  "Auto play started":"Автоигра запущена",
+  "Auto play stopped":"Автоигра остановлена",
+  "Auto play stopped: balance is not enough":"Автоигра остановлена: недостаточно средств"
+});
+
+let CURRENT_LANG = (()=>{ try{ return localStorage.getItem('goalRush_lang') || 'az'; }catch(_){ return 'az'; } })();
+function tr(key){ return (I18N[CURRENT_LANG] && I18N[CURRENT_LANG][key]) || key; }
+function translateStaticDOM(){
+  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+  const nodes=[]; while(walker.nextNode()) nodes.push(walker.currentNode);
+  nodes.forEach(node=>{
+    if(node.parentElement && /^(SCRIPT|STYLE)$/.test(node.parentElement.tagName)) return;
+    const raw=node.nodeValue, trimmed=raw.trim(); if(!trimmed) return;
+    if(!node.__grI18nKey && (I18N.az[trimmed] || I18N.ru[trimmed])) node.__grI18nKey=trimmed;
+    if(node.__grI18nKey){ const before=raw.slice(0,raw.indexOf(trimmed)); const after=raw.slice(raw.indexOf(trimmed)+trimmed.length); node.nodeValue=before+tr(node.__grI18nKey)+after; }
+  });
+  document.documentElement.lang=CURRENT_LANG;
+  const langSel=document.getElementById('languageSelect'); if(langSel) langSel.value=CURRENT_LANG;
+  const dep=document.getElementById('depositAmount'); if(dep) dep.placeholder=tr('Custom amount, AZN');
+  const ap=document.getElementById('adminPasswordInput'); if(ap) ap.placeholder=tr('Admin password');
+}
+function applyLanguage(lang, silent=false){
+  CURRENT_LANG = ['az','ru','en'].includes(lang) ? lang : 'az';
+  try{ localStorage.setItem('goalRush_lang',CURRENT_LANG); }catch(_){}
+  translateStaticDOM();
+  refreshMainDisplay(); updateAll(); renderZones(); refreshStartLabel(); refreshAutoUI();
+  const off=document.getElementById('offsideLabel'); if(off && off.dataset.lossKey) off.textContent=tr(off.dataset.lossKey);
+  if(!silent) t(CURRENT_LANG==='az'?'Dil dəyişdirildi':CURRENT_LANG==='ru'?'Язык изменён':'Language changed');
+}
+
+
+const LOSS_EVENT_TABLE = {
+  early: [
+    {key:'OUT', detail:'Ball went out', kind:'out'},
+    {key:'HEAVY TOUCH', detail:'Heavy touch sent the ball away', kind:'heavy'},
+    {key:'BALL LOST', detail:'Lost control of the ball', kind:'lost'}
+  ],
+  middle: [
+    {key:'TACKLED', detail:'Defender won the tackle', kind:'tackle'},
+    {key:'INTERCEPTED', detail:'Defender intercepted the ball', kind:'intercept'},
+    {key:'BALL LOST', detail:'Lost control of the ball', kind:'lost'},
+    {key:'OUT', detail:'Ball went out', kind:'out'}
+  ],
+  late: [
+    {key:'OFFSIDE', detail:'Offside flag near the goal', kind:'offside'},
+    {key:'SHOT BLOCKED', detail:'Shot was blocked', kind:'blocked'},
+    {key:'TACKLED', detail:'Defender won the tackle', kind:'tackle'},
+    {key:'KEEPER CLAIM', detail:'Goalkeeper collected the ball', kind:'keeper'}
+  ]
+};
+function lossEventForStage(stageIndex){
+  const pool = stageIndex <= 1 ? LOSS_EVENT_TABLE.early : stageIndex <= 3 ? LOSS_EVENT_TABLE.middle : LOSS_EVENT_TABLE.late;
+  return sample(pool);
+}
+async function animateLossVisual(event){
+  ui.pitch.classList.add('loss-pulse'); ui.player.classList.add('loss-stumble');
+  const offLine=document.getElementById('offsideLine'), offLabel=document.getElementById('offsideLabel');
+  if(event.kind==='offside' && offLine){ offLabel.dataset.lossKey='OFFSIDE'; offLabel.textContent=tr('OFFSIDE'); offLine.classList.remove('show'); void offLine.offsetWidth; offLine.classList.add('show'); }
+  if(event.kind==='out'){
+    const side = STATE.ballPos.x < .5 ? .035 : .965;
+    await animateBallTo(side, clamp(STATE.ballPos.y+.015,.13,.93), 360, .015);
+  } else if(event.kind==='heavy'){
+    await animateBallTo(clamp(STATE.ballPos.x+(Math.random()<.5?-.34:.34),.06,.94), clamp(STATE.ballPos.y-.07,.12,.91), 390, .025);
+  } else if(event.kind==='lost' || event.kind==='intercept' || event.kind==='tackle'){
+    let nearest=-1, best=99;
+    STATE.defenderStates.forEach((d,i)=>{const dist=Math.hypot(d.x-STATE.ballPos.x,d.y-STATE.ballPos.y); if(dist<best){best=dist;nearest=i;}});
+    if(nearest>=0 && ui.defs[nearest]) ui.defs[nearest].classList.add('tackle');
+    await animateBallTo(clamp(STATE.ballPos.x+(Math.random()<.5?-.18:.18),.08,.92), clamp(STATE.ballPos.y+.035,.14,.92), 330, .02);
+  } else if(event.kind==='blocked' || event.kind==='keeper'){
+    await animateBallTo(clamp(STATE.ballPos.x+(Math.random()-.5)*.16,.18,.82), clamp(STATE.ballPos.y-.035,.12,.86), 310, .035);
+  } else {
+    await new Promise(r=>setTimeout(r,320));
+  }
+  await new Promise(r=>setTimeout(r,170));
+  ui.player.classList.remove('loss-stumble'); ui.pitch.classList.remove('loss-pulse');
+}
+
+
+
+const PLAYER_START_BALANCE = 1000;
+const PLAYER_BALANCE_KEY = 'goalRush_final02_secure_player_balance';
+function loadPlayerBalance(){
+  try{
+    const raw = localStorage.getItem(PLAYER_BALANCE_KEY);
+    if(raw === null) return PLAYER_START_BALANCE;
+    const n = Number(raw); return Number.isFinite(n) && n >= 0 ? n : PLAYER_START_BALANCE;
+  }catch(_){ return PLAYER_START_BALANCE; }
+}
+function savePlayerBalance(){
+  try{ localStorage.setItem(PLAYER_BALANCE_KEY, String(STATE.playerBalance)); }catch(_){}
+}
+
+const CONFIG = loadConfig();
+const STATE = {
+  playerBalance: loadPlayerBalance(),
+  lastPlayerPayout: 0,
+  autoPlay: false,
+  autoCashout: 3.10,
+  autoTimer: 0,
+  reserveBalance: CONFIG.reserve,
+  houseCash: 0,
+  totalStakes: 0,
+  totalPayouts: 0,
+  reserveUsed: 0,
+  lockedLiability: 0,
+  accepted: 0,
+  rejected: 0,
+  liveRounds: 0,
+  liveRunning: true,
+  feed: [],
+  river: [],
+  activePlayers: [],
+  nextPlayerId: 1,
+  mode: 'BUILD',
+  mainRound: null,
+  buildTicker: [],
+  tickerCurrent: null,
+  defenderStates: [],
+  penChoice: 'center',
+  penDragging: false,
+  penMoves: [],
+  penBallPos: {x:.5,y:.82},
+  keeperRaf: 0,
+  runRaf: 0,
+  ballPos: {x:.5,y:.92},
+  playerPos: {x:.5,y:.96},
+  pointerId: null,
+  dragging: false,
+  lastMoves: [],
+  lastRunTs: 0
+};
+
+/* Shared demo state between index.html and admin.html on the same GitHub Pages origin. */
+const TREASURY_STATE_KEY = 'goalRush_github_shared_treasury_v1';
+const TREASURY_FIELDS = ['reserveBalance','houseCash','totalStakes','totalPayouts','reserveUsed','accepted','rejected','liveRounds','nextPlayerId'];
+function loadSharedTreasury(){
+  try{
+    const raw = localStorage.getItem(TREASURY_STATE_KEY);
+    if(!raw) return null;
+    const x = JSON.parse(raw);
+    return x && typeof x === 'object' ? x : null;
+  }catch(_){ return null; }
+}
+function applySharedTreasury(x){
+  if(!x || typeof x !== 'object') return;
+  TREASURY_FIELDS.forEach(k=>{ if(Number.isFinite(Number(x[k]))) STATE[k] = Number(x[k]); });
+  STATE.lockedLiability = 0;
+  STATE.activePlayers = [];
+}
+function saveSharedTreasury(){
+  try{
+    const snap = {};
+    TREASURY_FIELDS.forEach(k=>snap[k]=STATE[k]);
+    snap.savedAt = Date.now();
+    localStorage.setItem(TREASURY_STATE_KEY, JSON.stringify(snap));
+  }catch(_){}
+}
+const __sharedTreasury = loadSharedTreasury();
+if(__sharedTreasury) applySharedTreasury(__sharedTreasury);
+
+const ui = {
+  playerBalance:$('playerBalance'), walletHint:$('walletHint'), depositBtn:$('depositBtn'), depositOverlay:$('depositOverlay'), depositCloseBtn:$('depositCloseBtn'), depositLead:$('depositLead'), depositAmount:$('depositAmount'), depositConfirmBtn:$('depositConfirmBtn'), depositStatus:$('depositStatus'), adminLoginOverlay:$('adminLoginOverlay'), adminLoginCloseBtn:$('adminLoginCloseBtn'), adminPasswordInput:$('adminPasswordInput'), adminLoginBtn:$('adminLoginBtn'), adminLoginStatus:$('adminLoginStatus'), adminLogoutBtn:$('adminLogoutBtn'),
+  autoPlayBtn:$('autoPlayBtn'), autoCashoutSelect:$('autoCashoutSelect'), autoPlayStatus:$('autoPlayStatus'),
+  houseCashTop:$('houseCashTop'), reserveTop:$('reserveTop'), marginTop:$('marginTop'), activeCountTop:$('activeCountTop'), modeBadge:$('modeBadge'),
+  stakeTop:$('stakeTop'), multTop:$('multTop'), stageTop:$('stageTop'), potentialTop:$('potentialTop'), cashBtn:$('cashBtn'), continueBtn:$('continueBtn'),
+  betInput:$('betInput'), startBtn:$('startBtn'), river:$('river'), tickerInner:$('tickerInner'),
+  pitch:$('pitch'), ball:$('ball'), player:$('player'), gk:$('gk'), defs:[0,1,2,3,4,5].map(i=>$('def'+i)),
+  penaltyScene:$('penaltyScene'), penKeeper:$('penKeeper'), penBall:$('penBall'), penTags:{left:$('penLeftTag'), center:$('penCenterTag'), right:$('penRightTag')},
+  flash:$('resultFlash'), flashBig:$('flashBig'), flashMini:$('flashMini'),
+  simPlayers:$('simPlayers'), simSpeed:$('simSpeed'), startLiveBtn:$('startLiveBtn'), stopLiveBtn:$('stopLiveBtn'), liveStatus:$('liveStatus'), acceptReject:$('acceptReject'), roundCounter:$('roundCounter'), lockedLiability:$('lockedLiability'), activeList:$('activeList'), adminFeed:$('adminFeed'),
+  houseCashAdmin:$('houseCashAdmin'), reserveAdmin:$('reserveAdmin'), stakesAdmin:$('stakesAdmin'), payoutAdmin:$('payoutAdmin'), ggrAdmin:$('ggrAdmin'), marginAdmin:$('marginAdmin'), reserveUsedAdmin:$('reserveUsedAdmin'), safeBetAdmin:$('safeBetAdmin'), riskMeter:$('riskMeter'),
+  cfgRtp:$('cfgRtp'), cfgMargin:$('cfgMargin'), cfgReserve:$('cfgReserve'), cfgReserveFloor:$('cfgReserveFloor'), cfgSafety:$('cfgSafety'), cfgBuildCash:$('cfgBuildCash'), cfgMinBet:$('cfgMinBet'), cfgMaxBet:$('cfgMaxBet'), cfgPenLeft:$('cfgPenLeft'), cfgPenCenter:$('cfgPenCenter'), cfgPenRight:$('cfgPenRight'), saveCfgBtn:$('saveCfgBtn'), resetTreasuryBtn:$('resetTreasuryBtn')
+};
+
+
+
+function clearAutoTimer(){ if(STATE.autoTimer){ clearTimeout(STATE.autoTimer); STATE.autoTimer=0; } }
+function autoTargetText(){ return Number(STATE.autoCashout).toFixed(2)+'x'; }
+function refreshAutoUI(){
+  if(!ui.autoPlayBtn || !ui.autoCashoutSelect) return;
+  ui.autoCashoutSelect.value = Number(STATE.autoCashout).toFixed(2);
+  ui.autoPlayBtn.classList.toggle('on', STATE.autoPlay);
+  ui.autoPlayBtn.textContent = STATE.autoPlay ? tr('STOP AUTO') : tr('START AUTO');
+  if(ui.autoPlayStatus) ui.autoPlayStatus.textContent = tr('Auto cash out at')+' '+autoTargetText();
+  if(ui.startBtn) ui.startBtn.disabled = STATE.autoPlay || !!STATE.mainRound;
+}
+function scheduleAutoStep(delay=520){
+  clearAutoTimer();
+  if(!STATE.autoPlay) return;
+  STATE.autoTimer=setTimeout(()=>{ STATE.autoTimer=0; autoStep(); }, delay);
+}
+async function autoStep(){
+  if(!STATE.autoPlay) return;
+  const bet = Math.max(CONFIG.minBet, Number(ui.betInput.value||CONFIG.minBet));
+  if(!STATE.mainRound){
+    if(bet > STATE.playerBalance){
+      STATE.autoPlay=false; clearAutoTimer(); refreshAutoUI();
+      t(tr('Auto play stopped: balance is not enough'));
+      openDeposit('Your balance is not enough for this stake. Add a deposit or reduce the stake.');
+      return;
+    }
+    startMainRound();
+    refreshAutoUI();
+    if(!STATE.mainRound){ scheduleAutoStep(1000); return; }
+    scheduleAutoStep(430); return;
+  }
+  const r=STATE.mainRound;
+  if(r.completed || r.penaltyShot || r.locked){ scheduleAutoStep(180); return; }
+  if(r.penalty){
+    const gate = r.current>=0 ? RUN_LEVELS[r.current] : 1;
+    if(gate + 1e-9 >= STATE.autoCashout){ cashOutMain(); refreshAutoUI(); scheduleAutoStep(900); return; }
+    shootPenalty('center'); scheduleAutoStep(1100); return;
+  }
+  const current = r.current>=0 ? RUN_LEVELS[r.current] : 1;
+  if(r.current>=0 && current + 1e-9 >= STATE.autoCashout){ cashOutMain(); refreshAutoUI(); scheduleAutoStep(900); return; }
+  await continueRound();
+  if(!STATE.autoPlay) return;
+  const after=STATE.mainRound;
+  if(after && !after.locked && after.current>=0 && RUN_LEVELS[after.current] + 1e-9 >= STATE.autoCashout){
+    cashOutMain(); refreshAutoUI(); scheduleAutoStep(900); return;
+  }
+  scheduleAutoStep(after ? 420 : 850);
+}
+function setAutoPlay(on){
+  STATE.autoPlay=!!on; clearAutoTimer(); refreshAutoUI();
+  if(STATE.autoPlay){ t(tr('Auto play started')); scheduleAutoStep(120); }
+  else t(tr('Auto play stopped'));
+}
+
+function loadConfig(){
+  const d = {rtp:89, targetMargin:10, reserve:100000, reserveFloor:0, safety:1.08, buildCash:5000, minBet:1, maxBet:100, penLeft:50, penCenter:100, penRight:50, simPlayers:10, simSpeed:1};
+  try{ const x = JSON.parse(localStorage.getItem('goalRush_final02_secure_cfg')||'null'); return {...d,...x}; }catch(_){ return d; }
+}
+function saveConfig(){ localStorage.setItem('goalRush_final02_secure_cfg', JSON.stringify(CONFIG)); }
+function applyConfigFromInputs(){
+  CONFIG.rtp = clamp(Number(ui.cfgRtp.value||89),1,99);
+  CONFIG.targetMargin = clamp(Number(ui.cfgMargin.value||10),1,60);
+  CONFIG.reserve = Math.max(0, Number(ui.cfgReserve.value||100000));
+  CONFIG.reserveFloor = Math.max(0, Number(ui.cfgReserveFloor.value||0));
+  CONFIG.safety = clamp(Number(ui.cfgSafety.value||1.08),1,2);
+  CONFIG.buildCash = Math.max(0, Number(ui.cfgBuildCash.value||5000));
+  CONFIG.minBet = Math.max(1, Number(ui.cfgMinBet.value||1));
+  CONFIG.maxBet = Math.max(CONFIG.minBet, Number(ui.cfgMaxBet.value||100));
+  CONFIG.penLeft = Math.max(1, Number(ui.cfgPenLeft.value||50));
+  CONFIG.penCenter = Math.max(1, Number(ui.cfgPenCenter.value||100));
+  CONFIG.penRight = Math.max(1, Number(ui.cfgPenRight.value||50));
+  CONFIG.simPlayers = Number(ui.simPlayers.value||10);
+  CONFIG.simSpeed = Number(ui.simSpeed.value||1);
+  saveConfig();
+  refreshPenaltyLabels();
+  renderZones();
+  updateAll();
+  t(tr('Config saved'));
+}
+function fillInputs(){
+  ui.cfgRtp.value=CONFIG.rtp; ui.cfgMargin.value=CONFIG.targetMargin; ui.cfgReserve.value=CONFIG.reserve; ui.cfgReserveFloor.value=CONFIG.reserveFloor;
+  ui.cfgSafety.value=CONFIG.safety; ui.cfgBuildCash.value=CONFIG.buildCash; ui.cfgMinBet.value=CONFIG.minBet; ui.cfgMaxBet.value=CONFIG.maxBet;
+  ui.cfgPenLeft.value=CONFIG.penLeft; ui.cfgPenCenter.value=CONFIG.penCenter; ui.cfgPenRight.value=CONFIG.penRight;
+  ui.simPlayers.value=String(CONFIG.simPlayers); ui.simSpeed.value=String(CONFIG.simSpeed);
+}
+
+function openDeposit(message){
+  if(message) ui.depositLead.textContent = tr(message);
+  else ui.depositLead.textContent = tr('Demo wallet: choose an amount to add to your player balance. A deposit is not casino GGR.');
+  ui.depositStatus.textContent = '';
+  ui.depositOverlay.classList.add('show'); ui.depositOverlay.setAttribute('aria-hidden','false');
+  setTimeout(()=>ui.depositAmount.focus(),30);
+}
+function closeDeposit(){ ui.depositOverlay.classList.remove('show'); ui.depositOverlay.setAttribute('aria-hidden','true'); ui.depositAmount.value=''; }
+function addDeposit(amount){
+  amount = Number(amount);
+  if(!Number.isFinite(amount) || amount <= 0){ ui.depositStatus.textContent=tr('Enter a valid deposit amount.'); return; }
+  amount = Math.min(amount,1000000);
+  STATE.playerBalance += amount; savePlayerBalance(); updateAll(); closeDeposit(); t('Deposit +' + money(amount));
+}
+function maybePromptDeposit(){
+  if(STATE.playerBalance < CONFIG.minBet) setTimeout(()=>openDeposit('Your balance is empty. Add a deposit to continue playing.'),550);
+}
+
+function resetTreasury(){
+  STATE.reserveBalance = CONFIG.reserve;
+  STATE.houseCash = 0;
+  STATE.totalStakes = 0;
+  STATE.totalPayouts = 0;
+  STATE.reserveUsed = 0;
+  STATE.lockedLiability = 0;
+  STATE.accepted = 0;
+  STATE.rejected = 0;
+  STATE.liveRounds = 0;
+  STATE.feed = [];
+  STATE.river = [];
+  STATE.activePlayers = [];
+  STATE.nextPlayerId = 1;
+  updateAll();
+  t(tr('Treasury reset'));
+}
+function realizedMargin(){ return STATE.totalStakes>0 ? (STATE.totalStakes-STATE.totalPayouts)/STATE.totalStakes : 0; }
+function usableReserve(){ return Math.max(0, STATE.reserveBalance - CONFIG.reserveFloor); }
+function freeRiskCapital(){ return Math.max(0, STATE.houseCash + usableReserve() - STATE.lockedLiability); }
+function theoreticalReach(mult){ return clamp((CONFIG.rtp/100)/mult, 0, 1); }
+function currentMode(){
+  const margin = realizedMargin();
+  if(STATE.houseCash < CONFIG.buildCash * 0.25 || STATE.reserveBalance < CONFIG.reserve*0.65) return 'CRITICAL';
+  if(STATE.houseCash < CONFIG.buildCash || margin < CONFIG.targetMargin/100 * 0.75) return 'BUILD';
+  if(STATE.houseCash < CONFIG.buildCash*3 || margin < CONFIG.targetMargin/100) return 'DEFENSIVE';
+  return 'NORMAL';
+}
+function allowedTargets(){
+  const mode = currentMode();
+  const targets = [...RUN_LEVELS];
+  const extras = [];
+  if(mode === 'CRITICAL') return [1.17,1.39,1.72];
+  if(mode === 'BUILD') return [1.17,1.39,1.72,2.25,3.10];
+  if(mode === 'DEFENSIVE') return [1.17,1.39,1.72,2.25,3.10,4.80,8.00];
+  return [1.17,1.39,1.72,2.25,3.10,4.80,8.00, CONFIG.penLeft, CONFIG.penCenter, CONFIG.penRight];
+}
+function weightedTargetChoice(){
+  const arr = allowedTargets().map(m => ({m, w: m<=2 ? 20 : m<=8 ? 8 : 2}));
+  const sum = arr.reduce((a,b)=>a+b.w,0); let r = Math.random()*sum;
+  for(const x of arr){ r -= x.w; if(r<=0) return x.m; }
+  return arr[arr.length-1].m;
+}
+function calcLiability(stake,mult){ return stake * Math.max(0, mult-1) * CONFIG.safety; }
+function maxSafeBet(){
+  const biggest = Math.max(...allowedTargets());
+  const perBet = Math.max(0.01, (biggest-1) * CONFIG.safety);
+  return freeRiskCapital()/perBet;
+}
+function canAccept(stake, mult){ return calcLiability(stake,mult) <= freeRiskCapital(); }
+function settleEconomic(stake,payout){
+  STATE.totalStakes += stake;
+  STATE.totalPayouts += payout;
+  let delta = stake - payout;
+  if(delta >= 0){
+    STATE.houseCash += delta;
+  } else {
+    let need = -delta;
+    if(STATE.houseCash >= need){
+      STATE.houseCash -= need;
+    } else {
+      let shortage = need - STATE.houseCash;
+      STATE.houseCash = 0;
+      let take = Math.min(shortage, STATE.reserveBalance);
+      STATE.reserveBalance -= take;
+      STATE.reserveUsed += take;
+    }
+  }
+}
+
+function shortLiveResult(type, text){
+  if(type !== 'win' && type !== 'loss') return null;
+  const raw = String(text || '');
+  const parts = raw.split(' · ').map(x=>x.trim()).filter(Boolean);
+  const who = parts[0] || 'PLAYER';
+  const multMatch = raw.match(/(\d+(?:\.\d+)?)x/i);
+  const mult = multMatch ? Number(multMatch[1]).toFixed(Number(multMatch[1]) % 1 ? 2 : 0) + 'x' : '';
+  const amountParts = parts.filter(x=>/^[\d,.]+\s*AZN$/i.test(x));
+  const payout = type === 'win' && amountParts.length ? amountParts[amountParts.length-1] : '';
+  return {type, who, mult, payout};
+}
+function shortLiveLabel(type){
+  if(CURRENT_LANG === 'az') return type === 'win' ? 'UDDU' : 'UDUZDU';
+  if(CURRENT_LANG === 'ru') return type === 'win' ? 'ВЫИГРАЛ' : 'ПРОИГРАЛ';
+  return type === 'win' ? 'WON' : 'LOST';
+}
+function renderTicker(){
+  const x = STATE.tickerCurrent;
+  if(!x){
+    ui.tickerInner.innerHTML = `<span class="tickerEmpty">${tr('Waiting for live rounds...')}</span>`;
+    return;
+  }
+  ui.tickerInner.innerHTML = `<span class="tickerResult ${x.type}"><span class="tickerWho">${x.who}</span>${x.mult?`<span class="tickerMult">· ${x.mult}</span>`:''}<span class="tickerStatus">· ${shortLiveLabel(x.type)}</span>${x.payout?`<span class="tickerPayout">· ${x.payout}</span>`:''}</span>`;
+}
+function addFeed(type, text, cashNow){
+  const stamp = new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const item = {type,text,cashNow,stamp};
+  STATE.feed.unshift(item); STATE.feed = STATE.feed.slice(0,60);
+  STATE.river.unshift(item); STATE.river = STATE.river.slice(0,30);
+  const shortItem = shortLiveResult(type, text);
+  if(shortItem){
+    if(!STATE.tickerCurrent) STATE.tickerCurrent = shortItem;
+    else {
+      STATE.buildTicker.push(shortItem);
+      if(STATE.buildTicker.length > 14) STATE.buildTicker.shift();
+    }
+  }
+}
+function renderFeeds(){
+  ui.adminFeed.innerHTML = STATE.feed.map(x=>`<div class="feedItem"><div>${x.text}</div><div class="t">${x.stamp} · House Cash ${money(x.cashNow)}</div></div>`).join('') || '<div class="feedItem">No data yet.</div>';
+  ui.river.innerHTML = STATE.river.map(x=>`<div class="riverItem"><div class="dot ${x.type}"></div><div><b>${x.text}</b><div class="meta">${x.stamp}</div></div><div class="cashNow">${x.type==='win'?'WIN':x.type==='loss'?'LOSS':x.type==='reject'?'WAIT':'LIVE'}</div></div>`).join('') || '<div class="riverItem"><div class="dot play"></div><div><b>Waiting for live rounds...</b><div class="meta">Live results</div></div><div class="cashNow">LIVE</div></div>';
+  renderTicker();
+}
+
+function renderActivePlayers(){
+  ui.activeList.innerHTML = STATE.activePlayers.slice(0,40).map(p=>`<div class="activeItem"><div><b>${p.id}</b> · Bet ${money(p.bet)} · Target ${p.target.toFixed(2)}x</div><div class="t">Liability ${money(p.liability)} · ${p.status}</div></div>`).join('') || '<div class="activeItem">No active players right now.</div>';
+  ui.activeCountTop.textContent = STATE.activePlayers.length;
+}
+function updateAll(skipPersist=false){
+  ui.playerBalance.textContent = money(STATE.playerBalance);
+  ui.playerBalance.classList.toggle('walletEmpty', STATE.playerBalance < CONFIG.minBet);
+  ui.walletHint.textContent = STATE.playerBalance < CONFIG.minBet ? tr('Balance empty · deposit to continue') : tr('Available to play');
+  STATE.mode = currentMode();
+  ui.modeBadge.textContent = tr('Mode: '+STATE.mode);
+  ui.houseCashTop.textContent = money(STATE.houseCash);
+  ui.reserveTop.textContent = money(STATE.reserveBalance);
+  ui.marginTop.textContent = pct(realizedMargin());
+  ui.houseCashAdmin.textContent = money(STATE.houseCash);
+  ui.reserveAdmin.textContent = money(STATE.reserveBalance);
+  ui.stakesAdmin.textContent = money(STATE.totalStakes);
+  ui.payoutAdmin.textContent = money(STATE.totalPayouts);
+  ui.ggrAdmin.textContent = money(STATE.totalStakes-STATE.totalPayouts);
+  ui.marginAdmin.textContent = pct(realizedMargin());
+  ui.reserveUsedAdmin.textContent = money(STATE.reserveUsed);
+  ui.safeBetAdmin.textContent = money(Math.max(0,maxSafeBet()));
+  ui.lockedLiability.textContent = money(STATE.lockedLiability);
+  ui.acceptReject.textContent = STATE.accepted + ' / ' + STATE.rejected;
+  ui.roundCounter.textContent = String(STATE.liveRounds);
+  ui.liveStatus.textContent = STATE.liveRunning ? ('RUNNING · '+Number(ui.simSpeed.value||CONFIG.simSpeed||1)+'x') : 'STOPPED';
+  const riskP = Math.min(100, freeRiskCapital()<=0 ? 100 : (STATE.lockedLiability / (STATE.lockedLiability + freeRiskCapital())) * 100);
+  ui.riskMeter.style.width = riskP.toFixed(1)+'%';
+  renderFeeds();
+  renderActivePlayers();
+  refreshMainDisplay();
+  if(!skipPersist) saveSharedTreasury();
+}
+
+function makeLiveRound(){
+  const playerId = 'P' + String(STATE.nextPlayerId++).padStart(4,'0');
+  const stake = Number((rand(CONFIG.minBet, CONFIG.maxBet)).toFixed(2));
+  const target = weightedTargetChoice();
+  const liability = calcLiability(stake,target);
+  if(!canAccept(stake,target)){
+    STATE.rejected++;
+    addFeed('reject', `${playerId} · ${money(stake)} · ${target.toFixed(2)}x · ${tr('REJECT')}`, STATE.houseCash);
+    updateAll();
+    return;
+  }
+  STATE.accepted++;
+  STATE.liveRounds++;
+  STATE.lockedLiability += liability;
+  const active = {id:playerId, bet:stake, target, liability, status:tr('PLAYING')};
+  STATE.activePlayers.unshift(active); STATE.activePlayers = STATE.activePlayers.slice(0,120);
+  addFeed('play', `${playerId} · ${money(stake)} · ${target.toFixed(2)}x · ${tr('PLAYING')}`, STATE.houseCash);
+  updateAll();
+  const sp = speedProfile();
+  const settleDelay = rand(sp.settleMin, sp.settleMax);
+  setTimeout(()=>{
+    const win = Math.random() < theoreticalReach(target);
+    const payout = win ? stake*target : 0;
+    const liveStageIndex = Math.max(0, RUN_LEVELS.findIndex(x=>x>=target));
+    const liveLossEvent = win ? null : lossEventForStage(liveStageIndex);
+    STATE.lockedLiability = Math.max(0, STATE.lockedLiability - liability);
+    settleEconomic(stake, payout);
+    active.status = win ? tr('WIN') : tr('LOSS');
+    STATE.activePlayers = STATE.activePlayers.filter(x=>x!==active);
+    addFeed(win ? 'win' : 'loss', `${playerId} · ${money(stake)} · ${target.toFixed(2)}x · ${win?tr('WIN'):tr('LOSS')} · ${win?money(payout):(tr(liveLossEvent.key)+' · '+tr(liveLossEvent.detail))}`, STATE.houseCash);
+    updateAll();
+  }, settleDelay);
+}
+let liveTimer = null;
+function speedProfile(){
+  const s = Number(ui.simSpeed.value || CONFIG.simSpeed || 1);
+  if(s >= 10) return {speed:10, tick:450, settleMin:650, settleMax:1300, spawnCap:12};
+  if(s >= 5) return {speed:5, tick:850, settleMin:1100, settleMax:2200, spawnCap:8};
+  if(s >= 2) return {speed:2, tick:1700, settleMin:2200, settleMax:3800, spawnCap:5};
+  return {speed:1, tick:3200, settleMin:3600, settleMax:6200, spawnCap:3};
+}
+function scheduleLiveTick(immediate=false){
+  clearTimeout(liveTimer);
+  const sp = speedProfile();
+  CONFIG.simSpeed = sp.speed;
+  const delay = immediate ? 80 : sp.tick;
+  liveTimer = setTimeout(()=>{
+    if(STATE.liveRunning){
+      CONFIG.simPlayers = Number(ui.simPlayers.value || CONFIG.simPlayers || 10);
+      const missing = Math.max(0, CONFIG.simPlayers - STATE.activePlayers.length);
+      const spawn = Math.min(missing, sp.spawnCap);
+      for(let i=0;i<spawn;i++) makeLiveRound();
+    }
+    scheduleLiveTick(false);
+  }, delay);
+}
+function ensureLiveLoop(){ scheduleLiveTick(true); }
+
+// Main player game
+function flash(a,b,color='white'){ ui.flashBig.textContent=a; ui.flashMini.textContent=b||''; ui.flashBig.style.color=color; ui.flash.classList.add('show'); clearTimeout(flash._); flash._=setTimeout(()=>ui.flash.classList.remove('show'), 1000); }
+function rect(el){return el.getBoundingClientRect()}
+function setAbs(el, x, y){ const r=rect(ui.pitch); el.style.left=(x*r.width-el.offsetWidth/2)+'px'; el.style.top=(y*r.height-el.offsetHeight/2)+'px'; }
+function resetRunPositions(){
+  STATE.ballPos={x:.5,y:.92}; STATE.playerPos={x:.5,y:.96}; ui.player.style.setProperty('--depth','1.08'); ui.player.style.setProperty('--face','1'); setAbs(ui.ball,STATE.ballPos.x,STATE.ballPos.y); setAbs(ui.player,STATE.playerPos.x,STATE.playerPos.y);
+  ui.gk.style.left='calc(50% - 31px)'; ui.gk.style.top='42px';
+  STATE.defenderStates=[]; ui.defs.forEach(d=>d.classList.remove('active','chasing','tackle')); ui.penaltyScene.classList.remove('show','penalty-ready'); ui.pitch.classList.remove('penalty-mode'); ui.penKeeper.className='penKeeper'; ui.player.classList.remove('loss-stumble'); ui.pitch.classList.remove('loss-pulse'); const ol=document.getElementById('offsideLine'); if(ol) ol.classList.remove('show');
+  ui.player.classList.remove('running'); ui.ball.classList.remove('rolling','kicked'); ui.pitch.classList.remove('sprint');
+  resetPenBall();
+}
+function reflowScene(){
+  // Layout-only update. Never clear the active round or defender state here.
+  const pitchRect = rect(ui.pitch);
+  if(!pitchRect.width || !pitchRect.height) return;
+  setAbs(ui.ball, STATE.ballPos.x, STATE.ballPos.y);
+  setAbs(ui.player, STATE.playerPos.x, STATE.playerPos.y);
+  ui.player.style.setProperty('--depth',(.72 + STATE.playerPos.y*.38).toFixed(3));
+
+  STATE.defenderStates.forEach((st,i)=>{
+    const d = ui.defs[i];
+    if(!d) return;
+    d.classList.add('active','chasing');
+    d.style.setProperty('--depth',(.70 + st.y*.34).toFixed(3));
+    d.style.setProperty('--face', st.x < STATE.ballPos.x ? '1' : '-1');
+    setAbs(d, st.x, st.y);
+  });
+  ui.defs.forEach((d,i)=>{
+    if(i >= STATE.defenderStates.length) d.classList.remove('active','chasing','tackle');
+  });
+
+  if(STATE.mainRound && STATE.mainRound.penalty){
+    ui.pitch.classList.add('penalty-mode');
+    ui.penaltyScene.classList.add('show','penalty-ready');
+    if(!STATE.mainRound.penaltyShot){
+      const r = penRect();
+      if(r.width) setPenBall(r.width*.5, Math.min(r.height-70, 500));
+    }
+  }
+  refreshMainDisplay();
+}
+function defendersNeeded(stageIndex){ if(stageIndex<0) return 0; return Math.min(6, stageIndex+1); }
+function resetDefenders(stageIndex){
+  const n = defendersNeeded(stageIndex);
+  STATE.defenderStates=[];
+  ui.defs.forEach((d,i)=>{
+    if(i<n){
+      d.classList.add('active','chasing');
+      const num=d.querySelector('.body-num'); if(num) num.textContent=String(i+1);
+    } else { d.classList.remove('active','chasing','tackle'); }
+  });
+  const baseY = Math.max(.18,.79-stageIndex*.08);
+  for(let i=0;i<n;i++){
+    const side = i%2===0 ? .18+.12*((i/2)|0) : .82-.12*((i/2)|0);
+    const y = clamp(baseY + (i%3)*.05, .14, .88);
+    STATE.defenderStates.push({x:side,y,seed:Math.random()*6.283,speed:.062+Math.min(5,stageIndex+1)*.008+i*.003});
+  }
+  STATE.defenderStates.forEach((s,i)=>{ ui.defs[i].style.setProperty('--depth',(.70+s.y*.34).toFixed(3)); ui.defs[i].style.setProperty('--face',s.x<STATE.ballPos.x?'1':'-1'); setAbs(ui.defs[i],s.x,s.y); });
+}
+function refreshMainDisplay(){
+  const round = STATE.mainRound; const x = round ? (round.current>=0 ? RUN_LEVELS[round.current] : 1) : 1;
+  ui.stakeTop.textContent = money(Number(ui.betInput.value||10));
+  ui.multTop.textContent = x.toFixed(2)+'x';
+  if(!round) ui.stageTop.textContent = tr('Round ready');
+  else if(round.penalty) ui.stageTop.textContent = tr('Penalty bonus');
+  else ui.stageTop.textContent = round.current>=0 ? tr(RUN_NAMES[round.current]) : tr('Start dribble');
+  ui.potentialTop.textContent = money((round ? round.bet : Number(ui.betInput.value||10)) * x);
+  ui.cashBtn.disabled = !round || round.current < 0 || round.locked || round.penaltyShot || round.completed;
+  ui.continueBtn.disabled = !round || round.locked || round.completed || round.penaltyShot;
+  ui.cashBtn.textContent = tr('CASH OUT') + ' · ' + x.toFixed(2)+'x';
+  ui.continueBtn.textContent = round && round.penalty ? tr('SHOOT BONUS') : tr('CONTINUE ↑');
+  qsa('.zone').forEach(z=>{
+    const i=Number(z.dataset.zone);
+    z.classList.toggle('active', round && !round.penalty && i===round.current+1);
+    z.classList.toggle('done', round && !round.penalty && i<=round.current);
+    z.classList.toggle('locked', round && !round.penalty && i>round.current+1);
+  });
+  qsa('.shotZone').forEach(el=>el.classList.toggle('active', el.dataset.shot===STATE.penChoice));
+}
+function pickMainOutcome(){
+  let max=-1;
+  const u=Math.random();
+  for(let i=0;i<RUN_LEVELS.length;i++){
+    if(u <= theoreticalReach(RUN_LEVELS[i])) max=i; else break;
+  }
+  return max;
+}
+function startMainRound(){
+  if(STATE.mainRound) return;
+  const bet = Math.max(CONFIG.minBet, Number(ui.betInput.value||10));
+  if(bet > CONFIG.maxBet){ t(tr('Bet is above max bet')); return; }
+  if(bet > STATE.playerBalance){ openDeposit('Your balance is not enough for this stake. Add a deposit or reduce the stake.'); return; }
+  const maxExposure = Math.max(...allowedTargets());
+  if(!canAccept(bet, maxExposure)){ t(tr('Bet is temporarily unavailable')); return; }
+  STATE.playerBalance -= bet; savePlayerBalance();
+  STATE.mainRound = {bet, maxStage: pickMainOutcome(), current:-1, locked:false, penalty:false, penaltyShot:false, completed:false, liability: calcLiability(bet,maxExposure)};
+  STATE.lockedLiability += STATE.mainRound.liability;
+  resetRunPositions(); ui.player.classList.add('running'); ui.ball.classList.add('rolling'); resetDefenders(0); refreshMainDisplay(); updateAll();
+  flash('GO!', tr('Dribble and continue'));
+  if(!STATE.runRaf){ STATE.lastRunTs=performance.now(); STATE.runRaf=requestAnimationFrame(runLoop); }
+}
+async function animateBallTo(tx,ty,dur=380,arc=.04){
+  const ox=STATE.ballPos.x, oy=STATE.ballPos.y;
+  ui.ball.classList.remove('rolling'); ui.ball.classList.add('kicked'); ui.pitch.classList.add('sprint');
+  return await new Promise(resolve=>{
+    const start=performance.now();
+    function frame(now){
+      const t=clamp((now-start)/dur,0,1); const e=1-Math.pow(1-t,3);
+      STATE.ballPos.x=ox+(tx-ox)*e; STATE.ballPos.y=oy+(ty-oy)*e;
+      setAbs(ui.ball, STATE.ballPos.x, STATE.ballPos.y - Math.sin(t*Math.PI)*arc);
+      if(t<1) requestAnimationFrame(frame); else {
+        setAbs(ui.ball, STATE.ballPos.x, STATE.ballPos.y);
+        ui.ball.classList.remove('kicked'); ui.ball.classList.add('rolling');
+        setTimeout(()=>ui.pitch.classList.remove('sprint'),80);
+        resolve();
+      }
+    } requestAnimationFrame(frame);
+  });
+}
+function syncPlayer(){ const dx=STATE.ballPos.x-STATE.playerPos.x; STATE.playerPos.x += dx*.18; STATE.playerPos.y += (clamp(STATE.ballPos.y+.075,.12,.96)-STATE.playerPos.y)*.18; ui.player.style.setProperty('--lean',clamp(dx*78,-10,10)+'deg'); if(Math.abs(dx)>.008) ui.player.style.setProperty('--face',dx<0?'-1':'1'); const depth=.72 + STATE.playerPos.y*.38; ui.player.style.setProperty('--depth',depth.toFixed(3)); setAbs(ui.player, STATE.playerPos.x, STATE.playerPos.y); }
+async function continueRound(){
+  const r = STATE.mainRound; if(!r || r.locked || r.completed) return;
+  if(r.penalty){ shootPenalty(STATE.penChoice); return; }
+  r.locked=true; refreshMainDisplay();
+  const target = r.current+1;
+  const tx=clamp(STATE.ballPos.x+(Math.random()-.5)*.18,.18,.82); const ty=YS[target];
+  await animateBallTo(tx,ty,420,.045);
+  if(target > r.maxStage){
+    const lossEvent = lossEventForStage(Math.max(0,target));
+    await animateLossVisual(lossEvent);
+    STATE.lockedLiability=Math.max(0, STATE.lockedLiability-r.liability);
+    settleEconomic(r.bet,0);
+    addFeed('loss', `YOU · ${money(r.bet)} · ${tr('LOSS')} · ${tr(lossEvent.key)} · ${tr(lossEvent.detail)}`, STATE.houseCash);
+    r.completed=true; flash(tr(lossEvent.key), tr(lossEvent.detail), 'var(--red)');
+    STATE.mainRound=null; updateAll(); resetRunPositions(); maybePromptDeposit(); return;
+  }
+  r.current = target;
+  resetDefenders(Math.min(target+1, RUN_LEVELS.length-1)); refreshMainDisplay();
+  if(target === RUN_LEVELS.length-1){
+    r.penalty = true;
+    openPenalty();
+    flash('8.00x', tr('Penalty bonus opened'));
+  } else {
+    flash(RUN_LEVELS[target].toFixed(2)+'x', tr('Continue or cash out'), 'var(--lime)');
+  }
+  r.locked=false; updateAll();
+}
+function cashOutMain(){
+  const r = STATE.mainRound; if(!r || r.current<0 || r.locked || r.completed || r.penaltyShot) return;
+  const payout = r.bet * RUN_LEVELS[r.current];
+  STATE.lockedLiability=Math.max(0, STATE.lockedLiability-r.liability);
+  settleEconomic(r.bet,payout);
+  STATE.playerBalance += payout; STATE.lastPlayerPayout = payout; savePlayerBalance();
+  addFeed('win', `YOU · ${money(r.bet)} · CASH OUT ${RUN_LEVELS[r.current].toFixed(2)}x · ${money(payout)}`, STATE.houseCash);
+  flash(tr('CASH OUT'), money(payout), 'var(--green)');
+  STATE.mainRound=null; updateAll(); resetRunPositions();
+}
+function openPenalty(){
+  ui.pitch.classList.add('penalty-mode');
+  ui.penaltyScene.classList.remove('penalty-ready');
+  ui.penaltyScene.classList.add('show');
+  void ui.penaltyScene.offsetWidth; ui.penaltyScene.classList.add('penalty-ready');
+  STATE.penChoice='center'; ui.penKeeper.className='penKeeper'; refreshMainDisplay(); requestAnimationFrame(resetPenBall);
+}
+function refreshPenaltyLabels(){ ui.penTags.left.textContent=CONFIG.penLeft.toFixed(0)+'x'; ui.penTags.center.textContent=CONFIG.penCenter.toFixed(0)+'x'; ui.penTags.right.textContent=CONFIG.penRight.toFixed(0)+'x'; }
+function penRect(){ return rect(ui.penaltyScene); }
+function setPenBall(x,y){ const r=penRect(); const px=clamp(x,48,r.width-48), py=clamp(y,320,r.height-56); ui.penBall.style.left=px+'px'; ui.penBall.style.top=py+'px'; STATE.penBallPos={x:px/r.width,y:py}; }
+function resetPenBall(){ if(!ui.penaltyScene) return; const r=penRect(); if(!r.width) return; setPenBall(r.width*.5, Math.min(r.height-70, 500)); ui.penBall.classList.remove('drag'); }
+function penaltyReach(mult){ return theoreticalReach(mult); }
+function shootPenalty(dir){
+  const r = STATE.mainRound; if(!r || !r.penalty || r.penaltyShot || r.completed) return;
+  r.penaltyShot = true;
+  const multMap = {left:CONFIG.penLeft, center:CONFIG.penCenter, right:CONFIG.penRight};
+  const mult = multMap[dir]; const win = Math.random() < penaltyReach(mult);
+  ui.penKeeper.className = 'penKeeper ' + (win ? (dir==='center'?'dive-left':dir==='left'?'dive-right':'dive-left') : (dir==='center'?'dive-center':dir==='left'?'dive-left':'dive-right'));
+  const sceneR = penRect();
+  const bx = parseFloat(ui.penBall.style.left||sceneR.width/2), by=parseFloat(ui.penBall.style.top||500);
+  const end = dir==='left'?{x:sceneR.width*.22,y:180}:dir==='right'?{x:sceneR.width*.78,y:180}:{x:sceneR.width*.5,y:165};
+  let t0=null;
+  function frame(ts){ if(!t0) t0=ts; const p=Math.min(1,(ts-t0)/520), e=1-Math.pow(1-p,3); const x=bx+(end.x-bx)*e, y=by+(end.y-by)*e - Math.sin(p*Math.PI)*35; ui.penBall.style.left=x+'px'; ui.penBall.style.top=y+'px'; ui.penBall.style.transform=`translate(-50%,-50%) scale(${1-p*.35})`; if(p<1) requestAnimationFrame(frame); else setTimeout(()=>{
+      const payout = win ? r.bet * mult : 0;
+      STATE.lockedLiability=Math.max(0, STATE.lockedLiability-r.liability);
+      settleEconomic(r.bet,payout);
+      if(payout > 0){ STATE.playerBalance += payout; STATE.lastPlayerPayout = payout; savePlayerBalance(); }
+      addFeed(win?'win':'loss', `YOU · ${money(r.bet)} · PENALTY ${dir.toUpperCase()} ${mult.toFixed(0)}x · ${win?tr('WIN'):tr('LOSS')}${win?' · '+money(payout):' · '+tr('KEEPER CLAIM')}`, STATE.houseCash);
+      flash(win?tr('GOAL!'):tr('SAVE'), win?money(payout):tr('No payout'), win?'var(--gold)':'var(--red)');
+      STATE.mainRound=null; updateAll(); resetRunPositions(); maybePromptDeposit();
+    },120); }
+  requestAnimationFrame(frame);
+}
+
+function runLoop(ts){
+  const r=STATE.mainRound; if(!r){ STATE.runRaf=0; return; }
+  const dt=Math.min(.035,(ts-STATE.lastRunTs)/1000); STATE.lastRunTs=ts;
+  if(!r.locked && !r.penalty){
+    syncPlayer();
+    STATE.defenderStates.forEach((st,i)=>{
+      const orbitX=Math.cos(ts/1000 + st.seed)*.012, orbitY=Math.sin(ts/800 + st.seed)*.008;
+      const dx=(STATE.ballPos.x+orbitX)-st.x, dy=(STATE.ballPos.y+orbitY)-st.y, d=Math.max(.001,Math.hypot(dx,dy));
+      st.x += dx/d * st.speed * dt * 2.25; st.y += dy/d * st.speed * dt * 2.25; st.x=clamp(st.x,.06,.94); st.y=clamp(st.y,.08,.94);
+      if(ui.defs[i].classList.contains('active')){
+        ui.defs[i].style.setProperty('--lean',clamp(dx*70,-11,11)+'deg');
+        ui.defs[i].classList.toggle('tackle', d<.092);
+        setAbs(ui.defs[i],st.x,st.y);
+      }
+    });
+  }
+  if(r.penalty && !r.penaltyShot){
+    const scene = penRect();
+    if(scene.width){ const center=scene.width/2, amp=Math.min(80, scene.width*.16); ui.penKeeper.style.left = (center + Math.sin(ts/560)*amp + Math.sin(ts/920)*16) + 'px'; }
+  }
+  STATE.runRaf=requestAnimationFrame(runLoop);
+}
+
+// interactions
+ui.startBtn.addEventListener('click', startMainRound);
+ui.continueBtn.addEventListener('click', continueRound);
+ui.cashBtn.addEventListener('click', cashOutMain);
+
+
+if(ui.autoCashoutSelect) ui.autoCashoutSelect.addEventListener('change',()=>{
+  const v=Number(ui.autoCashoutSelect.value);
+  const allowedAuto = RUN_LEVELS;
+  STATE.autoCashout = allowedAuto.reduce((best,x)=>Math.abs(x-v)<Math.abs(best-v)?x:best, allowedAuto[0]);
+  refreshAutoUI();
+  if(STATE.autoPlay) scheduleAutoStep(120);
+});
+if(ui.autoPlayBtn) ui.autoPlayBtn.addEventListener('click',()=>setAutoPlay(!STATE.autoPlay));
+
+qsa('[data-bet]').forEach(b=>b.addEventListener('click',()=>{ ui.betInput.value=b.dataset.bet; refreshMainDisplay(); }));
+qsa('.shotZone').forEach(el=>el.addEventListener('click',()=>{ STATE.penChoice=el.dataset.shot; refreshMainDisplay(); if(STATE.mainRound && STATE.mainRound.penalty && !STATE.mainRound.penaltyShot) shootPenalty(STATE.penChoice); }));
+
+ui.ball.addEventListener('pointerdown',e=>{ if(!STATE.mainRound || STATE.mainRound.locked || STATE.mainRound.penalty) return; STATE.dragging=true; STATE.pointerId=e.pointerId; ui.ball.classList.remove('rolling'); ui.ball.classList.add('drag'); ui.ball.setPointerCapture?.(e.pointerId); STATE.lastMoves=[{x:e.clientX,y:e.clientY,t:performance.now()}]; });
+ui.ball.addEventListener('pointermove',e=>{ if(!STATE.dragging || e.pointerId!==STATE.pointerId) return; e.preventDefault(); const r=rect(ui.pitch); STATE.ballPos={x:clamp((e.clientX-r.left)/r.width,.05,.95), y:clamp((e.clientY-r.top)/r.height,.10,.96)}; setAbs(ui.ball, STATE.ballPos.x, STATE.ballPos.y); const now=performance.now(); STATE.lastMoves.push({x:e.clientX,y:e.clientY,t:now}); while(STATE.lastMoves.length>8 || (STATE.lastMoves[0] && now-STATE.lastMoves[0].t>180)) STATE.lastMoves.shift(); }, {passive:false});
+function endDragBall(e){ if(!STATE.dragging || e.pointerId!==STATE.pointerId) return; STATE.dragging=false; ui.ball.classList.remove('drag'); if(STATE.mainRound && !STATE.mainRound.penalty) ui.ball.classList.add('rolling'); try{ui.ball.releasePointerCapture?.(STATE.pointerId)}catch(_){} STATE.pointerId=null; if(!STATE.mainRound || STATE.mainRound.locked || STATE.mainRound.penalty) return; const a=STATE.lastMoves[0], b=STATE.lastMoves[STATE.lastMoves.length-1]; if(a&&b && (b.y-a.y)<-65) continueRound(); }
+ui.ball.addEventListener('pointerup', endDragBall); ui.ball.addEventListener('pointercancel', endDragBall);
+
+ui.penBall.addEventListener('pointerdown',e=>{ if(!STATE.mainRound || !STATE.mainRound.penalty || STATE.mainRound.penaltyShot) return; STATE.penDragging=true; STATE.pointerId=e.pointerId; ui.penBall.classList.add('drag'); ui.penBall.setPointerCapture?.(e.pointerId); STATE.penMoves=[{x:e.clientX,y:e.clientY,t:performance.now()}]; });
+ui.penBall.addEventListener('pointermove',e=>{ if(!STATE.penDragging || e.pointerId!==STATE.pointerId) return; e.preventDefault(); const r=penRect(); setPenBall(e.clientX-r.left, e.clientY-r.top); const xNorm = clamp((e.clientX-r.left)/r.width,0,1); STATE.penChoice = xNorm<.36 ? 'left' : xNorm>.64 ? 'right' : 'center'; refreshMainDisplay(); const now=performance.now(); STATE.penMoves.push({x:e.clientX,y:e.clientY,t:now}); while(STATE.penMoves.length>8 || (STATE.penMoves[0] && now-STATE.penMoves[0].t>180)) STATE.penMoves.shift(); }, {passive:false});
+function endPenDrag(e){ if(!STATE.penDragging || e.pointerId!==STATE.pointerId) return; STATE.penDragging=false; ui.penBall.classList.remove('drag'); try{ui.penBall.releasePointerCapture?.(STATE.pointerId)}catch(_){} STATE.pointerId=null; if(!STATE.mainRound || !STATE.mainRound.penalty || STATE.mainRound.penaltyShot) return; const a=STATE.penMoves[0], b=STATE.penMoves[STATE.penMoves.length-1]; if(a&&b && (b.y-a.y)<-50){ const dx=b.x-a.x; if(dx<-20) STATE.penChoice='left'; else if(dx>20) STATE.penChoice='right'; refreshMainDisplay(); shootPenalty(STATE.penChoice); } else resetPenBall(); }
+ui.penBall.addEventListener('pointerup', endPenDrag); ui.penBall.addEventListener('pointercancel', endPenDrag);
+
+ui.startLiveBtn.addEventListener('click',()=>{ STATE.liveRunning=true; scheduleLiveTick(true); updateAll(); t(tr('Live simulation started')); });
+ui.stopLiveBtn.addEventListener('click',()=>{ STATE.liveRunning=false; clearTimeout(liveTimer); updateAll(); t(tr('Live simulation stopped')); });
+ui.saveCfgBtn.addEventListener('click', applyConfigFromInputs);
+ui.resetTreasuryBtn.addEventListener('click', resetTreasury);
+ui.simPlayers.addEventListener('change',()=>{CONFIG.simPlayers=Number(ui.simPlayers.value||10); saveConfig(); scheduleLiveTick(true); t('Players: '+CONFIG.simPlayers);});
+ui.simSpeed.addEventListener('change',()=>{CONFIG.simSpeed=Number(ui.simSpeed.value||1); saveConfig(); scheduleLiveTick(true); t('Speed changed to '+CONFIG.simSpeed+'x');});
+let layoutRaf=0;
+function scheduleSceneReflow(){
+  if(layoutRaf) cancelAnimationFrame(layoutRaf);
+  layoutRaf=requestAnimationFrame(()=>{
+    layoutRaf=0;
+    renderZones();
+    reflowScene();
+  });
+}
+window.addEventListener('resize', scheduleSceneReflow, {passive:true});
+if(window.visualViewport) window.visualViewport.addEventListener('resize', scheduleSceneReflow, {passive:true});
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden && STATE.mainRound){ STATE.lastRunTs=performance.now(); if(STATE.runRaf) cancelAnimationFrame(STATE.runRaf); STATE.runRaf=requestAnimationFrame(runLoop); scheduleSceneReflow(); } });
+
+function positionZones(){
+  if(!ui.pitch) return; const r=rect(ui.pitch); if(!r.height) return;
+  const fractions=[.80,.69,.58,.47,.36,.25,.17];
+  qsa('.zone').forEach((z,i)=>{ if(fractions[i]!=null) z.style.top=Math.round(r.height*fractions[i])+'px'; });
+}
+function renderZones(){ positionZones(); const zoneX=qsa('.zone .zx'); zoneX.forEach((el,i)=>{el.textContent=RUN_LEVELS[i].toFixed(2)+'x';}); }
+
+
+ui.depositBtn.addEventListener('click',()=>openDeposit());
+ui.depositCloseBtn.addEventListener('click',closeDeposit);
+ui.depositOverlay.addEventListener('click',e=>{if(e.target===ui.depositOverlay) closeDeposit();});
+qsa('[data-deposit]').forEach(btn=>btn.addEventListener('click',()=>addDeposit(btn.dataset.deposit)));
+ui.depositConfirmBtn.addEventListener('click',()=>addDeposit(ui.depositAmount.value));
+ui.depositAmount.addEventListener('keydown',e=>{if(e.key==='Enter') addDeposit(ui.depositAmount.value);});
+
+// FINAL navigation — GitHub Pages split mode
+const switchUser = document.getElementById('switchUser');
+const switchAdmin = document.getElementById('switchAdmin');
+const userView = document.getElementById('userView');
+const adminView = document.getElementById('adminView');
+function setView(view){
+  if(PAGE_MODE === 'player') view = 'user';
+  if(PAGE_MODE === 'admin') view = 'admin';
+  const isUser = view === 'user';
+  userView.classList.toggle('active', isUser);
+  adminView.classList.toggle('active', !isUser);
+  if(switchUser){ switchUser.classList.toggle('active', isUser); switchUser.setAttribute('aria-selected', String(isUser)); }
+  if(switchAdmin){ switchAdmin.classList.toggle('active', !isUser); switchAdmin.setAttribute('aria-selected', String(!isUser)); }
+  if(isUser){
+    requestAnimationFrame(()=>{ renderZones(); reflowScene(); });
+  } else {
+    updateAll();
+  }
+}
+let adminUnlocked = false;
+const ADMIN_PIN_SHA256 = '5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5';
+async function sha256Hex(value){
+  const data = new TextEncoder().encode(String(value));
+  const digest = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(digest)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+function openAdminLogin(){
+  document.body.classList.add('admin-locked');
+  ui.adminLoginStatus.textContent=''; ui.adminPasswordInput.value='';
+  ui.adminLoginOverlay.classList.add('show'); ui.adminLoginOverlay.setAttribute('aria-hidden','false');
+  setTimeout(()=>ui.adminPasswordInput.focus(),30);
+}
+function closeAdminLogin(){ ui.adminLoginOverlay.classList.remove('show'); ui.adminLoginOverlay.setAttribute('aria-hidden','true'); }
+async function unlockAdmin(){
+  try{
+    const ok = (await sha256Hex(ui.adminPasswordInput.value)) === ADMIN_PIN_SHA256;
+    if(ok){
+      adminUnlocked=true; document.body.classList.remove('admin-locked'); closeAdminLogin(); setView('admin'); t(tr('Admin unlocked'));
+    } else {
+      ui.adminLoginStatus.textContent=tr('Wrong password.'); ui.adminPasswordInput.select();
+    }
+  }catch(_){ ui.adminLoginStatus.textContent=tr('Wrong password.'); }
+}
+if(switchUser) switchUser.addEventListener('click', ()=>setView('user'));
+if(switchAdmin) switchAdmin.addEventListener('click', ()=>{ if(PAGE_MODE==='player'){ location.href='./admin.html'; return; } if(adminUnlocked) setView('admin'); else openAdminLogin(); });
+ui.adminLoginBtn.addEventListener('click',()=>{ unlockAdmin(); });
+ui.adminPasswordInput.addEventListener('keydown',e=>{if(e.key==='Enter') unlockAdmin();});
+ui.adminLoginCloseBtn.addEventListener('click',()=>{ if(PAGE_MODE==='admin'){ location.href='./index.html'; } else closeAdminLogin(); });
+ui.adminLoginOverlay.addEventListener('click',e=>{ if(e.target===ui.adminLoginOverlay){ if(PAGE_MODE==='admin') location.href='./index.html'; else closeAdminLogin(); }});
+ui.adminLogoutBtn.addEventListener('click',()=>{
+  adminUnlocked=false;
+  if(PAGE_MODE==='admin'){ openAdminLogin(); }
+  else { setView('user'); t(tr('Admin locked')); }
+});
+
+/* Sync demo treasury, config and player wallet across open tabs/windows. */
+window.addEventListener('storage', e=>{
+  try{
+    if(e.key===TREASURY_STATE_KEY && e.newValue){ applySharedTreasury(JSON.parse(e.newValue)); updateAll(true); }
+    if(e.key==='goalRush_final02_secure_cfg' && e.newValue){ Object.assign(CONFIG, JSON.parse(e.newValue)); fillInputs(); refreshPenaltyLabels(); renderZones(); updateAll(true); }
+    if(e.key===PLAYER_BALANCE_KEY && e.newValue!==null){ const n=Number(e.newValue); if(Number.isFinite(n)&&n>=0){ STATE.playerBalance=n; updateAll(true); } }
+  }catch(_){}
+});
+
+// Keep START label synchronized with the visible stake input.
+function refreshStartLabel(){
+  const value = Math.max(CONFIG.minBet, Number(ui.betInput.value || CONFIG.minBet));
+  ui.startBtn.textContent = (CURRENT_LANG==='az'?'RAUNDU BAŞLAT':CURRENT_LANG==='ru'?'НАЧАТЬ РАУНД':'START ROUND') + ' · ' + value.toFixed(value % 1 ? 2 : 0) + ' AZN';
+}
+ui.betInput.addEventListener('input', ()=>{ refreshMainDisplay(); refreshStartLabel(); });
+qsa('[data-bet]').forEach(btn=>btn.addEventListener('click', ()=>setTimeout(refreshStartLabel,0)));
+
+const languageSelect = document.getElementById('languageSelect');
+if(languageSelect) languageSelect.addEventListener('change',()=>applyLanguage(languageSelect.value));
+translateStaticDOM();
+
+fillInputs();
+refreshStartLabel();
+refreshAutoUI();
+setView(PAGE_MODE==='admin' ? 'admin' : 'user');
+refreshPenaltyLabels();
+renderZones();
+resetRunPositions();
+if(PAGE_MODE==='admin') STATE.liveRunning=false;
+updateAll();
+setInterval(()=>{
+  if(STATE.buildTicker.length){
+    STATE.tickerCurrent = STATE.buildTicker.shift();
+    renderTicker();
+  }
+}, 3800);
+if(PAGE_MODE==='player'){ STATE.liveRunning=true; ensureLiveLoop(); }
+applyLanguage(CURRENT_LANG,true);
+if(PAGE_MODE==='admin') openAdminLogin();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+{
+  "name": "Camel Rush",
+  "version": "v1.9.1",
+  "status": "LIVE DEMO",
+  "category": "Race · Crash · Cashout",
+  "description": "Always-on desert race with rising multiplier, Auto Play, Auto Cashout and live-room simulation.",
+  "tags": ["Crash", "Race", "Cashout"],
+  "art": "camel",
+  "order": 10
+}

@@ -1,0 +1,10 @@
+{
+  "name": "Goal Rush",
+  "version": "v6.4.02",
+  "status": "LIVE DEMO",
+  "category": "Football · Run · Cashout",
+  "description": "Football-driven progressive cashout experience with manual play, Auto Play and live-result presentation.",
+  "tags": ["Football", "Cashout", "Auto Play"],
+  "art": "goal",
+  "order": 20
+}

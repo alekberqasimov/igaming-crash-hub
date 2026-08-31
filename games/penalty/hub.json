@@ -1,0 +1,10 @@
+{
+  "name": "Casino Penalty",
+  "version": "v25.14",
+  "status": "LIVE DEMO",
+  "category": "Football · Penalty · Progressive",
+  "description": "Penalty-based progressive prototype with player/admin views, treasury controls and multiplier logic.",
+  "tags": ["Penalty", "Progressive", "Treasury"],
+  "art": "penalty",
+  "order": 30
+}
