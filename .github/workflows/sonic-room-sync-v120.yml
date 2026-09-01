@@ -1,0 +1,56 @@
+name: Sonic Room Sync V1.2
+on:
+  push:
+    paths:
+      - '.github/sonic-room-sync-v120-trigger.txt'
+permissions:
+  contents: write
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Sonic authoritative room bridge
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('games/sonic-rush/index.html')
+          s=p.read_text(encoding='utf-8')
+
+          old="function newRound(){cancelAnimationFrame(raf);clearTimeout(timer);world={id:world.id+1,state:'BETTING',bettingEnds:now()+10000,bust:1,cfg:clone(config),startAt:0,current:1,simBets:[],userBet:null,roomPaid:0,roomStake:0};setWorldState('BETTING');$('[data-mult]').textContent='1.00x';$('[data-status]').textContent=lang==='az'?'Növbəti speed run açıqdır':lang==='ru'?'Следующий speed run открыт':'Next speed run is open';$('[data-result]').hidden=true;$('[data-bet-window]').hidden=false;$('[data-live-action]').classList.remove('show');$('[data-stage]').classList.remove('cashed');animateWorld(.02,1);seedRoom();tryAutoJoin();bettingTick()}"
+          new="function localNewRound(){cancelAnimationFrame(raf);clearTimeout(timer);world={id:world.id+1,state:'BETTING',bettingEnds:now()+10000,bust:1,cfg:clone(config),startAt:0,current:1,simBets:[],userBet:null,roomPaid:0,roomStake:0,roundUid:null};setWorldState('BETTING');$('[data-mult]').textContent='1.00x';$('[data-status]').textContent=lang==='az'?'Növbəti speed run açıqdır':lang==='ru'?'Следующий speed run открыт':'Next speed run is open';$('[data-result]').hidden=true;$('[data-bet-window]').hidden=false;$('[data-live-action]').classList.remove('show');$('[data-stage]').classList.remove('cashed');animateWorld(.02,1);seedRoom();tryAutoJoin();bettingTick()}function newRound(){const r=window.IGCHSonicRoom;if(r&&r.isReady&&r.isReady()&&r.beginEngineRound&&r.beginEngineRound())return;localNewRound()}"
+          if old not in s: raise SystemExit('newRound marker not found')
+          s=s.replace(old,new,1)
+
+          old="function startCountdown(){setWorldState('COUNTDOWN');$('[data-bet-window]').hidden=true;world.bust=bust(world.cfg);let seq=3;const cd=$('[data-countdown]');function flash(){cd.textContent=seq>0?seq:'GO';cd.classList.remove('show');void cd.offsetWidth;cd.classList.add('show');seq--;if(seq>=0)setTimeout(flash,world.cfg.countdownMs/4.2)}flash();setTimeout(startRace,world.cfg.countdownMs)}"
+          new="function localStartCountdown(forcedBust=null,forcedStartAt=null){setWorldState('COUNTDOWN');$('[data-bet-window]').hidden=true;world.bust=Number.isFinite(Number(forcedBust))?Number(forcedBust):bust(world.cfg);let seq=3;const cd=$('[data-countdown]');function flash(){cd.textContent=seq>0?seq:'GO';cd.classList.remove('show');void cd.offsetWidth;cd.classList.add('show');seq--;if(seq>=0)setTimeout(flash,world.cfg.countdownMs/4.2)}flash();const delay=forcedStartAt?Math.max(0,Number(forcedStartAt)-Date.now()):world.cfg.countdownMs;setTimeout(startRace,delay)}function startCountdown(){const r=window.IGCHSonicRoom;if(r&&r.isReady&&r.isReady()&&r.handleEngineCountdown&&r.handleEngineCountdown())return;localStartCountdown()}"
+          if old not in s: raise SystemExit('startCountdown marker not found')
+          s=s.replace(old,new,1)
+
+          marker="function tryAutoJoin(){"
+          bridge="""window.IGCHSonicEngineBridge={
+          getState(){const ub=world.userBet;return{roundUid:world.roundUid||null,state:world.state,userStake:ub?.stake??null,userStatus:ub?(ub.settled?(ub.payout>0?'CASHED_OUT':'LOST'):(world.state==='RUNNING'?'PLAYING':'BETTING')):(world.state==='RUNNING'?'WATCHING':'ONLINE'),userResult:ub?.settled?(ub.payout>0?(ub.cashout?ub.cashout.toFixed(2)+'x':'WON'):'LOST'):''}},
+          openLeaderRound({roundUid,leaderId}){cancelAnimationFrame(raf);clearTimeout(timer);world={id:world.id+1,state:'BETTING',bettingEnds:now()+10000,bust:1,cfg:clone(config),startAt:0,current:1,simBets:[],userBet:null,roomPaid:0,roomStake:0,roundUid};setWorldState('BETTING');$('[data-mult]').textContent='1.00x';$('[data-status]').textContent=lang==='az'?'Növbəti speed run açıqdır':lang==='ru'?'Следующий speed run открыт':'Next speed run is open';$('[data-result]').hidden=true;$('[data-bet-window]').hidden=false;$('[data-live-action]').classList.remove('show');$('[data-stage]').classList.remove('cashed');animateWorld(.02,1);seedRoom();tryAutoJoin();bettingTick();return{roundUid,leaderId,bettingEnds:world.bettingEnds,simBets:world.simBets.map(b=>({name:b.name,stake:b.stake,target:b.target,liability:b.liability})),cfg:{countdownMs:world.cfg.countdownMs,growthRate:world.cfg.growthRate,animationSpeed:world.cfg.animationSpeed,maxMultiplier:world.cfg.maxMultiplier}}},
+          applyRoomOpen(pkt){if(world.state==='RUNNING'||world.state==='COUNTDOWN')return false;cancelAnimationFrame(raf);clearTimeout(timer);world={id:world.id+1,state:'BETTING',bettingEnds:Number(pkt.bettingEnds)||now()+10000,bust:1,cfg:clone(config),startAt:0,current:1,simBets:[],userBet:null,roomPaid:0,roomStake:0,roundUid:pkt.roundUid};setWorldState('BETTING');$('[data-mult]').textContent='1.00x';$('[data-status]').textContent='ROOM SYNC';$('[data-result]').hidden=true;$('[data-bet-window]').hidden=false;$('[data-live-action]').classList.remove('show');$('[data-stage]').classList.remove('cashed');animateWorld(.02,1);for(const x of (pkt.simBets||[])){const st=Number(x.stake)||0,target=Number(x.target)||1,liability=Number(x.liability)||st*target;world.simBets.push({name:String(x.name||'SIM'),stake:st,target,liability,settled:false,payout:0});world.roomStake+=st;metrics.roomStake+=st;finance.openExposure+=liability;acceptStake(st,false)}renderFeed('waiting');tryAutoJoin();bettingTick();return true},
+          setWaitingForRoom(){cancelAnimationFrame(raf);clearTimeout(timer);setWorldState('BETTING');$('[data-status]').textContent='SYNCING ROOM...';$('[data-bet-window]').hidden=true},
+          startLeaderCountdown({leaderId}){setWorldState('COUNTDOWN');$('[data-bet-window]').hidden=true;world.bust=bust(world.cfg);const startAt=Date.now()+world.cfg.countdownMs;localStartCountdown(world.bust,startAt);return{roundUid:world.roundUid,leaderId,bust:world.bust,startAt}},
+          applyRoomCountdown(pkt){if(pkt.roundUid!==world.roundUid)return false;localStartCountdown(Number(pkt.bust),Number(pkt.startAt));return true},
+          setWaitingForCountdown(){setWorldState('BETTING');$('[data-status]').textContent='WAITING ROOM...';$('[data-bet-window]').hidden=true}
+          };
+          """
+          if marker not in s: raise SystemExit('bridge marker not found')
+          s=s.replace(marker,bridge+marker,1)
+
+          s=s.replace("../shared/sonic-global-p2p-room-v1.js?v=1.1.0","../shared/sonic-global-p2p-room-v1.js?v=1.2.0")
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Validate markers
+        run: |
+          grep -q 'IGCHSonicEngineBridge' games/sonic-rush/index.html
+          grep -q 'sonic-global-p2p-room-v1.js?v=1.2.0' games/shared/player-hub-link-v214.js
+      - name: Commit
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add games/sonic-rush/index.html
+          git diff --cached --quiet || (git commit -m 'Sonic v1.2: synchronize room rounds and simulation' && git push)
