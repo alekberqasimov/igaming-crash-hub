@@ -1,0 +1,30 @@
+name: Sonic v1.3 Loader Patch
+on:
+  push:
+    branches: [main]
+    paths: ['.sonic-v13-loader-trigger']
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/sonic-global-timeline-v13
+          fetch-depth: 0
+      - run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('games/sonic-rush/index.html');s=p.read_text()
+          if 'player-hub-link-v216.js?v=2.16' not in s:
+              if 'player-hub-link-v215.js?v=2.15' not in s: raise SystemExit('loader marker missing')
+              s=s.replace('player-hub-link-v215.js?v=2.15','player-hub-link-v216.js?v=2.16',1)
+          p.write_text(s)
+          PY
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add games/sonic-rush/index.html
+          if git diff --cached --quiet; then echo 'Already patched'; exit 0; fi
+          git commit -m 'Load Sonic v1.3 timeline module'
+          git push origin HEAD:feature/sonic-global-timeline-v13
