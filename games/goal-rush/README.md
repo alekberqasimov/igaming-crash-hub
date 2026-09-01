@@ -30,3 +30,9 @@ GitHub Pages is static hosting. The PIN gate is suitable only for a demo UI. For
 - Actual RTP = Total Payout / Total Stake; Actual Margin = 1 - Actual RTP.
 - Payout Budget is House Cash risk budget, not RTP.
 - Admin separates target and actual metrics. Player visuals are unchanged.
+
+## V2.8 Admin Info Audit
+- Every active math/treasury/risk config now has code-accurate AZ/RU/EN info help.
+- Help explicitly distinguishes Target vs Actual, RTP vs Payout Budget, soft risk feedback vs hard limits, and settings that do not change RNG.
+- Explanations were written against each game's current implementation rather than copied generically across games.
+- Player visuals and gameplay are unchanged.
