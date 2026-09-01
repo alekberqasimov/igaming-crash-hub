@@ -1,7 +1,7 @@
 const IGCH_SONIC_P2P = (() => {
   'use strict';
 
-  const VERSION = '1.0.0';
+  const VERSION = '1.0.1';
   const APP_ID = 'az.alekberqasimov.igaming-crash-hub.sonic-pilot.v1';
   const ROOM_ID = 'sonic-global-demo-v1';
   const TRYSTERO_URL = 'https://esm.run/trystero@0.25.4';
@@ -232,10 +232,8 @@ const IGCH_SONIC_P2P = (() => {
       if (!localEngine) rows.push(makeRealRow(local, true));
       for (const remote of remotes) rows.push(makeRealRow(remote.data, false));
 
-      let anchor = localEngine ? localEngine.nextSibling : el.firstChild;
-      for (const row of rows) {
-        el.insertBefore(row, anchor);
-      }
+      const anchor = localEngine ? localEngine.nextSibling : el.firstChild;
+      for (const row of rows) el.insertBefore(row, anchor);
 
       const realCount = 1 + remotes.length;
       const simCount = el.querySelectorAll('.feed-row[data-source="SIM"]').length;
@@ -255,11 +253,21 @@ const IGCH_SONIC_P2P = (() => {
     });
   }
 
+  function isOnlyP2PMutation(records) {
+    if (!records.length) return false;
+    return records.every(record => {
+      if (record.type === 'characterData') return Boolean(record.target.parentElement?.closest?.('[data-igch-p2p]'));
+      const nodes = [...record.addedNodes, ...record.removedNodes].filter(node => node.nodeType === 1);
+      return nodes.length > 0 && nodes.every(node => node.matches?.('[data-igch-p2p]') || node.closest?.('[data-igch-p2p]'));
+    });
+  }
+
   function observeUi() {
     const el = feed();
     if (el && !feedObserver) {
-      feedObserver = new MutationObserver(() => {
-        if (!rendering) scheduleSync();
+      feedObserver = new MutationObserver(records => {
+        if (rendering || isOnlyP2PMutation(records)) return;
+        scheduleSync();
       });
       feedObserver.observe(el, { childList: true, subtree: true, characterData: true });
     }
