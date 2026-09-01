@@ -1,4 +1,4 @@
-name: Live Room Real Player + Full Scroll
+name: Live Room Real Player Full Scroll
 on:
   push:
     paths:
@@ -12,6 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Patch Rush live rooms
+        shell: bash
         run: |
           python3 - <<'PY'
           from pathlib import Path
@@ -22,7 +23,7 @@ jobs:
               'games/Greyhound-Rush/index.html': 'race',
           }
 
-          style = r'''<style id="igch-live-room-real-player-v1">
+          style = '''<style id="igch-live-room-real-player-v1">
           [data-feed]{max-height:248px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;align-content:start;scroll-behavior:smooth}
           [data-feed] .igch-real-player{grid-column:1/-1;position:sticky;top:0;z-index:6;background:rgba(25,215,255,.10);border-top:1px solid rgba(25,215,255,.28);border-bottom:1px solid rgba(25,215,255,.28);box-shadow:0 5px 16px rgba(0,0,0,.18)}
           [data-feed] .igch-real-player b{color:var(--text,#fff)}
@@ -30,53 +31,68 @@ jobs:
           @media(max-width:720px){[data-feed]{max-height:220px}}
           </style>'''
 
+          def js_interp(expr):
+              return '$' + '{' + expr + '}'
+
           def render_function(kind):
-              sim_middle = "${b.stake.toFixed(0)} AZN" if kind == 'sonic' else "${b.stake.toFixed(0)} · ${b.target.toFixed(2)}x"
-              real_middle = "${Number(real.stake||0).toFixed(0)} AZN" if kind == 'sonic' else "${Number(real.stake||0).toFixed(0)}${real.autoCashout?' · '+Number(real.autoCashout).toFixed(2)+'x':''}"
-              sim_win = "`${b.target.toFixed(2)}x`" if kind == 'sonic' else "'WON'"
+              sim_middle = js_interp('b.stake.toFixed(0)') + ' AZN' if kind == 'sonic' else js_interp('b.stake.toFixed(0)') + ' · ' + js_interp('b.target.toFixed(2)') + 'x'
+              real_middle = js_interp('Number(real.stake||0).toFixed(0)') + ' AZN' if kind == 'sonic' else js_interp('Number(real.stake||0).toFixed(0)') + js_interp("real.autoCashout?' · '+Number(real.autoCashout).toFixed(2)+'x':''")
+              sim_win = "`" + js_interp('b.target.toFixed(2)') + "x`" if kind == 'sonic' else "'WON'"
               real_win = "real.cashout?Number(real.cashout).toFixed(2)+'x':'WON'" if kind == 'sonic' else "'WON'"
-              return f'''function renderFeed(mode){{
+              tpl = '''function renderFeed(mode){
           const e=$('[data-feed]');
           const arr=world.simBets;
-          const esc=v=>String(v==null?'':v).replace(/[&<>\"']/g,c=>({{'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}}[c]));
-          let rows=arr.map(b=>{{let state='—',cls='';if((mode==='live'||mode==='done')&&b.settled){{state=b.payout>0?{sim_win}:'LOST';cls=b.payout>0?'win':'loss'}}return`<div class="feed-row" data-source="SIM"><b>${{esc(b.name)}}</b><span>{sim_middle}</span><strong class="${{cls}}">${{state}}</strong></div>`}}).join('');
+          const esc=v=>String(v==null?'':v).replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]));
+          let rows=arr.map(b=>{let state='—',cls='';if((mode==='live'||mode==='done')&&b.settled){state=b.payout>0?__SIMWIN__:'LOST';cls=b.payout>0?'win':'loss'}return`<div class="feed-row" data-source="SIM"><b>__SIMNAME__</b><span>__SIMMID__</span><strong class="__CLS__">__STATE__</strong></div>`}).join('');
           const real=world.userBet;
-          if(real){{
+          if(real){
             const profile=window.IGCHPlayer&&typeof window.IGCHPlayer.getProfile==='function'?window.IGCHPlayer.getProfile():null;
             const realName=profile&&profile.nickname?profile.nickname:'YOU';
             const realId=profile&&profile.id?profile.id:'REAL';
             let state='—',cls='';
-            if(real.settled&&Number(real.payout)>0){{state={real_win};cls='win'}}
-            else if(mode==='done'||world.state==='SETTLED'){{state='LOST';cls='loss'}}
-            rows=`<div class="feed-row igch-real-player" data-source="REAL" data-player-id="${{esc(realId)}}"><b>${{esc(realName)}}<em class="igch-real-badge">REAL</em></b><span>{real_middle}</span><strong class="${{cls}}">${{state}}</strong></div>`+rows;
-          }}
+            if(real.settled&&Number(real.payout)>0){state=__REALWIN__;cls='win'}
+            else if(mode==='done'||world.state==='SETTLED'){state='LOST';cls='loss'}
+            rows=`<div class="feed-row igch-real-player" data-source="REAL" data-player-id="__REALID__"><b>__REALNAME__<em class="igch-real-badge">REAL</em></b><span>__REALMID__</span><strong class="__CLS__">__STATE__</strong></div>`+rows;
+          }
           e.innerHTML=rows;
           const liveCount=$('[data-live-count]');if(liveCount)liveCount.textContent=arr.length+(real?1:0);
-          }}
+          }
           '''
+              repl = {
+                  '__SIMWIN__': sim_win,
+                  '__SIMNAME__': js_interp('esc(b.name)'),
+                  '__SIMMID__': sim_middle,
+                  '__REALWIN__': real_win,
+                  '__REALID__': js_interp('esc(realId)'),
+                  '__REALNAME__': js_interp('esc(realName)'),
+                  '__REALMID__': real_middle,
+                  '__CLS__': js_interp('cls'),
+                  '__STATE__': js_interp('state'),
+              }
+              for a,b in repl.items(): tpl=tpl.replace(a,b)
+              return tpl
 
           for file, kind in targets.items():
               p=Path(file)
               s=p.read_text(encoding='utf-8')
               start=s.find('function renderFeed(mode){')
               if start < 0:
-                  raise SystemExit(f'renderFeed not found: {file}')
+                  raise SystemExit('renderFeed not found: '+file)
               end=s.find('function settleSim', start)
               if end < 0:
-                  raise SystemExit(f'settleSim not found: {file}')
+                  raise SystemExit('settleSim not found: '+file)
               s=s[:start]+render_function(kind)+s[end:]
               if 'igch-live-room-real-player-v1' not in s:
                   pos=s.lower().find('</head>')
-                  if pos < 0:
-                      raise SystemExit(f'</head> not found: {file}')
+                  if pos < 0: raise SystemExit('</head> not found: '+file)
                   s=s[:pos]+style+'\n'+s[pos:]
-              # Once a real bet is accepted, refresh immediately so the player appears before the run starts.
               if "acceptStake(stake,true);renderFeed('waiting');" not in s:
                   s=s.replace("acceptStake(stake,true);toast", "acceptStake(stake,true);renderFeed('waiting');toast")
               p.write_text(s,encoding='utf-8')
               print(file, 'patched')
           PY
       - name: Commit changes
+        shell: bash
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
