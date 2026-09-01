@@ -1,0 +1,61 @@
+IGAMING CRASH HUB — SONIC ROCKET RUSH
+UPDATE VERSION: v1.2.0
+DATE: 2026-09-01
+STATUS: PILOT / TEST
+
+PURPOSE
+- Make connected REAL Sonic testers share one authoritative crash result per synchronized round.
+- Keep GitHub Pages hosting and P2P/WebRTC room discovery.
+- Add a compact visible Room block.
+
+ROOM
+- Room name: SONIC-GLOBAL
+- Automatic join; no Create/Join code required.
+- Compact badge: ROOM · SONIC-GLOBAL · N REAL · SOLO/LEADER/SYNC
+- Existing Player Profile card is NOT the room card and remains separate.
+
+ROUND AUTHORITY
+- With one REAL browser: Sonic keeps its existing local round generation.
+- With 2+ connected REAL peers: deterministic peer leader is selected.
+- Leader uses Sonic's existing bust()/risk model to produce the shared bust value.
+- Followers wait for and consume the leader's authoritative bust value.
+- New-round and state hooks were added for synchronization.
+- If the leader leaves, remaining peers elect the next deterministic leader.
+
+REAL PLAYERS
+- Presence, nickname, stake/status/result continue through the P2P room.
+- Remote REAL players are shown in the live feed.
+
+SIMULATION
+- A SIM snapshot P2P channel is prepared in v1.2 for room presentation.
+- Local financial/risk accounting is NOT replaced by remote SIM financial state in this pilot.
+- This avoids silently changing treasury/liability accounting.
+
+GAME MATH SAFETY
+- Existing bust() formula is retained.
+- Existing riskSnapshot(), RTP, liability, reserve, treasury, payout and cashout formulas are not rewritten.
+- The synchronization layer chooses which peer's existing bust result is authoritative when multiplayer P2P is active.
+- Solo fallback remains local.
+
+FILES
+- games/sonic-rush/index.html
+- games/shared/sonic-global-p2p-room-v12.js
+- games/shared/player-hub-link-v215.js
+- updates/sonic/UPDATE_v1.2.0_2026-09-01.txt
+
+TEST
+1. Open Sonic on laptop and phone using different browsers/devices.
+2. Wait until both show ROOM · SONIC-GLOBAL · 2 REAL.
+3. One device should show LEADER and the other SYNC.
+4. Allow the current pre-connection/local round to finish if necessary.
+5. From the next synchronized round, compare final crash multipliers.
+6. Expected: both devices show the same final bust multiplier.
+7. Test several consecutive rounds.
+8. Close the LEADER browser and verify remaining peer continues in SOLO or elects a new leader if 2+ peers remain.
+
+ROLLBACK
+- Revert the Sonic v1.2 merge commit to return to the previous P2P presence-only pilot.
+
+NOTES
+- P2P discovery still depends on public MQTT/WebRTC infrastructure and is demo/QA architecture, not production casino infrastructure.
+- No secret/API key is embedded.
