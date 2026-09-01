@@ -1,0 +1,32 @@
+IGAMING CRASH HUB — SONIC ROCKET RUSH
+UPDATE VERSION: v1.3.1
+DATE: 2026-09-01
+STATUS: RESPONSIVE PLAYER VIEW UI FIX
+
+CHANGES
+- ROOM / HISTORY controls moved out of the crowded top-actions area.
+- Added dedicated responsive room bar directly below the Sonic header.
+- Desktop/tablet: single compact row.
+- Mobile: automatically compresses labels and spacing.
+- Very small screens: ROOM kicker and long HISTORY label collapse to save width.
+- No horizontal overflow should be introduced by the room controls.
+- Room bar shows SONIC-GLOBAL, REAL player count and SOLO / LEADER / SYNC role.
+- HISTORY button still opens the persistent round history modal.
+- Existing hidden v1.3 room badge remains functional internally but is visually replaced by the responsive bar.
+
+MATH / GAME ENGINE
+- No changes to RTP, bust formula, risk, liability, reserve, treasury, payout, cashout or round synchronization logic.
+
+FILES
+- games/shared/sonic-room-responsive-v131.js
+- games/shared/player-hub-link-v217.js
+- games/sonic-rush/index.html
+- updates/sonic/UPDATE_v1.3.1_2026-09-01.txt
+
+TEST
+1. Open Sonic on desktop, tablet and phone widths.
+2. Confirm ROOM bar is visible directly below header.
+3. Confirm no horizontal clipping or off-screen ROOM controls.
+4. Rotate phone portrait/landscape and verify automatic adjustment.
+5. Tap HISTORY and confirm modal opens.
+6. Confirm P2P REAL count and LEADER/SYNC continue updating.
