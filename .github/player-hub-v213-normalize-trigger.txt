@@ -1,0 +1,2 @@
+Normalize Games Hub navigation script placement.
+Triggered: 2026-09-01
