@@ -1,0 +1,69 @@
+name: Crash Treasury Semantics V2.7b
+on:
+  push:
+    paths:
+      - '.github/crash-treasury-semantics-v27b-trigger.txt'
+permissions:
+  contents: write
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply clear Target and Actual payout semantics
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import json,re
+          repo=Path('games')
+          rush={
+            'camel-rush':('camelrushv2lc_config_v2','camelrushv2lc_finance_v2','camelrushv2lc_lang_v2'),
+            'horse-rush':('horserushv2lc_config_v2','horserushv2lc_finance_v2','horserushv2lc_lang_v2'),
+            'Greyhound-Rush':('greyhoundrushv2lc_config_v2','greyhoundrushv2lc_finance_v2','greyhoundrushv2lc_lang_v2'),
+            'sonic-rush':('sonicrush_config_v2','sonicrush_finance_v2','sonicrush_lang_v2')}
+          tpl=r'''(()=>{'use strict';const M=__META__,R=(k,f)=>{try{return JSON.parse(localStorage.getItem(k))??f}catch{return f}},P=v=>(Number(v||0)*100).toFixed(2)+'%',TX={az:{h:'Hədəf və faktiki payout',m:'Target Profit Margin',r:'Derived Target RTP',b:'Payout Budget',a:'Actual RTP',am:'Actual Margin',mn:'Hədəf operator mənfəətidir — real payout deyil.',rn:'Avtomatik: 1 − Target Profit Margin. Bu target payout/RTP-dir.',bn:'House Cash-in payout riskinə ayrılan hissəsidir — RTP deyil.'},ru:{h:'Target и фактический payout',m:'Target Profit Margin',r:'Derived Target RTP',b:'Payout Budget',a:'Actual RTP',am:'Actual Margin',mn:'Целевая прибыль оператора — не фактический payout.',rn:'Автоматически: 1 − Target Profit Margin. Это target payout/RTP.',bn:'Доля House Cash для payout-risk — это не RTP.'},en:{h:'Target and actual payout',m:'Target Profit Margin',r:'Derived Target RTP',b:'Payout Budget',a:'Actual RTP',am:'Actual Margin',mn:'Operator target profit — not actual payout.',rn:'Automatic: 1 − Target Profit Margin. This is target payout/RTP.',bn:'Share of House Cash for payout risk — not RTP.'}};function L(){const x=(document.querySelector('[data-lang].active')?.dataset.lang||localStorage.getItem(M.lang)||'az').toLowerCase();return TX[x]||TX.az}function run(){const m=document.querySelector('[data-path="targetProfitMargin"]'),b=document.querySelector('[data-path="payoutBudgetPct"]');if(!m)return;const l=L(),mv=Math.max(.01,Math.min(.95,Number(m.value)||.5)),rv=1-mv,bv=Math.max(0,Number(b?.value)||0),f=R(M.finance,{}),s=Number(f.totalStake||0),p=Number(f.totalPayout||0),ar=s?p/s:0,am=s?(s-p)/s:mv;let c=document.querySelector('[data-treasury-v27-clarity]'),host=m.closest('[data-panel="config"]')||m.closest('.panel');if(host&&!c){c=document.createElement('div');c.dataset.treasuryV27Clarity='';c.style.cssText='margin:0 0 12px;padding:12px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.025);font-size:11px;line-height:1.6';(host.querySelector('[data-fields]')||host.firstChild).before(c)}if(c)c.innerHTML='<b>'+l.h+'</b><br>'+l.m+': <strong>'+P(mv)+'</strong> · '+l.r+': <strong>'+P(rv)+'</strong><br>'+l.a+': <strong>'+P(ar)+'</strong> · '+l.am+': <strong>'+P(am)+'</strong><br>'+l.b+': <strong>'+P(bv)+'</strong><br><span style="color:var(--muted)">'+l.mn+' '+l.rn+' '+l.bn+'</span>';const mf=m.closest('.field'),bf=b?.closest('.field');if(mf){let n=mf.querySelector('[data-v27-margin-note]');if(!n){n=document.createElement('small');n.dataset.v27MarginNote='';n.style.cssText='display:block;margin-top:6px;color:var(--muted);line-height:1.4';mf.append(n)}n.textContent=l.mn+' '+l.rn}if(bf){let n=bf.querySelector('[data-v27-budget-note]');if(!n){n=document.createElement('small');n.dataset.v27BudgetNote='';n.style.cssText='display:block;margin-top:6px;color:var(--muted);line-height:1.4';bf.append(n)}n.textContent=l.bn}}document.addEventListener('input',run);document.addEventListener('click',()=>setTimeout(run,0));setInterval(run,800);run()})();'''
+          for slug,(c,f,l) in rush.items():
+            (repo/slug/'treasury-clarity-v27.js').write_text(tpl.replace('__META__',json.dumps({'config':c,'finance':f,'lang':l},separators=(',',':'))))
+
+          # Goal Rush: margin is authoritative; RTP becomes derived/read-only.
+          for fn in ('index.html','admin.html'):
+            p=repo/'goal-rush'/fn;s=p.read_text()
+            s=re.sub(r'CONFIG\.rtp\s*=\s*clamp\(Number\(ui\.cfgRtp\.value\|\|89\),1,99\);\s*CONFIG\.targetMargin\s*=\s*clamp\(Number\(ui\.cfgMargin\.value\|\|10\),1,60\);',"CONFIG.targetMargin = clamp(Number(ui.cfgMargin.value||10),1,60); CONFIG.rtp = clamp(100-CONFIG.targetMargin,1,99);",s,count=1)
+            s=s.replace('ui.cfgRtp.value=CONFIG.rtp; ui.cfgMargin.value=CONFIG.targetMargin;', 'CONFIG.rtp=clamp(100-CONFIG.targetMargin,1,99); ui.cfgRtp.value=CONFIG.rtp; ui.cfgMargin.value=CONFIG.targetMargin;',1)
+            p.write_text(s)
+          goal=r'''(()=>{'use strict';const T={az:['Target Profit Margin, %','Derived Target RTP, %','Hədəf operator mənfəətidir; real payout deyil.','Avtomatik: 100% − Target Profit Margin; target payout/RTP-dir.'],ru:['Target Profit Margin, %','Derived Target RTP, %','Целевая маржа оператора; не фактический payout.','Автоматически: 100% − Target Profit Margin; это target payout/RTP.'],en:['Target Profit Margin, %','Derived Target RTP, %','Operator target margin; not actual payout.','Automatic: 100% − Target Profit Margin; this is target payout/RTP.']};function run(){const m=document.getElementById('cfgMargin'),r=document.getElementById('cfgRtp');if(!m||!r)return;const x=(document.documentElement.lang||'az').toLowerCase(),t=T[x]||T.az,v=Math.max(1,Math.min(60,Number(m.value)||10));r.value=(100-v).toFixed(1);r.readOnly=true;r.style.opacity='.75';const a=m.closest('.field'),b=r.closest('.field');if(a){a.querySelector('label').textContent=t[0];a.title=t[2]}if(b){b.querySelector('label').textContent=t[1];b.title=t[3]}let c=document.querySelector('[data-goal-v27]'),h=m.closest('.formGrid');if(h&&!c){c=document.createElement('div');c.dataset.goalV27='';c.className='field';c.style.gridColumn='1/-1';h.prepend(c)}if(c)c.innerHTML='<label>Target economics</label><b>Target Margin '+v.toFixed(1)+'% ↔ Target RTP '+(100-v).toFixed(1)+'%</b><small style="display:block;margin-top:6px;color:var(--muted)">'+t[2]+' '+t[3]+'</small>'}document.addEventListener('input',e=>{if(e.target.id==='cfgMargin')run()});setInterval(run,700);run()})();'''
+          (repo/'goal-rush'/'treasury-clarity-v27.js').write_text(goal)
+
+          # Casino Penalty: preserve corridor engine, but make target vs actual explicit.
+          pen=r'''(()=>{'use strict';function n(e){const x=parseFloat(String(e?.textContent||'').replace(',','.'));return Number.isFinite(x)?x:null}function run(){const a=document.getElementById('set-payoutMin'),b=document.getElementById('set-payoutMax');if(!a||!b)return;const mn=Number(a.value)||90,mx=Number(b.value)||95,rtp=(mn+mx)/2,margin=100-rtp,ar=n(document.getElementById('mRtp')),am=n(document.getElementById('mMargin'));let c=document.querySelector('[data-pen-v27]'),h=a.closest('.settings-grid')||a.closest('.cms-section')||a.parentElement?.parentElement;if(h&&!c){c=document.createElement('div');c.dataset.penV27='';c.style.cssText='grid-column:1/-1;padding:12px;border:1px solid var(--line);border-radius:12px;background:#ffffff05;font-size:11px;line-height:1.65';h.prepend(c)}if(c)c.innerHTML='<b>Target vs Actual</b><br>Target RTP corridor: <strong>'+mn.toFixed(1)+'–'+mx.toFixed(1)+'%</strong> · midpoint <strong>'+rtp.toFixed(2)+'%</strong><br>Derived Target Profit Margin: <strong>'+margin.toFixed(2)+'%</strong><br>Actual RTP: <strong>'+(ar===null?'—':ar.toFixed(2)+'%')+'</strong> · Actual Margin: <strong>'+(am===null?'—':am.toFixed(2)+'%')+'</strong><br><span style="color:var(--muted)">Target is the model goal; Actual is realized settled-bet performance. RTP min/max is not actual payout.</span>'}document.addEventListener('input',run);setInterval(run,900);run()})();'''
+          (repo/'penalty'/'treasury-clarity-v27.js').write_text(pen)
+
+          # Admin-only injection. Some generated admin files intentionally omit closing body/html, so append safely.
+          for slug in list(rush)+['goal-rush','penalty']:
+            p=repo/slug/'admin.html';s=p.read_text();s=re.sub(r'<script src="treasury-clarity-v27\.js[^>]*></script>','',s,flags=re.I);s+='\n<script src="treasury-clarity-v27.js?v=2.7.1"></script>\n';p.write_text(s)
+            rp=repo/slug/'README.md'
+            if rp.exists():
+              r=rp.read_text()
+              if 'V2.7 Target / Actual Semantics' not in r:r+='\n## V2.7 Target / Actual Semantics\n- Target Profit Margin is a target, not realized payout.\n- Derived Target RTP = 1 - Target Profit Margin where margin is authoritative.\n- Actual RTP = Total Payout / Total Stake; Actual Margin = 1 - Actual RTP.\n- Payout Budget is House Cash risk budget, not RTP.\n- Admin separates target and actual metrics. Player visuals are unchanged.\n'
+              rp.write_text(r)
+          PY
+      - name: Validate
+        shell: bash
+        run: |
+          set -euo pipefail
+          for f in games/camel-rush/treasury-clarity-v27.js games/horse-rush/treasury-clarity-v27.js games/Greyhound-Rush/treasury-clarity-v27.js games/sonic-rush/treasury-clarity-v27.js games/goal-rush/treasury-clarity-v27.js games/penalty/treasury-clarity-v27.js; do node --check "$f"; done
+          for f in games/camel-rush/admin.html games/horse-rush/admin.html games/Greyhound-Rush/admin.html games/sonic-rush/admin.html games/goal-rush/admin.html games/penalty/admin.html; do grep -q 'treasury-clarity-v27.js?v=2.7.1' "$f"; done
+          grep -Eq 'CONFIG\.rtp\s*=\s*clamp\(100-CONFIG\.targetMargin' games/goal-rush/admin.html
+          grep -Eq 'CONFIG\.rtp\s*=\s*clamp\(100-CONFIG\.targetMargin' games/goal-rush/index.html
+          grep -q 'targetRtp=1-margin' games/horse-rush/continuous-engine.js
+      - name: Commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add games
+          git commit -m 'Crash V2.7: clarify Target Margin, Target RTP, Actual RTP and Payout Budget'
+          git push
