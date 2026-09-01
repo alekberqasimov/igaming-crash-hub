@@ -1,10 +1,10 @@
 const IGCH_SONIC_P2P = (() => {
   'use strict';
 
-  const VERSION = '1.0.1';
+  const VERSION = '1.1.0';
   const APP_ID = 'az.alekberqasimov.igaming-crash-hub.sonic-pilot.v1';
   const ROOM_ID = 'sonic-global-demo-v1';
-  const TRYSTERO_URL = 'https://esm.run/trystero@0.25.4';
+  const TRYSTERO_URL = 'https://esm.run/@trystero-p2p/mqtt@0.25.4';
   const HEARTBEAT_MS = 5000;
   const STALE_MS = 22000;
   const GAME = 'sonic-rush';
