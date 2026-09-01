@@ -1,0 +1,50 @@
+IGAMING CRASH HUB — SONIC ROCKET RUSH
+UPDATE VERSION: v1.3.5
+DATE: 2026-09-01
+STATUS: CANONICAL ROOM CONFIG SYNC
+
+PURPOSE
+Admin SAVE is the source of truth for Sonic runtime configuration across connected SONIC-GLOBAL peers.
+
+BEHAVIOR
+- Admin continues using human percentage input: 7 = 7% margin, RTP = 93%.
+- Native Admin SAVE persists sonicrush_config_v2 and increments configVersion.
+- v1.3.5 stamps the saved config with roomConfigUpdatedAt and roomConfigSource=ADMIN.
+- Admin joins the same SONIC-GLOBAL P2P room and broadcasts the saved config.
+- Player View joins the config channel automatically through player-hub-link-v221.js.
+- Connected peers compare roomConfigUpdatedAt first, then configVersion.
+- A newer canonical config replaces the local Sonic config.
+- The existing safe config reload layer applies the received config at a safe round boundary rather than interrupting an active local bet.
+- Peers send their latest canonical config to newly joined peers.
+- A custom Admin SAVE is never overwritten by the 7%/93% code default merely because the page reloads.
+
+PRIORITY
+1. Latest Admin SAVE / canonical room config.
+2. Previously stored custom config.
+3. Default 7% margin / 93% RTP only when no newer custom room config exists.
+
+FILES
+- games/shared/sonic-room-config-sync-v135.js
+- games/shared/player-hub-link-v221.js
+- games/sonic-rush/admin-percent-config-v135.js
+- games/sonic-rush/index.html
+- games/sonic-rush/admin.html
+- updates/sonic/UPDATE_v1.3.5_2026-09-01.txt
+
+MATH SAFETY
+- This release does not rewrite the bust formula.
+- RTP, margin, liability, reserve, treasury, payout and cashout formulas remain the same.
+- The change ensures every connected Sonic peer feeds the same saved configuration into the existing model.
+
+TEST
+1. Open Sonic Player on two devices and wait for the shared room connection.
+2. Open Sonic Admin on one device.
+3. Set Margin 7 (RTP 93) and SAVE.
+4. Let active rounds finish if necessary.
+5. Both Player devices should reload/apply the same config safely.
+6. Change Margin to 12 (RTP 88) and SAVE.
+7. Both connected Player devices must converge to 12% / 88% for subsequent rounds.
+8. Reopen Admin: the custom 12/88 SAVE must remain and must not be reset to default 7/93.
+
+LIMITATION
+P2P is not permanent server storage. A config can propagate globally only while at least one peer carrying that canonical config is reachable. Same-browser localStorage remains persistent.
