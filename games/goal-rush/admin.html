@@ -955,8 +955,7 @@ function loadConfig(){
 }
 function saveConfig(){ localStorage.setItem('goalRush_final02_secure_cfg', JSON.stringify(CONFIG)); }
 function applyConfigFromInputs(){
-  CONFIG.rtp = clamp(Number(ui.cfgRtp.value||89),1,99);
-  CONFIG.targetMargin = clamp(Number(ui.cfgMargin.value||10),1,60);
+  CONFIG.targetMargin = clamp(Number(ui.cfgMargin.value||10),1,60); CONFIG.rtp = clamp(100-CONFIG.targetMargin,1,99);
   CONFIG.reserve = Math.max(0, Number(ui.cfgReserve.value||100000));
   CONFIG.reserveFloor = Math.max(0, Number(ui.cfgReserveFloor.value||0));
   CONFIG.safety = clamp(Number(ui.cfgSafety.value||1.08),1,2);
@@ -975,7 +974,7 @@ function applyConfigFromInputs(){
   t(tr('Config saved'));
 }
 function fillInputs(){
-  ui.cfgRtp.value=CONFIG.rtp; ui.cfgMargin.value=CONFIG.targetMargin; ui.cfgReserve.value=CONFIG.reserve; ui.cfgReserveFloor.value=CONFIG.reserveFloor;
+  CONFIG.rtp=clamp(100-CONFIG.targetMargin,1,99); ui.cfgRtp.value=CONFIG.rtp; ui.cfgMargin.value=CONFIG.targetMargin; ui.cfgReserve.value=CONFIG.reserve; ui.cfgReserveFloor.value=CONFIG.reserveFloor;
   ui.cfgSafety.value=CONFIG.safety; ui.cfgBuildCash.value=CONFIG.buildCash; ui.cfgMinBet.value=CONFIG.minBet; ui.cfgMaxBet.value=CONFIG.maxBet;
   ui.cfgPenLeft.value=CONFIG.penLeft; ui.cfgPenCenter.value=CONFIG.penCenter; ui.cfgPenRight.value=CONFIG.penRight;
   ui.simPlayers.value=String(CONFIG.simPlayers); ui.simSpeed.value=String(CONFIG.simSpeed);
@@ -1578,3 +1577,5 @@ if(PAGE_MODE==='admin') openAdminLogin();
 </script>
 </body>
 </html>
+
+<script src="treasury-clarity-v27.js?v=2.7.1"></script>

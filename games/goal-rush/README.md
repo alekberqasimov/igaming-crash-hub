@@ -23,3 +23,10 @@ Admin: `https://USERNAME.github.io/REPOSITORY/admin.html`
 ## Security note
 
 GitHub Pages is static hosting. The PIN gate is suitable only for a demo UI. For production, authentication, RNG/math, wallet and operator controls should be server-side.
+
+## V2.7 Target / Actual Semantics
+- Target Profit Margin is a target, not realized payout.
+- Derived Target RTP = 1 - Target Profit Margin where margin is authoritative.
+- Actual RTP = Total Payout / Total Stake; Actual Margin = 1 - Actual RTP.
+- Payout Budget is House Cash risk budget, not RTP.
+- Admin separates target and actual metrics. Player visuals are unchanged.

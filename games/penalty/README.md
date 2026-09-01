@@ -17,3 +17,10 @@ PIN: `12345`
 Both pages use the same browser `localStorage` on the same GitHub Pages origin, so demo balances/config/treasury state are shared in the same browser.
 
 > Demo only: a static GitHub Pages PIN is not production authentication. Real production admin/authentication and game engine controls must live server-side.
+
+## V2.7 Target / Actual Semantics
+- Target Profit Margin is a target, not realized payout.
+- Derived Target RTP = 1 - Target Profit Margin where margin is authoritative.
+- Actual RTP = Total Payout / Total Stake; Actual Margin = 1 - Actual RTP.
+- Payout Budget is House Cash risk budget, not RTP.
+- Admin separates target and actual metrics. Player visuals are unchanged.

@@ -84,3 +84,10 @@ No statement, metric, simulated RTP, simulated GGR, treasury result or user outc
 - When a Player page is active, Admin follows that live engine instead of creating duplicate rounds.
 - A wall-clock catch-up keeps the static GitHub Pages demo continuous after browser throttling/navigation.
 - Liability Coverage ON/OFF and existing player visual/animation design are unchanged.
+
+## V2.7 Target / Actual Semantics
+- Target Profit Margin is a target, not realized payout.
+- Derived Target RTP = 1 - Target Profit Margin where margin is authoritative.
+- Actual RTP = Total Payout / Total Stake; Actual Margin = 1 - Actual RTP.
+- Payout Budget is House Cash risk budget, not RTP.
+- Admin separates target and actual metrics. Player visuals are unchanged.
