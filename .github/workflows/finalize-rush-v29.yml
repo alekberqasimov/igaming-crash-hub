@@ -1,0 +1,38 @@
+name: Finalize Rush V2.9
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/rush-v29-finalize-trigger.txt'
+permissions:
+  contents: write
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Finalize consistency and versions
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import json
+          dirs=[Path('games/camel-rush'),Path('games/horse-rush'),Path('games/Greyhound-Rush'),Path('games/sonic-rush')]
+          camel=Path('games/camel-rush/index.html')
+          s=camel.read_text(encoding='utf-8')
+          s=s.replace('reserveDraw = Math.min(this.finance.reserve, due);','reserveDraw = Math.min(this.finance.reserve * this.config.usableReservePct, due);')
+          camel.write_text(s,encoding='utf-8')
+          assert 'this.finance.reserve * this.config.usableReservePct' in camel.read_text(encoding='utf-8')
+          for d in dirs:
+              p=d/'hub.json'
+              data=json.loads(p.read_text(encoding='utf-8'))
+              data['version']='2.9'
+              p.write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          PY
+      - name: Commit changes
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add games/camel-rush/index.html games/camel-rush/hub.json games/horse-rush/hub.json games/Greyhound-Rush/hub.json games/sonic-rush/hub.json
+          if git diff --cached --quiet; then echo "No changes"; else git commit -m "Rush V2.9: finalize usable reserve and metadata" && git push; fi
