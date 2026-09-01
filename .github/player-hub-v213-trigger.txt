@@ -1,0 +1,2 @@
+Install shared Games Hub navigation on all Player Views.
+Triggered: 2026-09-01
