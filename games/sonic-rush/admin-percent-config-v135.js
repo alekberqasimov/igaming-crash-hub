@@ -1,0 +1,15 @@
+(()=>{'use strict';
+const VERSION='1.3.5',KEY='sonicrush_config_v2';
+const $=(s,r=document)=>r.querySelector(s);
+function clamp(n,a,b){n=Number(n);return Number.isFinite(n)?Math.min(b,Math.max(a,n)):a}
+function marginInput(){return $('[data-path="targetProfitMargin"]')}
+function ensureSync(){if(window.IGCHSonicRoomConfig||document.querySelector('script[data-sonic-room-config-v135]'))return;const s=document.createElement('script');s.src='../shared/sonic-room-config-sync-v135.js?v=1.3.5';s.async=false;s.dataset.sonicRoomConfigV135='';document.head.appendChild(s)}
+function ensureRtpField(){const m=marginInput();if(!m)return null;let r=$('[data-sonic-target-rtp-percent]');if(r)return r;const mf=m.closest('.field');if(!mf)return null;r=document.createElement('div');r.className='field';r.dataset.sonicTargetRtpPercent='';r.innerHTML='<label>Target RTP % <span style="color:var(--cyan);font-size:10px">AUTO</span></label><input data-target-rtp-percent type="number" min="5" max="99" step="0.1" inputmode="decimal"><small style="display:block;margin-top:6px;color:var(--muted);line-height:1.4">Enter 93 for 93%. Margin and RTP always total 100%.</small>';mf.insertAdjacentElement('afterend',r);const inp=$('[data-target-rtp-percent]',r);inp.addEventListener('input',()=>{const mm=marginInput();if(!mm)return;const rtp=clamp(inp.value,5,99);mm.value=(100-rtp).toFixed(2).replace(/\.00$/,'')});return r}
+function toPercentUI(){const m=marginInput();if(!m)return;ensureRtpField();if(document.activeElement!==m){const raw=Number(m.value);if(Number.isFinite(raw)&&raw<=1)m.value=(raw*100).toFixed(2).replace(/\.00$/,'')}const rv=$('[data-target-rtp-percent]');if(rv&&document.activeElement!==rv){const mp=clamp(m.value,1,95);rv.value=(100-mp).toFixed(2).replace(/\.00$/,'')}m.min='1';m.max='95';m.step='0.1';m.inputMode='decimal';const label=m.closest('.field')?.querySelector('label');if(label&&!/%/.test(label.textContent))label.childNodes[0].nodeValue='Target Profit Margin % '}
+function beforeSave(){const m=marginInput();if(!m)return;const pct=clamp(m.value,1,95);m.value=String(pct/100)}
+function read(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch{return{}}}
+function afterSave(){setTimeout(()=>{toPercentUI();window.dispatchEvent(new CustomEvent('igch:sonic:admin-config-saved',{detail:{version:VERSION}}));setTimeout(()=>window.IGCHSonicRoomConfig?.publish?.(),100)},20)}
+document.addEventListener('input',e=>{if(e.target===marginInput()){const rv=$('[data-target-rtp-percent]');if(rv){const mp=clamp(e.target.value,1,95);rv.value=(100-mp).toFixed(2).replace(/\.00$/,'')}}});
+document.addEventListener('click',e=>{const save=e.target.closest?.('[data-save]');if(save){beforeSave();afterSave()}const defs=e.target.closest?.('[data-defaults]');if(defs)setTimeout(()=>{toPercentUI();window.dispatchEvent(new CustomEvent('igch:sonic:admin-config-saved',{detail:{version:VERSION,defaults:true}}))},30)},true);
+setInterval(toPercentUI,350);ensureSync();toPercentUI();window.IGCHSonicPercentConfig={version:VERSION,refresh:toPercentUI,read};
+})();
