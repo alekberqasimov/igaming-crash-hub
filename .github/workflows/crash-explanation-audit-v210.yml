@@ -1,0 +1,97 @@
+name: Crash Explanation Audit V2.10
+on:
+  push:
+    paths:
+      - '.github/crash-explanation-audit-v210-trigger.txt'
+permissions:
+  contents: write
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply code-accurate explanations
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re, json
+
+          rush=['camel-rush','horse-rush','Greyhound-Rush','sonic-rush']
+          # 1) Rush family: make the audited V2.9 info dictionary authoritative.
+          for slug in rush:
+              admin=Path('games')/slug/'admin.html'
+              s=admin.read_text()
+              tag='<script src="../shared/rush-admin-info-v29.js?v=2.10"></script>'
+              s=re.sub(r'<script src="\.\./shared/rush-admin-info-v29\.js[^>]*></script>','',s,flags=re.I)
+              pos=s.lower().rfind('</body>')
+              if pos<0: pos=s.lower().rfind('</html>')
+              if pos<0: raise SystemExit(f'{slug}: cannot inject audited Rush info')
+              s=s[:pos]+tag+s[pos:]
+              admin.write_text(s)
+
+              # Remove the old contradictory claim from any legacy/embedded Admin text in Player HTML.
+              idx=Path('games')/slug/'index.html'
+              x=idx.read_text()
+              replacements={
+                'Player outcomes are never changed by treasury status. Limits control exposure.':'Treasury V2 changes the NEXT round probability profile through Risk Pressure → Effective RTP. The active round remains locked at start; hard exposure limits are separate.',
+                'Xəzinə vəziyyəti oyunçu nəticəsini dəyişmir. Exposure limitlərlə idarə olunur.':'Treasury V2 NÖVBƏTİ raundun ehtimal profilini Risk Pressure → Effective RTP vasitəsilə dəyişir. Aktiv raund startda kilidlənir; hard exposure limitləri ayrıca işləyir.',
+                'Состояние казны не меняет исход игрока. Экспозиция управляется лимитами.':'Treasury V2 меняет вероятностный профиль СЛЕДУЮЩЕГО раунда через Risk Pressure → Effective RTP. Активный раунд фиксируется при старте; hard exposure limits работают отдельно.',
+                'Demo fairness: every round outcome is locked before the race. House cash or player history does not change an active outcome.':'Demo rule: each round outcome is locked at start. Treasury V2 may adapt the NEXT round probability profile via Effective RTP; it never rewrites an already active round.',
+                'Demo fairness: hər raundun nəticəsi yarışdan əvvəl kilidlənir. House cash və ya oyunçu tarixçəsi aktiv nəticəni dəyişmir.':'Demo qaydası: hər raund startda kilidlənir. Treasury V2 Effective RTP vasitəsilə yalnız NÖVBƏTİ raundun ehtimal profilini adaptasiya edə bilər; aktiv raund yenidən yazılmır.',
+                'Демо-честность: исход каждого раунда фиксируется до гонки. House cash или история игрока не меняют активный исход.':'Демо-правило: исход раунда фиксируется при старте. Treasury V2 через Effective RTP может адаптировать только вероятностный профиль СЛЕДУЮЩЕГО раунда; активный раунд не переписывается.'
+              }
+              for a,b in replacements.items(): x=x.replace(a,b)
+              idx.write_text(x)
+
+          # 2) Goal Rush: replace the vague Build Cash explanation with the actual mode logic.
+          gp=Path('games/goal-rush/admin-info-v28.js'); g=gp.read_text()
+          old_az='House Cash üçün mode threshold-dur. Cari House Cash və faktiki margin bu target ilə birlikdə CRITICAL/BUILD/DEFENSIVE/NORMAL mode seçir; mode allowed multiplier target-ləri məhdudlaşdıra bilər.'
+          new_az='House Cash üçün rejim threshold-dur və outcome target selection-a real təsir edir. Cari kod: CRITICAL əgər House Cash < Build Target × 25% VƏ YA Reserve < Reserve Capital × 65%; BUILD əgər House Cash < Build Target VƏ YA Actual Margin < Target Margin × 75%; DEFENSIVE əgər House Cash < Build Target × 3 VƏ YA Actual Margin < Target Margin; əks halda NORMAL. Rejim allowed multiplier target-ləri məhdudlaşdırır.'
+          old_ru='Mode-threshold для House Cash. Текущий House Cash и фактическая margin вместе с ним выбирают CRITICAL/BUILD/DEFENSIVE/NORMAL; mode может ограничивать allowed multiplier targets.'
+          new_ru='Mode-threshold для House Cash, реально влияющий на outcome target selection. Текущий код: CRITICAL если House Cash < Build Target × 25% ИЛИ Reserve < Reserve Capital × 65%; BUILD если House Cash < Build Target ИЛИ Actual Margin < Target Margin × 75%; DEFENSIVE если House Cash < Build Target × 3 ИЛИ Actual Margin < Target Margin; иначе NORMAL. Режим ограничивает allowed multiplier targets.'
+          old_en='House Cash mode threshold. Current House Cash and actual margin use it to choose CRITICAL/BUILD/DEFENSIVE/NORMAL; the mode can restrict allowed multiplier targets.'
+          new_en='House Cash mode threshold that directly affects outcome target selection. Current code: CRITICAL if House Cash < Build Target × 25% OR Reserve < Reserve Capital × 65%; BUILD if House Cash < Build Target OR Actual Margin < Target Margin × 75%; DEFENSIVE if House Cash < Build Target × 3 OR Actual Margin < Target Margin; otherwise NORMAL. The mode restricts allowed multiplier targets.'
+          for a,b in [(old_az,new_az),(old_ru,new_ru),(old_en,new_en)]:
+              if a not in g: raise SystemExit('Goal Rush expected Build Cash text missing')
+              g=g.replace(a,b,1)
+          gp.write_text(g)
+
+          # 3) Casino Penalty: correct version wording and remove misleading "protection" naming from info title.
+          pp=Path('games/penalty/admin-info-v28.js'); p=pp.read_text()
+          p=p.replace('Cari v25.12 modelində accepted bet RNG-ni dəyişmir.','Cari professional modeldə accepted bet RNG-ni dəyişmir.')
+          p=p.replace('В текущем v25.12 RNG принятой ставки не меняет.','В текущей professional model RNG принятой ставки не меняет.')
+          p=p.replace('In current v25.12 it does not change accepted-bet RNG.','In the current professional model it does not change accepted-bet RNG.')
+          p=p.replace('Cari v25.12-də Treasury dashboard üçün target/warning səviyyəsidir. Accepted-round RNG-ni dəyişmir; House Cash aşağı olduqda risk status/hesabatı göstərir.','Cari professional modeldə bu, Treasury dashboard üçün target/warning səviyyəsidir. Accepted-round RNG-ni dəyişmir; House Cash aşağı olduqda status/hesabat reference-i kimi işləyir.')
+          p=p.replace('В текущем v25.12 это Treasury target/warning level для dashboard. RNG принятого раунда не меняет; показывает risk status при низком House Cash.','В текущей professional model это Treasury target/warning level для dashboard. RNG принятого раунда не меняет; используется как status/reporting reference при низком House Cash.')
+          p=p.replace('In current v25.12 this is a Treasury target/warning level for the dashboard. It does not change accepted-round RNG; it flags risk status when House Cash is low.','In the current professional model this is a Treasury target/warning level for the dashboard. It does not change accepted-round RNG; it is a status/reporting reference when House Cash is low.')
+          p=p.replace('["Cash Protection Target"','["Treasury Target / Warning Level"')
+          pp.write_text(p)
+
+          # 4) Repository audit log.
+          audit=Path('docs/CRASH_ADMIN_EXPLANATION_AUDIT_V2_10.md')
+          audit.parent.mkdir(parents=True,exist_ok=True)
+          audit.write_text('''# Crash Admin Explanation Audit — V2.10\n\nDate: 2026-09-01\n\n## Scope\nReviewed the active Admin explanations against the current implementation in the crash/progressive games.\n\n## Corrected\n\n### Camel Rush\n- Replaced the contradictory claim that Treasury does not affect outcomes.\n- Clarified: active round is locked; Treasury V2 adapts the NEXT round via Risk Pressure -> Effective RTP.\n- Installed the audited shared Rush AZ/RU/EN info dictionary.\n\n### Horse Rush\n- Same Treasury V2 / Liability wording correction.\n- Installed the audited shared Rush AZ/RU/EN info dictionary.\n\n### Greyhound Rush\n- Same Treasury V2 / Liability wording correction.\n- Installed the audited shared Rush AZ/RU/EN info dictionary.\n\n### Sonic Rush\n- Same Treasury V2 / Liability wording correction.\n- Installed the audited shared Rush AZ/RU/EN info dictionary.\n\n### Goal Rush\n- Build Cash Target explanation expanded to the actual CRITICAL / BUILD / DEFENSIVE / NORMAL conditions.\n- Explicitly states that the mode changes allowed outcome multiplier targets.\n\n### Casino Penalty\n- Removed stale v25.12 wording from Admin help.\n- Renamed the misleading info title Cash Protection Target to Treasury Target / Warning Level.\n- Clarified that this parameter is a dashboard/status reference and does NOT steer accepted-round RNG.\n\n## Key semantic rule after audit\n- Rush V2 family: Treasury state can adapt NEXT-round probability through Effective RTP; active rounds remain immutable.\n- Goal Rush: treasury/margin mode selection constrains the allowed outcome-target set.\n- Casino Penalty professional model: Treasury/exposure controls acceptance, settlement, reserve and jackpot gating; accepted-round RNG is not steered by treasury balance.\n''')
+          PY
+      - name: Validate corrected explanations
+        shell: bash
+        run: |
+          set -euo pipefail
+          for f in games/camel-rush/admin.html games/horse-rush/admin.html games/Greyhound-Rush/admin.html games/sonic-rush/admin.html; do grep -q '../shared/rush-admin-info-v29.js?v=2.10' "$f"; done
+          for f in games/camel-rush/index.html games/horse-rush/index.html games/Greyhound-Rush/index.html games/sonic-rush/index.html; do ! grep -q 'Player outcomes are never changed by treasury status' "$f"; done
+          grep -q 'CRITICAL if House Cash < Build Target × 25%' games/goal-rush/admin-info-v28.js
+          grep -q 'Treasury Target / Warning Level' games/penalty/admin-info-v28.js
+          ! grep -q 'v25.12' games/penalty/admin-info-v28.js
+          node --check games/shared/rush-admin-info-v29.js
+          node --check games/goal-rush/admin-info-v28.js
+          node --check games/penalty/admin-info-v28.js
+      - name: Commit audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add games docs/CRASH_ADMIN_EXPLANATION_AUDIT_V2_10.md
+          git commit -m 'Crash V2.10: align Admin explanations with actual game logic'
+          git push
