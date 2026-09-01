@@ -1,0 +1,60 @@
+name: Install Rush Liability Mode Admin V2.11
+on:
+  push:
+    paths:
+      - '.github/liability-mode-v211-trigger.txt'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Inject visible Liability Coverage selector into four Rush admins
+        shell: python
+        run: |
+          from pathlib import Path
+          games = ['camel-rush','horse-rush','Greyhound-Rush','sonic-rush']
+          tag = '<script src="../shared/liability-mode-admin-v211.js?v=2.11"></script>'
+          for game in games:
+              p = Path('games') / game / 'admin.html'
+              s = p.read_text(encoding='utf-8')
+              if tag in s:
+                  print(game, 'already installed')
+                  continue
+              marker = "<script>(()=>{'use strict';"
+              if marker not in s:
+                  raise SystemExit(f'{game}: core admin script marker missing')
+              s = s.replace(marker, tag + '\n' + marker, 1)
+              p.write_text(s, encoding='utf-8')
+              print(game, 'installed')
+      - name: Validate all four Admin pages
+        shell: python
+        run: |
+          from pathlib import Path
+          games = ['camel-rush','horse-rush','Greyhound-Rush','sonic-rush']
+          tag = '<script src="../shared/liability-mode-admin-v211.js?v=2.11"></script>'
+          for game in games:
+              s=(Path('games')/game/'admin.html').read_text(encoding='utf-8')
+              assert tag in s, game
+              assert 'liabilityCoverageEnabled' in s, game
+              assert 'ON — V2 + LIABILITY COVERAGE' in s, game
+              assert 'OFF — V2 TREASURY ONLY' in s, game
+          js=Path('games/shared/liability-mode-admin-v211.js').read_text(encoding='utf-8')
+          assert 'data-liability-mode-v211' in js
+          assert 'liabilityCoverageEnabled' in js
+          print('Validated Camel, Horse, Greyhound, Sonic')
+      - name: Commit installed Admin selector
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add games/camel-rush/admin.html games/horse-rush/admin.html games/Greyhound-Rush/admin.html games/sonic-rush/admin.html
+          if git diff --cached --quiet; then
+            echo 'No changes required'
+          else
+            git commit -m 'Crash V2.11: show Liability Coverage selector in Rush admins'
+            git push origin main
+          fi
