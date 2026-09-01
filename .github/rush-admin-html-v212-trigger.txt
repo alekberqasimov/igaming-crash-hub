@@ -1,0 +1,1 @@
+Normalize Camel, Horse, Greyhound and Sonic Admin HTML endings and validate PIN 12345 unlock after the Liability Coverage selector fix. Player View unchanged.
