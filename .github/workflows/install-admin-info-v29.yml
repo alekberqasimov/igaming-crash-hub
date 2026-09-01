@@ -1,0 +1,41 @@
+name: Install Goal and Penalty V2.9 admin info
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/admin-info-v29-trigger.txt'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install V2.9 help overlays
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          items=[
+            (Path('games/goal-rush/admin.html'),'<script src="../shared/goal-admin-info-v29.js?v=2.9"></script>'),
+            (Path('games/penalty/admin.html'),'<script src="../shared/penalty-admin-info-v29.js?v=2.9"></script>')
+          ]
+          for p,ref in items:
+              s=p.read_text(encoding='utf-8')
+              s=s.replace(ref,'')
+              s+='\n'+ref+'\n'
+              p.write_text(s,encoding='utf-8')
+              assert ref in p.read_text(encoding='utf-8')
+          PY
+      - name: Commit changes
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add games/goal-rush/admin.html games/penalty/admin.html
+          if git diff --cached --quiet; then
+            echo "No changes"
+          else
+            git commit -m "Admin V2.9: clarify Goal and Penalty info help"
+            git push
+          fi
