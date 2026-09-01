@@ -1,0 +1,75 @@
+name: Install Rush V2.9 clarity and treasury consistency
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/rush-v29-trigger.txt'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch Rush family
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          dirs = [Path('games/camel-rush'), Path('games/horse-rush'), Path('games/Greyhound-Rush'), Path('games/sonic-rush')]
+          shared_ref = '<script src="../shared/rush-admin-info-v29.js?v=2.9"></script>'
+
+          for d in dirs:
+              admin = d / 'admin.html'
+              if admin.exists():
+                  s = admin.read_text(encoding='utf-8')
+                  s = s.replace(shared_ref, '')
+                  s += '\n' + shared_ref + '\n'
+                  s = s.replace('let pr=Math.min(f.reserveBalance,rem);', 'let pr=Math.min(f.reserveBalance*config.usableReservePct,rem);')
+                  admin.write_text(s, encoding='utf-8')
+
+              eng = d / 'continuous-engine.js'
+              if eng.exists():
+                  s = eng.read_text(encoding='utf-8')
+                  s = s.replace(
+                      'const ROUND_MS=5200,LEASE_MS=2600,PLAYER_FRESH_MS=1800;',
+                      'const BASE_RUN_MS=3400,LEASE_MS=2600,PLAYER_FRESH_MS=1800;\nfunction roundMs(c){return Math.max(2600,Math.round(BASE_RUN_MS+Math.max(300,num(c?.countdownMs,1800))))}'
+                  )
+                  s = s.replace('let fromReserve=Math.min(f.reserveBalance,due);', 'let fromReserve=Math.min(f.reserveBalance*c.usableReservePct,due);')
+                  s = s.replace(
+                      "function adminTick(){const now=Date.now(),reset=localStorage.getItem(META.reset)||'';",
+                      "function adminTick(){const now=Date.now(),reset=localStorage.getItem(META.reset)||'',cadence=roundMs(cfg());"
+                  )
+                  s = s.replace('ROUND_MS*1.5', 'cadence*1.5').replace('gap/ROUND_MS', 'gap/cadence').replace('nextDue=now+ROUND_MS', 'nextDue=now+cadence')
+                  eng.write_text(s, encoding='utf-8')
+
+              idx = d / 'index.html'
+              if idx.exists():
+                  s = idx.read_text(encoding='utf-8')
+                  old = "function restoreReserve(){const deficit=Math.max(0,config.reserveTargetAmount-finance.reserve);if(deficit<=0||finance.houseCash<=0)return;const positiveGgr=Math.max(0,(finance.totalStake||0)-(finance.totalPayout||0));const eligible=Math.max(0,positiveGgr-(finance.reserveRestored||0)/Math.max(.0001,config.reserveRestorePct));const move=Math.min(deficit,finance.houseCash,eligible*config.reserveRestorePct);if(move<=0)return;finance.houseCash-=move;finance.reserve+=move;finance.reserveRestored=(finance.reserveRestored||0)+move}"
+                  new = "function restoreReserve(roundGgr=0){const deficit=Math.max(0,config.reserveTargetAmount-finance.reserve);if(deficit<=0||finance.houseCash<=0)return;const positiveGgr=Math.max(0,Number(roundGgr)||0);const move=Math.min(deficit,finance.houseCash,positiveGgr*config.reserveRestorePct);if(move<=0)return;finance.houseCash-=move;finance.reserve+=move;finance.reserveRestored=(finance.reserveRestored||0)+move}"
+                  if old in s:
+                      s = s.replace(old, new)
+                      s = s.replace('finance.rounds++;finance.openExposure=0;restoreReserve();saveState();', "finance.rounds++;finance.openExposure=0;const roundGgrForReserve=Math.max(0,(world.roomStake||0)-(world.roomPaid||0)+(world.userBet?((world.userBet.stake||0)-(world.userBet.payout||0)):0));restoreReserve(roundGgrForReserve);saveState();")
+                  idx.write_text(s, encoding='utf-8')
+
+          for d in dirs:
+              a=(d/'admin.html').read_text(encoding='utf-8')
+              assert shared_ref in a, d
+              e=(d/'continuous-engine.js').read_text(encoding='utf-8')
+              assert 'f.reserveBalance*c.usableReservePct' in e, d
+              assert 'roundMs(cfg())' in e, d
+          PY
+      - name: Commit changes
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add games/camel-rush games/horse-rush games/Greyhound-Rush games/sonic-rush
+          if git diff --cached --quiet; then
+            echo "No changes"
+          else
+            git commit -m "Rush V2.9: clarify admin info and align treasury rules"
+            git push
+          fi
