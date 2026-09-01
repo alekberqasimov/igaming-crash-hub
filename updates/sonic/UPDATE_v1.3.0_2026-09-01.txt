@@ -1,0 +1,49 @@
+IGAMING CRASH HUB — SONIC ROCKET RUSH
+UPDATE VERSION: v1.3.0
+DATE: 2026-09-01
+STATUS: GLOBAL TIMELINE + PERSISTENT HISTORY
+
+CHANGES
+1. Global Timeline Sync
+- Leader broadcasts current round phase and timestamps.
+- BETTING uses shared bettingEnds.
+- COUNTDOWN uses shared countdownEnds.
+- RUNNING uses shared startAt and bust.
+- Refresh/rejoin restores the current room position instead of starting a new 10 second local round.
+
+2. Persistent Round History
+- Completed rounds are stored in localStorage key igch.sonic.history.v13.
+- Up to 250 completed rounds are retained.
+- History survives page refresh and browser reopen on the same browser profile.
+- Connected peers replicate/merge history through the P2P room.
+- Leader sends history snapshot to newly joined peers.
+
+3. History UI
+- ROOM badge is clickable.
+- Opens ROUND HISTORY modal.
+- Shows Round ID, final multiplier and finish time.
+
+4. Room
+- SONIC-GLOBAL remains automatic.
+- Badge shows REAL count and SOLO / LEADER / SYNC role.
+
+5. Math Safety
+- Existing Sonic bust/risk formula remains the source used by the leader.
+- RTP, liability, reserve, treasury, payout and cashout formulas are not intentionally changed.
+
+FILES
+- games/sonic-rush/index.html
+- games/shared/sonic-global-p2p-room-v13.js
+- games/shared/player-hub-link-v216.js
+- updates/sonic/UPDATE_v1.3.0_2026-09-01.txt
+
+TEST PLAN
+A. Open Sonic on two devices and confirm 2 REAL with LEADER/SYNC.
+B. During BETTING at approximately 4 seconds, refresh the follower. It must return near the same remaining time, not 10 seconds.
+C. During RUNNING, refresh the follower. It must rejoin the same round/multiplier trajectory.
+D. Confirm both devices finish at the same multiplier.
+E. Open ROOM badge and confirm completed rounds remain after refresh.
+F. Open a fresh connected browser and confirm history is replicated from the active room.
+
+LIMITATION
+With no permanent backend, a completely new browser cannot recover ancient history if every device that possessed that history is offline. Same-browser persistence and active-peer replication are supported.
