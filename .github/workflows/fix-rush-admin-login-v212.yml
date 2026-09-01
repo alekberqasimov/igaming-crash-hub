@@ -1,0 +1,54 @@
+name: Fix Rush Admin Login V2.12
+on:
+  push:
+    paths:
+      - '.github/rush-admin-login-v212-trigger.txt'
+permissions:
+  contents: write
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Cache-bust fixed liability selector
+        shell: python
+        run: |
+          from pathlib import Path
+          games=['camel-rush','horse-rush','Greyhound-Rush','sonic-rush']
+          old='../shared/liability-mode-admin-v211.js?v=2.11'
+          new='../shared/liability-mode-admin-v211.js?v=2.12'
+          for game in games:
+              p=Path('games')/game/'admin.html'
+              s=p.read_text(encoding='utf-8')
+              if old in s:
+                  s=s.replace(old,new)
+              elif new not in s:
+                  raise SystemExit(f'{game}: liability selector script reference missing')
+              p.write_text(s,encoding='utf-8')
+      - name: Validate login-safe integration
+        shell: bash
+        run: |
+          set -euo pipefail
+          ! grep -q 'MutationObserver' games/shared/liability-mode-admin-v211.js
+          grep -q 'data-unlock' games/camel-rush/admin.html
+          grep -q 'data-unlock' games/horse-rush/admin.html
+          grep -q 'data-unlock' games/Greyhound-Rush/admin.html
+          grep -q 'data-unlock' games/sonic-rush/admin.html
+          grep -q 'liability-mode-admin-v211.js?v=2.12' games/camel-rush/admin.html
+          grep -q 'liability-mode-admin-v211.js?v=2.12' games/horse-rush/admin.html
+          grep -q 'liability-mode-admin-v211.js?v=2.12' games/Greyhound-Rush/admin.html
+          grep -q 'liability-mode-admin-v211.js?v=2.12' games/sonic-rush/admin.html
+          node --check games/shared/liability-mode-admin-v211.js
+      - name: Commit fix
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add games/camel-rush/admin.html games/horse-rush/admin.html games/Greyhound-Rush/admin.html games/sonic-rush/admin.html
+          if git diff --cached --quiet; then
+            echo 'No HTML cache-bust changes required'
+          else
+            git commit -m 'Crash V2.12: restore Rush Admin PIN login'
+            git push origin main
+          fi
