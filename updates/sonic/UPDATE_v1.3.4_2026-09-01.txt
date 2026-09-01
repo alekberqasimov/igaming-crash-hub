@@ -1,0 +1,33 @@
+IGAMING CRASH HUB — SONIC ROCKET RUSH
+UPDATE VERSION: v1.3.4
+DATE: 2026-09-01
+STATUS: RTP DEFAULT REPAIR + SINGLE HISTORY SOURCE
+
+ROOT CAUSES
+1. Sonic player/admin DEF still contained targetProfitMargin=.50 and targetRtp=.50. This made the actual engine run at 50% target RTP when the legacy/default config was active, producing many 1.00x rounds.
+2. The small Player View round-history strip was rendered by the legacy history-sync-v26 layer, while the HISTORY modal used the newer canonical P2P history. Two history sources could therefore disagree.
+3. Legacy history could already contain 0.00x entries from older versions; v26 rendered existing entries before cleaning them.
+4. finishRound dispatched the same igch:sonic:round-finished event twice.
+
+FIXES
+- Player and Admin defaults changed to 7% target margin / 93% target RTP.
+- One-time safe migration changes only untouched legacy 50/50 config (version <=2 with the old default signature) to 7/93. Explicit newer/custom configs are not overwritten.
+- New history-sync-v27 uses canonical IGCHSonicRoom history whenever available.
+- Legacy history is repaired before display; values below 1.00x are removed.
+- Player history strip and HISTORY modal now converge on the same canonical source.
+- Removed duplicate round-finished dispatch.
+- Cache-busted Sonic player loader to v2.20.
+
+FILES
+- games/sonic-rush/index.html
+- games/sonic-rush/admin.html
+- games/sonic-rush/history-sync-v27.js
+- games/shared/sonic-config-migrate-v134.js
+- games/shared/player-hub-link-v220.js
+
+EXPECTED AFTER DEPLOY
+- Admin default/legacy target margin: 7.00%
+- Admin default/legacy target RTP: 93.00%
+- 1.00x remains a mathematically valid possible crash result, but it should no longer dominate merely because the default RTP was 50%.
+- 0.00x is invalid and must not appear in either history UI.
+- Round history should continue with canonical round IDs and not use a second conflicting local list.
