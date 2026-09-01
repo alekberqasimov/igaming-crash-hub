@@ -1,0 +1,27 @@
+IGAMING CRASH HUB — SONIC ROCKET RUSH
+UPDATE VERSION: v1.3.6
+DATE: 2026-09-01
+STATUS: SOLO BUST NULL GUARD
+
+ROOT CAUSE
+- In SOLO mode the P2P room can return null from takeAuthoritativeBust().
+- JavaScript Number(null) equals 0 and Number.isFinite(0) is true.
+- The old guard therefore accepted null as a valid shared bust and set world.bust=0.
+- Result: SIGNAL BREAK 0.00x and 0.00x could appear in player display/history.
+
+FIX
+- Shared bust is accepted only when it is not null/undefined, finite, and >=1.00.
+- null / undefined / 0 / values below 1.00 are rejected.
+- When rejected, Sonic falls back to the existing local bust(world.cfg) generator.
+- Existing RTP/risk/bust formula is not changed.
+
+FILES
+- games/sonic-rush/index.html
+- updates/sonic/UPDATE_v1.3.6_2026-09-01.txt
+
+TEST
+1. Open Sonic with 1 REAL / SOLO.
+2. Let at least 10 rounds finish.
+3. SIGNAL BREAK may appear, but its multiplier must never be below 1.00x.
+4. 0.00x must never appear as the live/final multiplier.
+5. With 2 REAL peers, authoritative shared bust values >=1.00 continue to be used.
