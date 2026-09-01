@@ -1,0 +1,52 @@
+IGAMING CRASH HUB — SONIC ROCKET RUSH
+UPDATE VERSION: v1.3.2
+DATE: 2026-09-01
+STATUS: ADMIN PERCENT INPUT + LIVE CONFIG SYNC
+
+CHANGES
+1. Percent-based admin input
+- Target Profit Margin is entered as a human percentage.
+- Example: enter 7 for 7% margin.
+- Target RTP is shown as a synchronized percentage field.
+- Example: Margin 7% automatically shows RTP 93%.
+- Internal engine storage remains decimal-safe: 0.07 / 0.93.
+
+2. Save behavior
+- Admin Save continues writing sonicrush_config_v2 to localStorage.
+- Player View now detects saved config changes from another tab/browser context on the same origin.
+- If no active local bet is present during BETTING, Player View reloads safely and uses the new config.
+- If a local bet/active round exists, reload waits for SETTLED so an active bet is not interrupted.
+- P2P timeline restoration returns the player to the shared Sonic room after reload.
+
+3. Treasury clarity
+- Target/Margin explanatory block is now percent-aware.
+- It no longer interprets 7 as 700%/95% clamp.
+
+4. Cache bust
+- Sonic Player View uses player-hub-link-v218.js?v=2.18.0.
+- v2.18 loads sonic-config-sync-v132.js?v=1.3.2.
+
+MATH SAFETY
+- No RTP generator formula was rewritten in this patch.
+- No changes to liability, reserve, treasury, payout, cashout, P2P round authority, or timeline math.
+- This patch fixes how config values are entered, displayed, saved and picked up by the player runtime.
+
+FILES
+- games/sonic-rush/admin-percent-config-v132.js
+- games/sonic-rush/treasury-clarity-v28.js
+- games/sonic-rush/admin.html
+- games/sonic-rush/index.html
+- games/shared/sonic-config-sync-v132.js
+- games/shared/player-hub-link-v218.js
+- updates/sonic/UPDATE_v1.3.2_2026-09-01.txt
+
+TEST
+1. Open Sonic Admin and unlock.
+2. Set Target Profit Margin to 7.
+3. Confirm Target RTP field shows 93.
+4. Save.
+5. Re-open/inspect Admin: it must still show 7 and 93, not 0.07/0.93.
+6. Keep Player View open in another tab/device context on the same browser origin.
+7. Save a changed margin in Admin.
+8. Player View should safely pick up the new config at a safe round boundary.
+9. Confirm Admin dashboard Target Margin / Target RTP reflect 7% / 93%.
