@@ -1,0 +1,55 @@
+name: Normalize Rush Admin HTML V2.12
+on:
+  push:
+    paths:
+      - '.github/rush-admin-html-v212-trigger.txt'
+permissions:
+  contents: write
+jobs:
+  normalize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Normalize four Rush Admin document endings
+        shell: python
+        run: |
+          from pathlib import Path
+          games=['camel-rush','horse-rush','Greyhound-Rush','sonic-rush']
+          tail='''<script src="continuous-engine.js?v=2.5"></script>\n<script src="history-sync-v26.js?v=2.6.1"></script>\n<script src="admin-info-v28.js?v=2.8"></script>\n<script src="treasury-clarity-v27.js?v=2.7.1"></script>\n<script src="../shared/rush-admin-info-v29.js?v=2.10"></script>\n</body></html>\n'''
+          marker='<script src="continuous-engine.js?v=2.5"'
+          for game in games:
+              p=Path('games')/game/'admin.html'
+              s=p.read_text(encoding='utf-8')
+              pos=s.find(marker)
+              if pos<0: raise SystemExit(f'{game}: continuous engine marker missing')
+              s=s[:pos]+tail
+              p.write_text(s,encoding='utf-8')
+              print(game,'normalized')
+      - name: Validate PIN and HTML tail
+        shell: python
+        run: |
+          from pathlib import Path
+          games=['camel-rush','horse-rush','Greyhound-Rush','sonic-rush']
+          for game in games:
+              s=(Path('games')/game/'admin.html').read_text(encoding='utf-8')
+              assert "pin==='12345'" in s, game
+              assert 'data-unlock' in s, game
+              assert '../shared/liability-mode-admin-v211.js?v=2.12' in s, game
+              assert '</bod<script' not in s, game
+              assert '</htm<script' not in s, game
+              assert s.rstrip().endswith('</body></html>'), game
+              assert s.count('continuous-engine.js?v=2.5')==1, game
+              assert s.count('history-sync-v26.js?v=2.6.1')==1, game
+              assert s.count('admin-info-v28.js?v=2.8')==1, game
+              assert s.count('treasury-clarity-v27.js?v=2.7.1')==1, game
+              assert s.count('../shared/rush-admin-info-v29.js?v=2.10')==1, game
+          print('PIN handler and HTML tails validated for all four games')
+      - name: Commit normalization
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add games/camel-rush/admin.html games/horse-rush/admin.html games/Greyhound-Rush/admin.html games/sonic-rush/admin.html
+          git commit -m 'Crash V2.12: normalize Rush Admin HTML and PIN flow'
+          git push origin main
