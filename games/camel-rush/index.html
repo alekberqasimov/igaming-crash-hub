@@ -1563,7 +1563,7 @@ input,select{max-width:100%}
       due = money(due - fromHouse);
       let reserveDraw = 0;
       if (due > 0) {
-        reserveDraw = Math.min(this.finance.reserve, due);
+        reserveDraw = Math.min(this.finance.reserve * this.config.usableReservePct, due);
         this.finance.reserve = money(this.finance.reserve - reserveDraw);
         this.finance.reserveUsed = money(this.finance.reserveUsed + reserveDraw);
         due = money(due - reserveDraw);

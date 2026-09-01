@@ -1,6 +1,6 @@
 {
   "name": "Greyhound Rush",
-  "version": "2.6.1",
+  "version": "2.9",
   "status": "LIVE DEMO",
   "category": "Crash Racing",
   "description": "A real-time greyhound racing crash game with animated runners, manual and auto staking, live cashout, simulation, and treasury-aware risk controls. Continuous live rounds remain active in Admin; reset-safe treasury monitoring.",
