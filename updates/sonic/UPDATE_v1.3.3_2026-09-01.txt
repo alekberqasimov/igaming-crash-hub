@@ -1,0 +1,42 @@
+IGAMING CRASH HUB — SONIC ROCKET RUSH
+UPDATE VERSION: v1.3.3
+DATE: 2026-09-01
+STATUS: CANONICAL ROUND ID + HISTORY REPAIR
+
+ROOT CAUSES FOUND
+1. Player engine world.id was held only in page memory and restarted from 1 after refresh/reload.
+2. P2P persistent history used roundId as its unique key, so restarted #1/#2/... entries overwrote older rounds with the same IDs.
+3. v1.3 history validation accepted any finite numeric bust, including invalid 0.00 values.
+
+FIXES
+- Adds persistent canonical Sonic room sequence: igch.sonic.roundseq.v133.
+- Round IDs now continue forward across refresh/reload instead of restarting at 1.
+- P2P leader owns the canonical sequence in shared room mode.
+- Solo mode also uses the persistent sequence.
+- History accepts only multipliers >= 1.00x.
+- Existing invalid 0.xx / 0.00 history entries are removed during repair.
+- Existing valid history is retained and normalized, not blindly cleared.
+- Legacy sonicrush_round_history_v26 data can be migrated when current P2P history is empty.
+- Up to 250 canonical completed rounds are retained.
+- Peers exchange their latest sequence and history to prevent sequence rollback after joins/rejoins.
+- Incoming round/timeline/history data is validated before use.
+
+FILES
+- games/shared/sonic-global-p2p-room-v133.js
+- games/shared/player-hub-link-v219.js
+- games/sonic-rush/index.html
+- updates/sonic/UPDATE_v1.3.3_2026-09-01.txt
+
+MATH SAFETY
+- No RTP/margin/bust probability formula change in this patch.
+- No reserve, treasury, liability, payout or cashout formula change.
+- This patch repairs identity/history sequencing and invalid multiplier persistence.
+
+TEST
+1. Open Sonic and HISTORY; verify no 0.00x rows remain after v1.3.3 initializes.
+2. Note current highest Round ID.
+3. Let 5+ rounds finish; every finished round must appear once with increasing IDs.
+4. Refresh during/after a round.
+5. The next Round ID must continue from the previous highest ID, never restart at #1.
+6. Test with two phones; both should converge to the same canonical IDs/history.
+7. Close/reopen one phone and verify history continues instead of overwriting older rows.
