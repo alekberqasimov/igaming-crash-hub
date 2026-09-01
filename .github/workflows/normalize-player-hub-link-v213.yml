@@ -1,0 +1,45 @@
+name: Normalize Player Hub Link V2.13
+on:
+  push:
+    paths:
+      - '.github/player-hub-v213-normalize-trigger.txt'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  normalize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Normalize shared navigation script placement
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          games=['camel-rush','horse-rush','Greyhound-Rush','sonic-rush','goal-rush','penalty']
+          tag='<script src="../shared/player-hub-link-v213.js?v=2.13"></script>'
+          pat=re.compile(r'\s*<script\s+src=["\']\.\./shared/player-hub-link-v213\.js\?v=2\.13["\']\s*></script>\s*',re.I)
+          for game in games:
+              p=Path('games')/game/'index.html'
+              s=p.read_text(encoding='utf-8')
+              s=pat.sub('\n',s)
+              matches=list(re.finditer(r'</body\s*>',s,re.I))
+              if matches:
+                  pos=matches[-1].start()
+                  s=s[:pos]+tag+'\n'+s[pos:]
+              else:
+                  matches=list(re.finditer(r'</html\s*>',s,re.I))
+                  if matches:
+                      pos=matches[-1].start()
+                      s=s[:pos]+tag+'\n'+s[pos:]
+                  else:
+                      s+='\n'+tag+'\n'
+              p.write_text(s,encoding='utf-8')
+              print(game, 'normalized')
+          PY
+      - name: Commit
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add games/*/index.html
+          if git diff --cached --quiet; then echo 'No changes'; else git commit -m 'Player V2.13: normalize Games Hub navigation placement'; git push; fi
