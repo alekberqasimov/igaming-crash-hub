@@ -96,24 +96,7 @@ function restoreReserve(roundStake,roundPayout){const target=config.reserveTarge
 function acceptStake(stake,isUser){finance.houseCash+=stake;finance.totalStake+=stake;if(isUser){wallet.balance-=stake;metrics.userBets++;metrics.userStake+=stake}saveState();updateAll()}
 function playerNames(n){const a=['Araz','Elvin','Murad','Nika','Leo','Emil','Samir','Alex','Rauf','Kenan','Mila','Omar','Lina','Denis','Arif','Tural','Nina','Rashad','Ilya','Max'];return a[n%a.length]+String(10+(n*17)%90)}
 function seedRoom(){world.simBets=[];world.roomStake=0;world.roomPaid=0;const count=24+Math.floor(secure()*37);let accepted=0;for(let i=0;i<count;i++){const target=Math.max(1.05,Math.min(10,[1.2,1.3,1.5,1.8,2,2.5,3,5,8][Math.floor(secure()*9)]));let st=[1,2,5,10,10,20,25,50,100][Math.floor(secure()*9)];const cap=maxAllowedStake();if(cap<config.minBet)continue;st=Math.min(st,cap);if(st<config.minBet)continue;const liability=st*target;const availableAfterStake=finance.houseCash+finance.reserveBalance*config.usableReservePct+st;if(finance.openExposure+liability>config.maxPayoutPerRound||finance.openExposure+liability>config.maxSessionExposure||finance.openExposure+liability>availableAfterStake)continue;finance.openExposure+=liability;world.simBets.push({name:playerNames(i+world.id),stake:st,target,liability,settled:false,payout:0});world.roomStake+=st;metrics.roomStake+=st;accepted++;acceptStake(st,false)}$('[data-live-count]').textContent=accepted;renderFeed('waiting')}
-function renderFeed(mode){
-const e=$('[data-feed]');
-const arr=world.simBets;
-const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-let rows=arr.map(b=>{let state='—',cls='';if((mode==='live'||mode==='done')&&b.settled){state=b.payout>0?`${b.target.toFixed(2)}x`:'LOST';cls=b.payout>0?'win':'loss'}return`<div class="feed-row" data-source="SIM"><b>${esc(b.name)}</b><span>${b.stake.toFixed(0)} AZN</span><strong class="${cls}">${state}</strong></div>`}).join('');
-const real=world.userBet;
-if(real){
-  const profile=window.IGCHPlayer&&typeof window.IGCHPlayer.getProfile==='function'?window.IGCHPlayer.getProfile():null;
-  const realName=profile&&profile.nickname?profile.nickname:'YOU';
-  const realId=profile&&profile.id?profile.id:'REAL';
-  let state='—',cls='';
-  if(real.settled&&Number(real.payout)>0){state=real.cashout?Number(real.cashout).toFixed(2)+'x':'WON';cls='win'}
-  else if(mode==='done'||world.state==='SETTLED'){state='LOST';cls='loss'}
-  rows=`<div class="feed-row igch-real-player" data-source="REAL" data-player-id="${esc(realId)}"><b>${esc(realName)}<em class="igch-real-badge">REAL</em></b><span>${Number(real.stake||0).toFixed(0)} AZN</span><strong class="${cls}">${state}</strong></div>`+rows;
-}
-e.innerHTML=rows;
-const liveCount=$('[data-live-count]');if(liveCount)liveCount.textContent=arr.length+(real?1:0);
-}
+function renderFeed(mode){const e=$('[data-feed]');const arr=world.simBets;const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));let rows=arr.map(b=>{let state='—',cls='';if((mode==='live'||mode==='done')&&b.settled){state=b.payout>0?`${b.target.toFixed(2)}x`:'LOST';cls=b.payout>0?'win':'loss'}return`<div class="feed-row" data-source="SIM"><b>${esc(b.name)}</b><span>${b.stake.toFixed(0)} AZN</span><strong class="${cls}">${state}</strong></div>`}).join('');const real=world.userBet;if(real){const profile=window.IGCHPlayer&&typeof window.IGCHPlayer.getProfile==='function'?window.IGCHPlayer.getProfile():null;const realName=profile&&profile.nickname?profile.nickname:'YOU';const realId=profile&&profile.id?profile.id:'REAL';let state='—',cls='';if(real.settled&&Number(real.payout)>0){state=real.cashout?Number(real.cashout).toFixed(2)+'x':'WON';cls='win'}else if(mode==='done'||world.state==='SETTLED'){state='LOST';cls='loss'}rows=`<div class="feed-row igch-real-player" data-source="REAL" data-player-id="${esc(realId)}"><b>${esc(realName)}<em class="igch-real-badge">REAL</em></b><span>${Number(real.stake||0).toFixed(0)} AZN</span><strong class="${cls}">${state}</strong></div>`+rows;}e.innerHTML=rows;const lc=$('[data-live-count]');if(lc)lc.textContent=arr.length+(real?1:0)}
 function settleSim(current,final=false){for(const b of world.simBets){if(b.settled)continue;if(current>=b.target&&b.target<=world.bust){b.settled=true;finance.openExposure=Math.max(0,finance.openExposure-(b.liability||b.stake*b.target));b.payout=b.stake*b.target;const paid=transferPayout(b.payout);b.payout=paid;world.roomPaid+=paid;metrics.roomPayout+=paid}else if(final){b.settled=true;finance.openExposure=Math.max(0,finance.openExposure-(b.liability||b.stake*b.target));b.payout=0}}renderFeed(final?'done':'live')}
 function setWorldState(s){world.state=s;document.body.dataset.state=s;$('[data-state-label]').textContent=s;const stage=$('[data-stage]');stage.classList.toggle('running',s==='RUNNING');stage.classList.toggle('settled',s==='SETTLED')}
 function phaseFor(m){return m<1.2?0:m<2?1:m<5?2:m<10?3:4}
