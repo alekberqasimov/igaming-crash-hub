@@ -1,0 +1,28 @@
+name: Rocket Crash Best v1.6 QA
+
+on:
+  push:
+    branches:
+      - feature/rocket-crash-best-v16
+      - main
+    paths:
+      - 'games/rocket-crash-best/**'
+      - '.github/workflows/rocket-crash-best-qa.yml'
+  workflow_dispatch:
+
+jobs:
+  qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax checks
+        run: |
+          node --check games/rocket-crash-best/math-core-v16.js
+          node --check games/rocket-crash-best/risk-engine-v16.js
+          node --check games/rocket-crash-best/core-v16.js
+      - name: v1.6 architecture and UI audit
+        run: node games/rocket-crash-best/tests/v16.test.cjs
