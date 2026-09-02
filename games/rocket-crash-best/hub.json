@@ -1,7 +1,7 @@
 {
   "name": "Rocket Crash Best",
   "slug": "rocket-crash-best",
-  "version": "1.8.0",
+  "version": "1.8.1",
   "status": "PRE-CERT DEMO",
   "entry": "index.html",
   "admin": "admin.html",
