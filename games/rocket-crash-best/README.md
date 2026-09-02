@@ -1,6 +1,12 @@
-# Rocket Crash Best v1.7
+# Rocket Crash Best v1.8
 
 Production-test/demo crash game for the IGAMING CRASH HUB.
+
+## Unified test workspace
+
+- Player, Admin and pre-cert Audit views are reachable from the in-game icon dock.
+- Admin opens as an embedded full-screen workspace, so a tester does not leave the game URL.
+- The player UI kit includes Manual / Auto Play modes, quick stake controls, preset auto-cashout targets, session HUD, status feedback and responsive mobile controls.
 
 ## Runtime architecture
 - Fixed reference math profile: 95% theoretical RTP / 5% theoretical house edge.
