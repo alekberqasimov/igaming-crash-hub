@@ -1,0 +1,25 @@
+Rocket Crash Best v1.6
+Release date: 2026-09-02
+Repository: alekberqasimov/igaming-crash-hub
+Production merge commit: 60bd84fbec2a2f424f675640119e338fb495bbbe
+Pull Request: #14
+
+MAIN CHANGES
+- Primary game path is now games/rocket-crash-best/
+- Legacy games/sonic-crash-best/ player/admin URLs redirect to Rocket Crash Best
+- Legacy hub entry removed to avoid duplicate listing
+- Responsive Player View for desktop/tablet/mobile
+- Responsive Admin View for desktop/tablet/mobile
+- Player/Admin languages: AZ / RU / EN
+- Admin Main Config clearly marked ACTIVE / MAIN
+- Fixed reference math: 97% theoretical RTP / 3% theoretical margin
+- Session Horizon options: 10,000 / 100,000 / 1,000,000 / 100,000,000 settled rounds
+- Each completed horizon closes a reporting/audit session and opens the next one
+- Session tracks rounds, stake, payout, actual RTP and actual margin
+- Session rollover does NOT force exact 3% margin and does NOT alter RNG
+- Global treasury is not reset when a reporting session closes
+- Treasury/Risk remains ALLOW/LIMIT/REJECT and separate from RNG outcome
+- v1.6 QA covers fixed math lock, multiplier validity, risk separation, Player/Admin data separation, AZ/RU/EN markers and responsive breakpoints
+
+CERTIFICATION NOTE
+This is a production-test/demo architecture release. It is not itself a GLI-19 certificate. Real-money certification still requires authoritative RGS/backend, source/math/RNG laboratory submission, security review and jurisdiction-specific approval.
