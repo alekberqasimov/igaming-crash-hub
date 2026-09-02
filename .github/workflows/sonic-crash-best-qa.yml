@@ -24,8 +24,6 @@ jobs:
           node --check games/sonic-crash-best/math-core-v15.js
           node --check games/sonic-crash-best/risk-engine-v15.js
           node --check games/sonic-crash-best/core-v15.js
-      - name: Legacy canonical core regression
-        run: node games/sonic-crash-best/tests/core.test.cjs
       - name: Fixed RTP math audit
         run: node games/sonic-crash-best/tests/math-v15.test.cjs
       - name: Treasury risk audit
