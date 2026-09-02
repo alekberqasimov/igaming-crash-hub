@@ -19,7 +19,7 @@ const player=fs.readFileSync(path.join(root,'index.html'),'utf8');
 const admin=fs.readFileSync(path.join(root,'admin.html'),'utf8');
 for(const token of ['sessionHorizonRounds:10000','SESSION_CLOSED','MathCore.generateBust(state.config.mathProfile)','autoCashout','balanceBefore'])assert(core.includes(token),'core missing '+token);
 assert(!core.includes('effectiveRtp'),'treasury must not adapt RNG/RTP');
-for(const token of ['data-lang="az"','data-lang="ru"','data-lang="en"','RCB-GLOBAL-95','95% theoretical RTP','data-open-admin','data-admin-frame','data-open-audit','data-mode="auto"','data-auto-rounds','v1.8.0 UI KIT'])assert(player.includes(token),'player missing '+token);
+for(const token of ['data-lang="az"','data-lang="ru"','data-lang="en"','RCB-GLOBAL-95','95% theoretical RTP','data-open-admin','data-admin-frame','data-open-audit','data-mode="auto"','data-auto-rounds','v1.8.1 UI KIT','function animateFlight()','requestAnimationFrame(animateFlight)'])assert(player.includes(token),'player missing '+token);
 for(const forbidden of ['House Cash','Open Exposure','Reserve Target','Critical Coverage'])assert(!player.includes(forbidden),'player exposes admin field '+forbidden);
 for(const token of ['ACTIVE / MAIN','sessionHorizonRounds','100000000','95.00%','5.00%'])assert(admin.includes(token),'admin missing '+token);
 console.log('Rocket Crash Best v1.8 architecture/UI QA PASS');
