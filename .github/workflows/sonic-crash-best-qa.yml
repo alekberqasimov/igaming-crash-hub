@@ -1,0 +1,32 @@
+name: Rocket Crash Best v1.5 QA
+
+on:
+  push:
+    branches:
+      - feature/sonic-crash-best-v14
+    paths:
+      - 'games/sonic-crash-best/**'
+      - '.github/workflows/sonic-crash-best-qa.yml'
+  workflow_dispatch:
+
+jobs:
+  qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax checks
+        run: |
+          node --check games/sonic-crash-best/core.js
+          node --check games/sonic-crash-best/math-core-v15.js
+          node --check games/sonic-crash-best/risk-engine-v15.js
+          node --check games/sonic-crash-best/core-v15.js
+      - name: Fixed RTP math audit
+        run: node games/sonic-crash-best/tests/math-v15.test.cjs
+      - name: Treasury risk audit
+        run: node games/sonic-crash-best/tests/risk-v15.test.cjs
+      - name: Architecture separation audit
+        run: node games/sonic-crash-best/tests/architecture-v15.test.cjs

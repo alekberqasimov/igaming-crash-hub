@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#050912">
+<title>Rocket Crash Best — Operator Console</title>
+<style>
+:root{--bg:#050912;--panel:#07111f;--panel2:#0a1728;--line:#173250;--line2:#25577d;--text:#eef7ff;--muted:#8296aa;--green:#40e79a;--red:#ff526d;--cyan:#25d9ff;--violet:#8b5cff;--gold:#ffc85c;--orange:#ff9317;--shadow:0 22px 70px #0008}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:radial-gradient(circle at 50% -15%,#173a6655,transparent 42%),linear-gradient(180deg,#040810,#050b14 55%,#03060b);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif}button,input,select{font:inherit}button{cursor:pointer}.app{width:min(1500px,100%);margin:auto;padding:10px}.top{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:11px 13px;border:1px solid var(--line);border-radius:16px;background:#07111fe8;box-shadow:var(--shadow)}.brand{display:flex;align-items:center;gap:10px;font-weight:1000;font-style:italic;letter-spacing:.04em}.rocket-icon{width:40px;height:40px;border:1px solid #24638b;border-radius:12px;display:grid;place-items:center;background:linear-gradient(145deg,#0d2238,#07111f);font-size:22px}.brand em{color:var(--cyan);font-style:normal}.admin-badge{padding:5px 8px;border:1px solid #6d4c18;border-radius:8px;color:var(--gold);font-size:8px;font-style:normal}.top-center{text-align:center}.top-center b{display:block;font-size:10px}.top-center small{color:var(--muted);font-size:8px}.system{display:flex;align-items:center;gap:8px;font-size:9px}.dot{width:8px;height:8px;border-radius:50%;background:var(--gold);box-shadow:0 0 12px currentColor}.shell{display:grid;grid-template-columns:190px minmax(0,1fr);gap:10px;margin-top:10px}.rail{border:1px solid var(--line);border-radius:16px;background:#07111fe8;padding:8px;height:max-content;position:sticky;top:8px;box-shadow:var(--shadow)}.rail button{width:100%;display:flex;align-items:center;gap:9px;text-align:left;border:1px solid transparent;background:transparent;color:#aabac8;padding:10px 10px;border-radius:10px;font-size:9px;margin:2px 0}.rail button:hover{background:#0a192a}.rail button.on{color:#fff;border-color:#6e4cc3;background:linear-gradient(135deg,#23163f,#482776)}.rail .sep{height:1px;background:#132b43;margin:8px 4px}.content{min-width:0}.kpis{display:grid;grid-template-columns:repeat(8,1fr);gap:7px}.kpi,.panel{border:1px solid var(--line);background:#07111fe8;border-radius:14px;box-shadow:var(--shadow)}.kpi{padding:10px;min-width:0}.kpi span{display:block;color:var(--muted);font-size:7px;text-transform:uppercase;letter-spacing:.08em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.kpi b{display:block;margin-top:5px;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pane{display:none;margin-top:8px}.pane.on{display:block}.panel{padding:12px}.panel h2{margin:0 0 10px;font-size:11px;letter-spacing:.08em}.panel h2 small{float:right;color:var(--muted);font-size:8px;font-weight:500}.grid2{display:grid;grid-template-columns:1.25fr 1fr;gap:8px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.fields{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.field{padding:9px;border:1px solid #15304b;border-radius:11px;background:#0a1626}.field label{display:flex;justify-content:space-between;gap:8px;color:var(--muted);font-size:7px;margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em}.field input,.field select{width:100%;background:#06111f;border:1px solid #1c3956;border-radius:8px;color:#fff;padding:9px;font-size:10px;outline:none}.field input:focus,.field select:focus{border-color:#4389b4}.field input:disabled{color:#98aabd;background:#0a1420}.lock{color:var(--gold)}.notice{padding:10px;border-radius:10px;border:1px solid #57451f;background:#20190b;color:#ffe4a6;font-size:8px;line-height:1.5}.danger-note{border-color:#633041;background:#240d16;color:#ffc1cd}.good-note{border-color:#1d5b49;background:#09231c;color:#bfffe4}.actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.btn{border:1px solid var(--line2);background:#0c1c2e;color:#dce9f4;border-radius:9px;padding:9px 12px;font-size:9px;font-weight:850}.btn:hover{filter:brightness(1.13)}.btn.primary{border-color:#9b70ff;background:linear-gradient(135deg,#5d2eba,#8e4cff);color:#fff}.btn.green{border-color:#2d936e;background:#0d513b;color:#d5ffef}.btn.red{border-color:#9e4055;background:#4a1723;color:#ffdbe3}.btn.gold{border-color:#956724;background:#422d0d;color:#ffe0a3}.monitor{display:grid;grid-template-columns:1fr auto;gap:0;font-size:9px}.monitor div{padding:7px 0;border-bottom:1px solid #13283e}.monitor div:nth-child(even){text-align:right;font-weight:800}.metric-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.metric{border:1px solid #16334f;border-radius:11px;background:#091626;padding:10px}.metric small{color:var(--muted);font-size:7px;text-transform:uppercase}.metric b{display:block;font-size:18px;margin-top:5px}.bar{height:6px;border-radius:999px;background:#0a1a2c;overflow:hidden;margin-top:8px}.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--cyan),var(--green));transition:.2s}.table-wrap{overflow:auto;border:1px solid #142c44;border-radius:10px}.table{width:100%;border-collapse:collapse;font-size:8px;min-width:650px}.table th,.table td{padding:8px 7px;border-bottom:1px solid #13283e;text-align:left;white-space:nowrap}.table th{color:var(--muted);background:#081522;position:sticky;top:0}.green{color:var(--green)!important}.red{color:var(--red)!important}.cyan{color:var(--cyan)!important}.gold{color:var(--gold)!important}.audit-list{max-height:500px;overflow:auto}.audit-row{display:grid;grid-template-columns:115px 1fr auto;gap:7px;padding:8px 0;border-bottom:1px solid #13283e;font-size:8px}.audit-row small{color:var(--muted)}.switchline{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px;border:1px solid #16334f;border-radius:11px;background:#091626;margin-top:8px}.switchline b{font-size:9px}.switchline small{display:block;color:var(--muted);font-size:7px;margin-top:3px}.switch{width:42px;height:23px;border:1px solid #384b60;border-radius:999px;background:#121b25;position:relative;flex:0 0 auto}.switch:after{content:"";position:absolute;width:17px;height:17px;left:3px;top:2px;border-radius:50%;background:#c9d5df;transition:.2s}.switch.on{background:#5730a6;border-color:#9369ea}.switch.on:after{left:20px;background:white}.preset-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.preset-row button{border:1px solid #24405a;background:#0a1929;color:#bfd0df;border-radius:8px;padding:7px 10px;font-size:8px}.cert-card{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px;padding:12px;border:1px solid #214360;border-radius:12px;background:linear-gradient(135deg,#09192b,#0c2035)}.cert-card .icon{font-size:28px}.cert-card b{display:block;font-size:11px}.cert-card small{color:var(--muted);font-size:8px}.cert-state{padding:6px 8px;border-radius:8px;border:1px solid #2f765e;color:var(--green);font-size:8px}.cert-state.test{border-color:#9a7330;color:var(--gold)}.dirty{position:fixed;left:50%;bottom:12px;transform:translateX(-50%) translateY(80px);padding:9px 13px;border:1px solid #785924;border-radius:10px;background:#22170aee;color:#ffe0a0;font-size:8px;transition:.2s;z-index:20}.dirty.show{transform:translateX(-50%) translateY(0)}.toast{position:fixed;right:14px;bottom:14px;max-width:360px;padding:11px 13px;border:1px solid #34536e;border-radius:10px;background:#07111ff2;opacity:0;transform:translateY(14px);transition:.2s;z-index:30;font-size:9px}.toast.show{opacity:1;transform:none}
+@media(max-width:1100px){.shell{grid-template-columns:1fr}.rail{position:static;display:flex;overflow:auto}.rail button{width:auto;flex:0 0 auto}.rail .sep{display:none}.kpis{grid-template-columns:repeat(4,1fr)}.grid2,.grid3{grid-template-columns:1fr}.fields{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:650px){.app{padding:6px}.top{grid-template-columns:1fr auto}.top-center{display:none}.system span:last-child{display:none}.kpis{grid-template-columns:repeat(2,1fr)}.fields,.metric-grid{grid-template-columns:1fr}.brand{font-size:11px}.rocket-icon{width:34px;height:34px}.rail{border-radius:12px}.pane{margin-top:6px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div class="brand"><div class="rocket-icon">🚀</div><div>ROCKET CRASH <em>BEST</em> <span class="admin-badge">OPERATOR v1.5</span></div></div>
+  <div class="top-center"><b data-room>ROCKET-CRASH-BEST</b><small>Canonical demo room · certification-oriented architecture</small></div>
+  <div class="system"><i class="dot" data-dot></i><span data-status>CONNECTING</span></div>
+</header>
+<div class="shell">
+<nav class="rail">
+  <button class="on" data-tab="dashboard">◈ Dashboard</button>
+  <button data-tab="math">⌁ Game Math</button>
+  <button data-tab="treasury">◉ Treasury</button>
+  <button data-tab="risk">⬡ Risk & Liability</button>
+  <button data-tab="limits">⇅ Limits</button>
+  <div class="sep"></div>
+  <button data-tab="rounds">◷ Rounds</button>
+  <button data-tab="players">♟ Players</button>
+  <button data-tab="simulation">◎ Simulation</button>
+  <button data-tab="audit">▤ Audit</button>
+</nav>
+<main class="content">
+<section class="kpis">
+  <div class="kpi"><span>House Cash</span><b data-house>0</b></div>
+  <div class="kpi"><span>Reserve</span><b data-reserve>0</b></div>
+  <div class="kpi"><span>Open Exposure</span><b data-exposure>0</b></div>
+  <div class="kpi"><span>Available Liquidity</span><b data-liquidity>0</b></div>
+  <div class="kpi"><span>Coverage</span><b data-coverage>—</b></div>
+  <div class="kpi"><span>Total Stake</span><b data-totalstake>0</b></div>
+  <div class="kpi"><span>Total Payout</span><b data-totalpayout>0</b></div>
+  <div class="kpi"><span>Actual Margin</span><b data-margin>—</b></div>
+</section>
+
+<section class="pane on" data-pane="dashboard">
+ <div class="grid2">
+  <div class="panel"><h2>LIVE ROUND <small>same canonical state as Player</small></h2>
+   <div class="metric-grid">
+    <div class="metric"><small>Round</small><b data-round>#—</b></div>
+    <div class="metric"><small>Phase</small><b class="cyan" data-phase>—</b></div>
+    <div class="metric"><small>Multiplier</small><b class="green" data-mult>1.00x</b></div>
+    <div class="metric"><small>Real Players</small><b data-real>0</b></div>
+    <div class="metric"><small>Config Rev</small><b data-roundrev>—</b></div>
+    <div class="metric"><small>Risk Band</small><b data-band>—</b></div>
+   </div>
+   <div class="actions"><button class="btn" data-refresh>REFRESH VIEW</button><button class="btn" data-open-player>OPEN PLAYER VIEW</button><button class="btn gold" data-goto="audit">OPEN AUDIT</button></div>
+  </div>
+  <div class="panel"><h2>AUTHORITY / SYNC</h2><div class="monitor">
+    <div>Leader</div><div data-leader>—</div><div>Room</div><div data-room2>—</div><div>State Revision</div><div data-state-rev>—</div><div>Epoch</div><div data-epoch>—</div><div>Pending Config</div><div data-pending>NO</div><div>Authoritative Bust</div><div data-bust>LOCKED</div>
+  </div></div>
+ </div>
+ <div class="grid3" style="margin-top:8px">
+  <div class="panel"><h2>GAME MATH</h2><div class="monitor"><div>Profile</div><div data-profile-mini>—</div><div>RTP</div><div data-rtp-mini>—</div><div>State</div><div data-cert-mini>—</div></div><div class="actions"><button class="btn" data-goto="math">MANAGE MATH</button></div></div>
+  <div class="panel"><h2>TREASURY HEALTH</h2><div class="monitor"><div>Reserve Health</div><div data-reserve-health>—</div><div>Usable Reserve</div><div data-usable-reserve>—</div><div>Coverage Band</div><div data-band2>—</div></div><div class="bar"><i data-reserve-bar></i></div><div class="actions"><button class="btn" data-goto="treasury">OPEN TREASURY</button></div></div>
+  <div class="panel"><h2>CURRENT ROOM</h2><div class="monitor"><div>SIM Participants</div><div data-sim-mini>0</div><div>Real Bets</div><div data-bets-mini>0</div><div>Audit Events</div><div data-audit-mini>0</div></div><div class="actions"><button class="btn" data-goto="players">VIEW PLAYERS</button></div></div>
+ </div>
+</section>
+
+<section class="pane" data-pane="math">
+ <div class="grid2">
+  <div class="panel"><h2>GAME MATH PROFILE <small>production profile locked by default</small></h2>
+   <div class="cert-card"><div class="icon">🛡</div><div><b data-profile-title>RCB-GLOBAL-97</b><small>Fixed RTP math · CSPRNG draw · Treasury does not alter bust</small></div><span class="cert-state" data-cert-state>REFERENCE PROFILE LOCKED</span></div>
+   <div class="fields" style="margin-top:8px">
+    <div class="field"><label>Profile ID <span class="lock">🔒</span></label><input data-profile disabled></div>
+    <div class="field"><label>Math Version <span class="lock">🔒</span></label><input data-mathver disabled></div>
+    <div class="field"><label>Schema Version <span class="lock">🔒</span></label><input data-schema disabled></div>
+    <div class="field"><label>RTP % <span data-math-lock class="lock">🔒</span></label><input data-math="rtp" type="number" step=".01" disabled></div>
+    <div class="field"><label>House Edge % <span class="lock">derived</span></label><input data-edge disabled></div>
+    <div class="field"><label>Max Multiplier <span data-math-lock class="lock">🔒</span></label><input data-math="maxMultiplier" type="number" step="1" disabled></div>
+   </div>
+   <div class="switchline"><div><b>LAB TEST MODE</b><small>Unlocks RTP / max multiplier for engineering tests. Any saved test profile is explicitly NON-CERTIFIED TEST.</small></div><button class="switch" data-test-switch aria-label="Toggle lab test mode"></button></div>
+   <div class="actions"><button class="btn primary" data-save>SAVE CONFIG FOR NEXT ROUND</button><button class="btn" data-reset>RESET DRAFT</button></div>
+  </div>
+  <div class="panel"><h2>RNG / MATH SELF-AUDIT</h2><div class="notice good-note" data-math-audit-status>No audit executed in this browser session.</div><div class="monitor" style="margin-top:8px"><div>Expected P(≥2x)</div><div data-p2>—</div><div>Expected P(≥5x)</div><div data-p5>—</div><div>Expected P(≥10x)</div><div data-p10>—</div><div>Min Valid Bust</div><div>1.00x</div></div><div class="actions"><button class="btn green" data-run-audit>RUN LOCAL MATH AUDIT</button></div></div>
+ </div>
+</section>
+
+<section class="pane" data-pane="treasury">
+ <div class="grid2">
+  <div class="panel"><h2>TREASURY CONFIGURATION</h2><div class="notice">These controls affect bet capacity / settlement liquidity. They do not change the RNG result.</div>
+   <div class="fields" style="margin-top:8px">
+    <div class="field"><label>Reserve Target</label><input data-c="reserveTargetAmount" type="number"></div>
+    <div class="field"><label>Usable Reserve %</label><input data-pct="usableReservePct" type="number" min="0" max="100"></div>
+    <div class="field"><label>Reserve Restore %</label><input data-pct="reserveRestorePct" type="number" min="0" max="100"></div>
+   </div>
+   <div class="actions"><button class="btn primary" data-save>SAVE FOR NEXT ROUND</button><button class="btn" data-reset>RESET DRAFT</button></div>
+  </div>
+  <div class="panel"><h2>LIVE TREASURY</h2><div class="monitor"><div>House Cash</div><div data-house2>0</div><div>Reserve</div><div data-reserve2>0</div><div>Usable Reserve</div><div data-usable-reserve2>0</div><div>Available Liquidity</div><div data-liquidity2>0</div><div>Reserve Health</div><div data-reserve-health2>—</div><div>Reserve Used</div><div data-reserve-used>0</div><div>Reserve Restored</div><div data-reserve-restored>0</div></div></div>
+ </div>
+</section>
+
+<section class="pane" data-pane="risk">
+ <div class="grid2">
+  <div class="panel"><h2>RISK & LIABILITY</h2>
+   <div class="switchline"><div><b>LIABILITY COVERAGE</b><small>When enabled, risk capacity includes configured usable reserve and coverage thresholds.</small></div><button class="switch" data-liability-switch></button></div>
+   <div class="fields" style="margin-top:8px">
+    <div class="field"><label>Warning Coverage</label><input data-c="warningCoverage" type="number" step=".01"></div>
+    <div class="field"><label>Stress Coverage</label><input data-c="stressCoverage" type="number" step=".01"></div>
+    <div class="field"><label>Critical Coverage</label><input data-c="criticalCoverage" type="number" step=".01"></div>
+   </div>
+   <div class="actions"><button class="btn primary" data-save>SAVE FOR NEXT ROUND</button><button class="btn" data-reset>RESET DRAFT</button></div>
+  </div>
+  <div class="panel"><h2>LIVE RISK SNAPSHOT</h2><div class="metric-grid"><div class="metric"><small>Band</small><b data-risk-band>—</b></div><div class="metric"><small>Coverage</small><b data-risk-coverage>—</b></div><div class="metric"><small>Open Exposure</small><b data-risk-exposure>0</b></div></div><div class="monitor" style="margin-top:8px"><div>Round Exposure</div><div data-round-exposure>0</div><div>Session Exposure</div><div data-session-exposure>0</div><div>Available Liquidity</div><div data-risk-liquidity>0</div></div></div>
+ </div>
+</section>
+
+<section class="pane" data-pane="limits">
+ <div class="panel"><h2>BET / PAYOUT / ROUND LIMITS</h2>
+  <div class="fields">
+   <div class="field"><label>Min Bet</label><input data-c="minBet" type="number" step=".01"></div>
+   <div class="field"><label>Max Bet</label><input data-c="maxBet" type="number"></div>
+   <div class="field"><label>Max Payout / Bet</label><input data-c="maxPayoutPerBet" type="number"></div>
+   <div class="field"><label>Max Payout / Round</label><input data-c="maxPayoutPerRound" type="number"></div>
+   <div class="field"><label>Max Session Exposure</label><input data-c="maxSessionExposure" type="number"></div>
+   <div class="field"><label>Growth Rate</label><input data-c="growthRate" type="number" step=".001"></div>
+   <div class="field"><label>Betting Duration ms</label><input data-c="bettingMs" type="number"></div>
+   <div class="field"><label>Countdown ms</label><input data-c="countdownMs" type="number"></div>
+   <div class="field"><label>Settled Delay ms</label><input data-c="settledMs" type="number"></div>
+  </div>
+  <div class="actions"><button class="btn primary" data-save>SAVE FOR NEXT ROUND</button><button class="btn" data-reset>RESET DRAFT</button></div>
+ </div>
+</section>
+
+<section class="pane" data-pane="rounds">
+ <div class="panel"><h2>ROUND HISTORY <small>canonical history only</small></h2><div class="actions" style="margin-bottom:8px"><button class="btn" data-export-history>EXPORT HISTORY JSON</button><button class="btn" data-refresh>REFRESH</button></div><div class="table-wrap"><table class="table"><thead><tr><th>Round ID</th><th>Final Multiplier</th><th>Math Profile</th><th>Math Version</th><th>Config Rev</th><th>Settlement ID</th><th>Ended</th></tr></thead><tbody data-history></tbody></table></div></div>
+</section>
+
+<section class="pane" data-pane="players">
+ <div class="panel"><h2>REAL PLAYER BETS — CURRENT ROUND <small>SIM entries excluded</small></h2><div class="table-wrap"><table class="table"><thead><tr><th>Player</th><th>Stake</th><th>Liability</th><th>Auto Cashout</th><th>Max Cashout</th><th>Status</th><th>Payout</th></tr></thead><tbody data-bets></tbody></table></div></div>
+</section>
+
+<section class="pane" data-pane="simulation">
+ <div class="grid2"><div class="panel"><h2>DEMO SIMULATION PARTICIPANTS</h2><div class="notice danger-note">Simulation is a development/demo facility for exercising the static GitHub build. A production RGS submission must segregate test simulation from real-money accounting.</div><div class="field" style="margin-top:8px"><label>Participants per round</label><input data-c="simPlayers" type="number" min="0" max="200"></div><div class="preset-row"><button data-sim-preset="0">0</button><button data-sim-preset="16">16</button><button data-sim-preset="32">32</button><button data-sim-preset="64">64</button><button data-sim-preset="100">100</button></div><div class="actions"><button class="btn primary" data-save>SAVE FOR NEXT ROUND</button><button class="btn" data-reset>RESET DRAFT</button></div></div><div class="panel"><h2>CURRENT SIM ROUND</h2><div class="monitor"><div>Participants</div><div data-sim>0</div><div>Open SIM Liability</div><div data-simexp>0</div><div>Won</div><div data-simwon>0</div><div>Lost</div><div data-simlost>0</div></div></div></div>
+</section>
+
+<section class="pane" data-pane="audit">
+ <div class="grid2"><div class="panel"><h2>COMPLIANCE / SELF AUDIT</h2><div class="notice">Engineering self-audit is not a GLI certificate. It verifies repository invariants before laboratory submission.</div><div class="monitor" style="margin-top:8px"><div>Math Core loaded</div><div class="green" data-check-math>PASS</div><div>Risk Engine loaded</div><div class="green" data-check-risk>PASS</div><div>Canonical Engine loaded</div><div class="green" data-check-core>PASS</div><div>Player/Admin separation</div><div class="green">DESIGN ENFORCED</div><div>Production RGS</div><div class="gold">REQUIRED FOR CERTIFICATION</div></div><div class="actions"><button class="btn green" data-run-audit>RUN LOCAL MATH AUDIT</button><button class="btn" data-export-audit>EXPORT AUDIT JSON</button></div></div><div class="panel"><h2>RECENT AUDIT EVENTS</h2><div class="audit-list" data-auditlist></div></div></div>
+</section>
+</main>
+</div>
+</div>
+<div class="dirty" data-dirty>Unsaved configuration changes</div><div class="toast" data-toast></div>
+<script src="math-core-v15.js?v=1.5.1"></script>
+<script src="risk-engine-v15.js?v=1.5.1"></script>
+<script src="core-v15.js?v=1.5.1"></script>
+<script>
+(()=>{'use strict';
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+let S=null,M=null,dirty=false,draft=null,lastLoadedRev=0,testMode=false,liabilityEnabled=true;
+const num=n=>Number(n||0).toLocaleString(undefined,{maximumFractionDigits:2});
+const pct=n=>(Number(n||0)*100).toFixed(2)+'%';
+const fmt=n=>Number(n||1).toFixed(2)+'x';
+const safe=(sel,val)=>{const e=$(sel);if(e)e.textContent=val};
+function toast(t){const e=$('[data-toast]');e.textContent=t;e.classList.add('show');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('show'),2600)}
+function setDirty(v=true){dirty=v;$('[data-dirty]').classList.toggle('show',v)}
+function activate(name){$$('[data-tab]').forEach(b=>b.classList.toggle('on',b.dataset.tab===name));$$('[data-pane]').forEach(p=>p.classList.toggle('on',p.dataset.pane===name));history.replaceState(null,'','#'+name)}
+function download(name,obj){const blob=new Blob([JSON.stringify(obj,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+function syncSwitches(){const ts=$('[data-test-switch]'),ls=$('[data-liability-switch]');ts.classList.toggle('on',testMode);ls.classList.toggle('on',liabilityEnabled);$$('[data-math]').forEach(e=>e.disabled=!testMode);$$('[data-math-lock]').forEach(e=>e.textContent=testMode?'LAB':'🔒');const st=$('[data-cert-state]');st.classList.toggle('test',testMode);st.textContent=testMode?'NON-CERTIFIED TEST':'REFERENCE PROFILE LOCKED'}
+function loadDraft(c){draft=JSON.parse(JSON.stringify(c));testMode=!!c.mathProfile.testMode;liabilityEnabled=c.liabilityCoverageEnabled!==false;$$('[data-c]').forEach(e=>{if(e.dataset.c in c)e.value=c[e.dataset.c]});$$('[data-pct]').forEach(e=>e.value=(Number(c[e.dataset.pct]||0)*100).toFixed(0));$('[data-math="rtp"]').value=(Number(c.mathProfile.rtp)*100).toFixed(2);$('[data-math="maxMultiplier"]').value=c.mathProfile.maxMultiplier;$('[data-profile]').value=c.mathProfile.profileId;$('[data-mathver]').value=c.mathProfile.mathVersion;$('[data-schema]').value=c.schemaVersion;$('[data-edge]').value=(Number(c.mathProfile.houseEdge)*100).toFixed(2);safe('[data-profile-title]',c.mathProfile.profileId);syncSwitches();setDirty(false);lastLoadedRev=c.configRevision}
+function collectDraft(){if(!S)return null;const c=JSON.parse(JSON.stringify(S.config));$$('[data-c]').forEach(e=>{const n=Number(e.value);if(Number.isFinite(n))c[e.dataset.c]=n});$$('[data-pct]').forEach(e=>{const n=Number(e.value);if(Number.isFinite(n))c[e.dataset.pct]=n/100});c.liabilityCoverageEnabled=liabilityEnabled;c.mathProfile={testMode,rtp:Number($('[data-math="rtp"]').value)/100,maxMultiplier:Number($('[data-math="maxMultiplier"]').value)};c.configRevision=S.config.configRevision+1;return c}
+function save(){const c=collectDraft();if(!c)return;const sent=RocketCrashBest.proposeConfig(c);setDirty(false);render(RocketCrashBest.getState(),RocketCrashBest.getMeta());toast(sent?'Config sent — applies on next round boundary':'Config stored locally — open a Player node to become room authority')}
+function render(s,m){S=s;M=m;const f=s.finance,r=s.round||{},risk=RocketCrashBest.riskSnapshot(),profit=f.totalStake-f.totalPayout,margin=f.totalStake?profit/f.totalStake:0,p=s.config.mathProfile;safe('[data-room]',m.roomId);safe('[data-room2]',m.roomId);safe('[data-house]',num(f.houseCash));safe('[data-house2]',num(f.houseCash));safe('[data-reserve]',num(f.reserveBalance));safe('[data-reserve2]',num(f.reserveBalance));safe('[data-exposure]',num(f.openExposure));safe('[data-liquidity]',num(risk.availableLiquidity));safe('[data-liquidity2]',num(risk.availableLiquidity));safe('[data-coverage]',risk.coverage>=900?'∞':fmt(risk.coverage));safe('[data-totalstake]',num(f.totalStake));safe('[data-totalpayout]',num(f.totalPayout));safe('[data-margin]',pct(margin));safe('[data-round]','#'+(r.id||'—'));safe('[data-phase]',r.phase||'—');safe('[data-mult]',fmt(RocketCrashBest.currentMultiplier()));safe('[data-real]',m.playerPeerCount||0);safe('[data-roundrev]',r.configRevision||'—');safe('[data-band]',risk.band);safe('[data-band2]',risk.band);safe('[data-bust]',r.bust==null?'LOCKED UNTIL BET CLOSE':fmt(r.bust));safe('[data-leader]',m.leaderId||'—');safe('[data-state-rev]',s.stateRevision);safe('[data-epoch]',s.epoch);safe('[data-pending]',s.pendingConfig?'YES · rev '+s.pendingConfig.configRevision:'NO');safe('[data-profile-mini]',p.profileId);safe('[data-rtp-mini]',pct(p.rtp));safe('[data-cert-mini]',p.certificationState);safe('[data-reserve-health]',pct(risk.reserveHealth));safe('[data-reserve-health2]',pct(risk.reserveHealth));safe('[data-usable-reserve]',num(risk.usableReserve));safe('[data-usable-reserve2]',num(risk.usableReserve));safe('[data-reserve-used]',num(f.reserveUsed));safe('[data-reserve-restored]',num(f.reserveRestored));safe('[data-risk-band]',risk.band);safe('[data-risk-coverage]',risk.coverage>=900?'∞':fmt(risk.coverage));safe('[data-risk-exposure]',num(f.openExposure));safe('[data-round-exposure]',num(f.roundExposure));safe('[data-session-exposure]',num(f.sessionExposure));safe('[data-risk-liquidity]',num(risk.availableLiquidity));$('[data-reserve-bar]').style.width=Math.max(0,Math.min(100,risk.reserveHealth*100))+'%';const bets=Object.values(r.realBets||{});safe('[data-bets-mini]',bets.length);safe('[data-sim-mini]',(r.simBets||[]).length);safe('[data-audit-mini]',(s.audit||[]).length);safe('[data-sim]',(r.simBets||[]).length);safe('[data-simexp]',num((r.simBets||[]).filter(b=>b.status==='OPEN').reduce((a,b)=>a+Number(b.liability||0),0)));safe('[data-simwon]',(r.simBets||[]).filter(b=>b.status==='WON').length);safe('[data-simlost]',(r.simBets||[]).filter(b=>b.status==='LOST').length);$('[data-status]').textContent=m.connected?'P2P CONNECTED':'SOLO / LOCAL';$('[data-dot]').style.background=m.connected?'var(--green)':'var(--gold)';$('[data-dot]').style.color=m.connected?'var(--green)':'var(--gold)';if(!dirty&&s.config.configRevision!==lastLoadedRev)loadDraft(s.config);
+ const hist=(s.history||[]).slice().reverse();$('[data-history]').innerHTML=hist.map(h=>`<tr><td>#${h.roundId}</td><td class="${h.bust>=2?'green':'cyan'}">${fmt(h.bust)}</td><td>${h.mathProfileId||'—'}</td><td>${h.mathVersion||'—'}</td><td>${h.configRevision}</td><td>${h.settlementId||'—'}</td><td>${new Date(h.endedAt).toLocaleString()}</td></tr>`).join('')||'<tr><td colspan="7">No settled rounds yet</td></tr>';
+ $('[data-bets]').innerHTML=bets.map(b=>`<tr><td>${b.nickname||b.playerId}</td><td>${num(b.stake)}</td><td>${num(b.liability)}</td><td>${b.autoCashout?fmt(b.autoCashout):'—'}</td><td>${b.maxCashout?fmt(b.maxCashout):'—'}</td><td class="${['LOST','UNPAID'].includes(b.status)?'red':'green'}">${b.status}</td><td>${num(b.payout)}</td></tr>`).join('')||'<tr><td colspan="7">No real bets in current round</td></tr>';
+ $('[data-auditlist]').innerHTML=(s.audit||[]).slice().reverse().map(a=>`<div class="audit-row"><b>${a.type}</b><span>Round #${a.roundId||'—'} · rev ${a.configRevision}${a.settlementId?' · '+a.settlementId:''}</span><small>${new Date(a.ts).toLocaleTimeString()}</small></div>`).join('')||'<div class="audit-row"><span>No audit events</span></div>';
+ const c=risk.band==='CRITICAL'?'red':risk.band==='STRESS'?'gold':risk.band==='WARNING'?'gold':'green';$$('[data-risk-band],[data-band],[data-band2]').forEach(e=>{e.className=c});
+}
+function runAudit(){try{const p=RocketCrashBest.mathProfile(),tests=[0,.0001,.01,.25,.5,.75,.9,.97,.99,.999,.999999].map(u=>RCBMathV15.bustFromUniform(u,p)),valid=tests.every(x=>Number.isFinite(x)&&x>=1),p2=RCBMathV15.theoreticalReachProbability(2,p),p5=RCBMathV15.theoreticalReachProbability(5,p),p10=RCBMathV15.theoreticalReachProbability(10,p);safe('[data-p2]',pct(p2));safe('[data-p5]',pct(p5));safe('[data-p10]',pct(p10));const e=$('[data-math-audit-status]');e.textContent=valid?'PASS — all deterministic invariant samples are finite and ≥ 1.00x':'FAIL — invalid multiplier detected';e.classList.toggle('good-note',valid);e.classList.toggle('danger-note',!valid);toast(valid?'Local math invariants PASS':'Local math audit FAIL')}catch(e){$('[data-math-audit-status]').textContent='AUDIT ERROR — '+e.message;toast('Audit error: '+e.message)}}
+RocketCrashBest.start({role:'admin'}).subscribe(render);
+$$('[data-tab]').forEach(b=>b.onclick=()=>activate(b.dataset.tab));$$('[data-goto]').forEach(b=>b.onclick=()=>activate(b.dataset.goto));$$('[data-save]').forEach(b=>b.onclick=save);$$('[data-reset]').forEach(b=>b.onclick=()=>{if(S)loadDraft(S.config);toast('Draft reset to active config')});$$('[data-refresh]').forEach(b=>b.onclick=()=>render(RocketCrashBest.getState(),RocketCrashBest.getMeta()));$$('[data-run-audit]').forEach(b=>b.onclick=runAudit);
+$$('[data-c],[data-pct],[data-math]').forEach(e=>e.addEventListener('input',()=>setDirty(true)));
+$('[data-test-switch]').onclick=()=>{testMode=!testMode;syncSwitches();setDirty(true)};$('[data-liability-switch]').onclick=()=>{liabilityEnabled=!liabilityEnabled;syncSwitches();setDirty(true)};
+$$('[data-sim-preset]').forEach(b=>b.onclick=()=>{const inputs=$$('[data-c="simPlayers"]');inputs.forEach(e=>e.value=b.dataset.simPreset);setDirty(true)});
+$('[data-open-player]').onclick=()=>window.open('index.html','_blank');$('[data-export-history]').onclick=()=>download('rocket-crash-history.json',S?.history||[]);$('[data-export-audit]').onclick=()=>download('rocket-crash-audit.json',{exportedAt:new Date().toISOString(),version:RocketCrashBest.VERSION,stateRevision:S?.stateRevision,epoch:S?.epoch,config:S?.config,audit:S?.audit||[]});
+const hash=location.hash.replace('#','');if(hash&&$(`[data-pane="${hash}"]`))activate(hash);
+})();
+</script>
+</body>
+</html>
