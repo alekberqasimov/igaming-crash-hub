@@ -41,7 +41,7 @@ function loadSession(){
 let profile=loadProfile();
 const session=loadSession();
 function endpoint(){return (window.IGCH_TELEMETRY&&window.IGCH_TELEMETRY.endpoint)||localStorage.getItem(ENDPOINT_KEY)||''}
-function localEvents(){return safeParse(localStorage.getItem(EVENTS_KEY),'__bad__')==='__bad__'?[]:safeParse(localStorage.getItem(EVENTS_KEY),[])}
+function localEvents(){const value=safeParse(localStorage.getItem(EVENTS_KEY),[]);return Array.isArray(value)?value:[]}
 function storeEvent(e){const a=localEvents();a.push(e);if(a.length>MAX_LOCAL_EVENTS)a.splice(0,a.length-MAX_LOCAL_EVENTS);localStorage.setItem(EVENTS_KEY,JSON.stringify(a))}
 function sendRemote(e){
   const url=endpoint();if(!url)return;
