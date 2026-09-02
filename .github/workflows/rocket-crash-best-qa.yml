@@ -1,4 +1,4 @@
-name: Rocket Crash Best v1.6 QA
+name: Rocket Crash Best v1.7 Pre-Cert QA
 
 on:
   push:
@@ -21,8 +21,12 @@ jobs:
           node-version: '22'
       - name: Syntax checks
         run: |
-          node --check games/rocket-crash-best/math-core-v16.js
-          node --check games/rocket-crash-best/risk-engine-v16.js
-          node --check games/rocket-crash-best/core-v16.js
-      - name: v1.6 architecture and UI audit
-        run: node games/rocket-crash-best/tests/v16.test.cjs
+          node --check games/rocket-crash-best/math-core-v17.js
+          node --check games/rocket-crash-best/risk-engine-v17.js
+          node --check games/rocket-crash-best/core-v17.js
+      - name: v1.7 architecture and UI audit
+        run: node games/rocket-crash-best/tests/v17.test.cjs
+      - name: RNG distribution pre-cert audit
+        run: node games/rocket-crash-best/tests/rng-stat-v17.test.cjs
+      - name: 10K margin convergence audit
+        run: node games/rocket-crash-best/tests/margin-10k-v17.test.cjs

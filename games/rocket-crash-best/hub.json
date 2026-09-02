@@ -1,10 +1,18 @@
 {
   "name": "Rocket Crash Best",
   "slug": "rocket-crash-best",
-  "version": "1.6.0",
-  "status": "production-test",
+  "version": "1.7.0",
+  "status": "PRE-CERT DEMO",
   "entry": "index.html",
   "admin": "admin.html",
-  "description": "Responsive trilingual crash-game demo with fixed RTP math, treasury risk controls and canonical session reporting.",
-  "languages": ["az", "ru", "en"]
+  "category": "Space · Crash · Cashout",
+  "description": "Premium trilingual rocket crash demo with locked 95% RTP math, 10K statistical audit, treasury controls and canonical session reporting.",
+  "languages": ["az", "ru", "en"],
+  "tags": ["Crash", "Rocket", "95% RTP", "Pre-Cert"],
+  "art": "auto",
+  "icon": "🚀",
+  "theme": "space",
+  "label": "SPACE / CRASH",
+  "subtitle": "REALTIME ROCKET CASHOUT",
+  "order": 60
 }
