@@ -1,4 +1,4 @@
-name: Sonic Crash Best v1.4 QA
+name: Rocket Crash Best v1.5 QA
 
 on:
   push:
@@ -12,13 +12,17 @@ on:
 jobs:
   qa:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 8
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Syntax check
-        run: node --check games/sonic-crash-best/core.js
-      - name: Canonical core tests
+      - name: Syntax checks
+        run: |
+          node --check games/sonic-crash-best/core.js
+          node --check games/sonic-crash-best/math-core-v15.js
+      - name: Legacy canonical core regression
         run: node games/sonic-crash-best/tests/core.test.cjs
+      - name: Fixed RTP math audit
+        run: node games/sonic-crash-best/tests/math-v15.test.cjs
