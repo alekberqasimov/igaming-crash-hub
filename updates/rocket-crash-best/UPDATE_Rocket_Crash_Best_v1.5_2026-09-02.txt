@@ -1,0 +1,30 @@
+Rocket Crash Best v1.5
+Release date: 2026-09-02
+Repository: alekberqasimov/igaming-crash-hub
+Production merge commit: bc4d7d1dc40e3171146be1ded212ba57e3b62615
+Pull Request: #13
+
+Release scope
+- Fixed RTP CSPRNG math core
+- Treasury / Risk engine separated from RNG outcome
+- ALLOW / LIMIT / REJECT bet-capacity logic
+- Canonical round engine v1.5
+- Rocket-themed Player View
+- Functional Operator/Admin Console
+- Round History and Real Players visible in Player View
+- House Cash / Reserve / Exposure / Risk / Math controls remain Admin-only
+- Next-round atomic config proposal flow
+- Math profile / config revision / settlement audit data
+- Automated syntax, math, treasury-risk and architecture separation QA
+- GLI-19-oriented engineering compliance matrix
+
+Final pre-merge QA
+- Syntax checks: PASS
+- Fixed RTP math audit: PASS
+- Treasury risk audit: PASS
+- Architecture separation audit: PASS
+
+Important certification note
+This build is a production-test/demo release and is NOT itself a GLI-19 certificate.
+A real-money certified release still requires an authoritative production RGS/backend,
+laboratory review, RNG/math submission, security review and jurisdiction-specific approval.
