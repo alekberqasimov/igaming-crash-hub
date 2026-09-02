@@ -140,7 +140,7 @@ async function discoverGames(config){
   const response=await fetch(api,{headers:{"Accept":"application/vnd.github+json"},cache:"no-store"});
   if(!response.ok) throw new Error(`GitHub API ${response.status}`);
   const items=await response.json();
-  const folders=(items||[]).filter(item=>item.type==="dir");
+  const folders=(items||[]).filter(item=>item.type==="dir" && String(item.name).toLowerCase()!=="shared");
   const fallbackMap=new Map((config.fallback_games||DEFAULT_GAMES).map(game=>[String(game.folder).toLowerCase(),game]));
   const games=await Promise.all(folders.map(async folder=>{
     const fallback=fallbackMap.get(String(folder.name).toLowerCase())||{};
