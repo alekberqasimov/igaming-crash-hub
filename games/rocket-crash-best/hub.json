@@ -1,0 +1,10 @@
+{
+  "name": "Rocket Crash Best",
+  "slug": "rocket-crash-best",
+  "version": "1.6.0",
+  "status": "production-test",
+  "entry": "index.html",
+  "admin": "admin.html",
+  "description": "Responsive trilingual crash-game demo with fixed RTP math, treasury risk controls and canonical session reporting.",
+  "languages": ["az", "ru", "en"]
+}
