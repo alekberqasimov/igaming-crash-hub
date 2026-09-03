@@ -1,4 +1,4 @@
-# Rocket Crash Best v1.9
+# Rocket Crash Best v1.10
 
 Production-test/demo crash game for the IGAMING CRASH HUB.
 
@@ -10,12 +10,13 @@ Production-test/demo crash game for the IGAMING CRASH HUB.
 - The flight multiplier is rendered on every animation frame, so its growth stays visibly continuous between engine state events.
 - A live circular countdown shows the seconds remaining before every flight.
 - The balance control opens a demo Deposit modal with presets and a custom local test amount.
+- Player devices elect one deterministic room leader; every follower adopts that leader's canonical round, phase, timing and multiplier state through Trystero's action listener API.
 
 ## Runtime architecture
 - Fixed reference math profile: 95% theoretical RTP / 5% theoretical house edge.
 - Browser CSPRNG reference implementation for the static demo; production certification still requires an authoritative RGS.
 - Treasury/Risk engine controls bet capacity using ALLOW / LIMIT / REJECT and does not modify the RNG result.
-- Canonical round state shared between Player/Admin demo peers.
+- Canonical round state shared between Player/Admin demo peers with one elected Player leader.
 - Config changes apply on the next round boundary.
 - Admin-only treasury, reserve, exposure and risk controls.
 - Player/Admin languages: Azerbaijani, Russian, English.
